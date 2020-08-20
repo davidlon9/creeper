@@ -105,8 +105,4 @@ public class ExecutorFactory {
         }
         throw new RuntimeExecuteException(looperClass.getSimpleName()+" is not support");
     }
-
-    public static void main(String[] args) {
-        System.out.println();
-    }
 }

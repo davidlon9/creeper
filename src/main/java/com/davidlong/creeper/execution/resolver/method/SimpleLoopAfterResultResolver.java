@@ -4,7 +4,7 @@ import com.davidlong.creeper.control.BreakAction;
 import com.davidlong.creeper.control.RetryAction;
 import com.davidlong.creeper.exception.ExecutionException;
 import com.davidlong.creeper.execution.context.ExecutionContext;
-import com.davidlong.creeper.model.ExecutionResult;
+import com.davidlong.creeper.model.result.ExecutionResult;
 import org.apache.log4j.Logger;
 
 public class SimpleLoopAfterResultResolver implements HandlerMethodResultResolver {

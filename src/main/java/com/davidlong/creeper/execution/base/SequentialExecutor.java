@@ -1,7 +1,7 @@
 package com.davidlong.creeper.execution.base;
 
 import com.davidlong.creeper.exception.ExecutionException;
-import com.davidlong.creeper.model.ExecutionResult;
+import com.davidlong.creeper.model.result.ExecutionResult;
 import com.davidlong.creeper.model.seq.SequentialEntity;
 
 import java.io.IOException;

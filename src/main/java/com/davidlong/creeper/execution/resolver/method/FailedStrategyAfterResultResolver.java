@@ -3,7 +3,7 @@ package com.davidlong.creeper.execution.resolver.method;
 import com.davidlong.creeper.annotation.control.FailedStrategy;
 import com.davidlong.creeper.exception.ExecutionException;
 import com.davidlong.creeper.execution.context.ExecutionContext;
-import com.davidlong.creeper.model.ExecutionResult;
+import com.davidlong.creeper.model.result.ExecutionResult;
 import com.davidlong.creeper.model.seq.RequestEntity;
 import com.davidlong.creeper.model.seq.SequentialEntity;
 import org.apache.log4j.Logger;

@@ -2,7 +2,7 @@ package com.davidlong.creeper.resolver.util;
 
 import com.davidlong.creeper.annotation.seq.Chain;
 import com.davidlong.creeper.annotation.seq.Request;
-import demo.pdf.PDFdzswChain;
+import demo.pdf.main.PDFdzswChain;
 import org.springframework.core.annotation.AnnotationUtils;
 
 import java.lang.annotation.Annotation;

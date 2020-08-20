@@ -10,7 +10,7 @@ import com.davidlong.creeper.execution.handler.info.RequestBeforeMethodArgumentI
 import com.davidlong.creeper.execution.resolver.ExecutionResultResolver;
 import com.davidlong.creeper.execution.resolver.LoopExecutionResultResolver;
 import com.davidlong.creeper.execution.resolver.SimpleExecutionResultResolver;
-import com.davidlong.creeper.model.ExecutionResult;
+import com.davidlong.creeper.model.result.ExecutionResult;
 import com.davidlong.creeper.model.HandlerMethodWrapper;
 import com.davidlong.creeper.model.seq.RequestEntity;
 import com.davidlong.creeper.model.seq.control.Looper;

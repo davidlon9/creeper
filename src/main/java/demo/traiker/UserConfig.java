@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class UserConfig {
-    public static final List<String> passengerNames= Arrays.asList("龙英杰");
+    public static final List<String> passengerNames= Arrays.asList("xxx");
 
     public static final String[] acceptTicketType={StringConsts.EDZ,StringConsts.YW};
 

@@ -9,8 +9,11 @@ import com.davidlong.creeper.execution.context.ExecutionContext;
 import com.davidlong.creeper.execution.looper.BaseExecuteLooper;
 import com.davidlong.creeper.execution.resolver.AutoNextSeqResultResolver;
 import com.davidlong.creeper.execution.resolver.MultiExecutionResultResolver;
-import com.davidlong.creeper.model.*;
+import com.davidlong.creeper.model.result.ExecutionResult;
+import com.davidlong.creeper.model.result.LoopExecutionResult;
+import com.davidlong.creeper.model.result.MultiExecutionResult;
 import com.davidlong.creeper.model.seq.multi.MultiRequestQueueEntity;
+import com.davidlong.creeper.model.seq.multi.Multiple;
 import org.apache.http.impl.execchain.RequestAbortedException;
 import org.apache.log4j.Logger;
 

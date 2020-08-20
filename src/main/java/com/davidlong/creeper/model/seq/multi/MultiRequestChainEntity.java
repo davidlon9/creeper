@@ -1,8 +1,6 @@
 package com.davidlong.creeper.model.seq.multi;
 
 import com.davidlong.creeper.execution.handler.help.ThreadLocalMap;
-import com.davidlong.creeper.model.ExecutionStrategy;
-import com.davidlong.creeper.model.Multiple;
 import com.davidlong.creeper.model.seq.RequestChainEntity;
 
 import java.util.concurrent.ExecutorService;
@@ -12,7 +10,6 @@ public class MultiRequestChainEntity extends RequestChainEntity implements Multi
     private int interval;
     private boolean shareContext = true;
     private boolean moveStopAll = true;
-    private ExecutionStrategy strategy = ExecutionStrategy.Parallel;
     private ThreadLocalMap<ExecutorService> localThreadPool =new ThreadLocalMap<>();
 
     public int getThreadSize() {
@@ -21,14 +18,6 @@ public class MultiRequestChainEntity extends RequestChainEntity implements Multi
 
     public void setThreadSize(int threadSize){
         this.threadSize = threadSize;
-    }
-
-    public ExecutionStrategy getStrategy() {
-        return strategy;
-    }
-
-    public void setStrategy(ExecutionStrategy strategy) {
-        this.strategy = strategy;
     }
 
     public int getInterval() {

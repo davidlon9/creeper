@@ -3,7 +3,7 @@ package com.davidlong.creeper.execution.base;
 import com.davidlong.creeper.exception.ExecutionException;
 import com.davidlong.creeper.execution.ExecutorFactory;
 import com.davidlong.creeper.execution.context.ExecutionContext;
-import com.davidlong.creeper.model.ExecutionResult;
+import com.davidlong.creeper.model.result.ExecutionResult;
 import com.davidlong.creeper.model.seq.control.Looper;
 import com.davidlong.creeper.model.seq.LoopableEntity;
 

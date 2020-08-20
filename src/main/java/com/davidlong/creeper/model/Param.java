@@ -1,10 +1,9 @@
 package com.davidlong.creeper.model;
 
-import com.davidlong.creeper.execution.context.ParamStore;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
-public class Param extends BasicNameValuePair implements Injectable {
+public class Param extends BasicNameValuePair{
     private String globalKey;
 
     public Param(String name, String value) {
@@ -39,19 +38,8 @@ public class Param extends BasicNameValuePair implements Injectable {
         }
     }
 
-    @Override
-    public Class getStoreClass() {
-        return ParamStore.class;
-    }
-
-    @Override
     public String getKey() {
         return this.globalKey!=null?this.globalKey:this.getName();
-    }
-
-    @Override
-    public String getTarget() {
-        return this.getValue();
     }
 
     @Override

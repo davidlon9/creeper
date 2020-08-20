@@ -2,9 +2,9 @@ package com.davidlong.creeper.execution.looper;
 
 import com.davidlong.creeper.exception.ExecutionException;
 import com.davidlong.creeper.execution.base.LoopableExecutor;
-import com.davidlong.creeper.model.ExecutionResult;
-import com.davidlong.creeper.model.LoopExecutionResult;
-import com.davidlong.creeper.model.Multiple;
+import com.davidlong.creeper.model.result.ExecutionResult;
+import com.davidlong.creeper.model.result.LoopExecutionResult;
+import com.davidlong.creeper.model.seq.multi.Multiple;
 import com.davidlong.creeper.model.seq.LoopableEntity;
 import com.davidlong.creeper.model.seq.control.WhileLooper;
 import com.davidlong.creeper.model.seq.control.Looper;

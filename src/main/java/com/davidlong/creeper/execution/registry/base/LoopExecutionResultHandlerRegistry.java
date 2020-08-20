@@ -3,7 +3,7 @@ package com.davidlong.creeper.execution.registry.base;
 import com.davidlong.creeper.exception.ExecutionException;
 import com.davidlong.creeper.execution.context.ExecutionContext;
 import com.davidlong.creeper.execution.handler.LoopExecutionResultHandler;
-import com.davidlong.creeper.model.LoopExecutionResult;
+import com.davidlong.creeper.model.result.LoopExecutionResult;
 import com.davidlong.creeper.model.seq.LoopableEntity;
 
 import java.util.ArrayList;

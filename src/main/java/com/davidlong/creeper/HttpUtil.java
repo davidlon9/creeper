@@ -39,7 +39,6 @@ public class HttpUtil {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
     }
 
 }

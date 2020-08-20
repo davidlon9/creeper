@@ -4,7 +4,7 @@ import com.davidlong.creeper.control.ContinueAction;
 import com.davidlong.creeper.control.MoveAction;
 import com.davidlong.creeper.exception.ExecutionException;
 import com.davidlong.creeper.execution.context.ExecutionContext;
-import com.davidlong.creeper.model.ExecutionResult;
+import com.davidlong.creeper.model.result.ExecutionResult;
 import com.davidlong.creeper.model.seq.SequentialEntity;
 import org.apache.log4j.Logger;
 

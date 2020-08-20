@@ -2,8 +2,8 @@ package com.davidlong.creeper.execution.multi;
 
 import com.davidlong.creeper.execution.base.BaseChainExecutor;
 import com.davidlong.creeper.execution.context.ExecutionContext;
-import com.davidlong.creeper.model.ChainExecutionResult;
-import com.davidlong.creeper.model.ExecutionResult;
+import com.davidlong.creeper.model.result.ChainExecutionResult;
+import com.davidlong.creeper.model.result.ExecutionResult;
 import com.davidlong.creeper.model.seq.multi.LoginUserInfo;
 import com.davidlong.creeper.model.seq.multi.MultiUserChainEntity;
 

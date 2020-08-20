@@ -2,7 +2,7 @@ package com.davidlong.creeper.execution.resolver;
 
 import com.davidlong.creeper.execution.context.ExecutionContext;
 import com.davidlong.creeper.execution.resolver.method.HandlerMethodResultResolver;
-import com.davidlong.creeper.model.ExecutionResult;
+import com.davidlong.creeper.model.result.ExecutionResult;
 import com.davidlong.creeper.model.seq.SequentialEntity;
 import org.apache.log4j.Logger;
 

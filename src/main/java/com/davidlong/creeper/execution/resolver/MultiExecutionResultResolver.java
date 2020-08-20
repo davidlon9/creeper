@@ -2,8 +2,8 @@ package com.davidlong.creeper.execution.resolver;
 
 import com.davidlong.creeper.exception.ExecutionException;
 import com.davidlong.creeper.execution.context.ExecutionContext;
-import com.davidlong.creeper.model.ExecutionResult;
-import com.davidlong.creeper.model.MultiExecutionResult;
+import com.davidlong.creeper.model.result.ExecutionResult;
+import com.davidlong.creeper.model.result.MultiExecutionResult;
 import com.davidlong.creeper.model.seq.SequentialEntity;
 import com.davidlong.creeper.model.seq.multi.MultiRequestEntity;
 import org.apache.log4j.Logger;

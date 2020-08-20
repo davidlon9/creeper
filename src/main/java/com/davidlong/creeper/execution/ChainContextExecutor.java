@@ -5,7 +5,7 @@ import com.davidlong.creeper.execution.base.ChainExecutor;
 import com.davidlong.creeper.execution.base.ContextExecutor;
 import com.davidlong.creeper.execution.base.RequestExecutor;
 import com.davidlong.creeper.execution.context.ExecutionContext;
-import com.davidlong.creeper.model.ChainExecutionResult;
+import com.davidlong.creeper.model.result.ChainExecutionResult;
 import com.davidlong.creeper.model.result.ChainResult;
 import com.davidlong.creeper.model.result.HttpResult;
 import com.davidlong.creeper.model.seq.RequestChainEntity;

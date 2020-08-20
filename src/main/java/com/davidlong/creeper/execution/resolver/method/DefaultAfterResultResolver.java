@@ -2,7 +2,7 @@ package com.davidlong.creeper.execution.resolver.method;
 
 import com.davidlong.creeper.exception.ExecutionException;
 import com.davidlong.creeper.execution.context.ExecutionContext;
-import com.davidlong.creeper.model.ExecutionResult;
+import com.davidlong.creeper.model.result.ExecutionResult;
 import org.apache.log4j.Logger;
 
 public class DefaultAfterResultResolver implements HandlerMethodResultResolver {

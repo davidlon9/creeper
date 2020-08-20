@@ -1,6 +1,6 @@
 package com.davidlong.creeper.resolver.recorder;
 
-import com.davidlong.creeper.annotation.control.FileRecordsIgnore;
+import com.davidlong.creeper.annotation.control.recorder.FileRecordsIgnore;
 import com.davidlong.creeper.exception.AnnotationNotFoundException;
 import com.davidlong.creeper.model.seq.recorder.FileUrlRecorder;
 import com.davidlong.creeper.model.seq.recorder.UrlRecorder;

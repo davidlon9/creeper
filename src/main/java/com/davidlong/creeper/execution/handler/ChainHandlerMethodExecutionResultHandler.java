@@ -8,6 +8,7 @@ import com.davidlong.creeper.execution.resolver.ChainExecutionResultResolver;
 import com.davidlong.creeper.execution.resolver.ExecutionResultResolver;
 import com.davidlong.creeper.execution.resolver.LoopExecutionResultResolver;
 import com.davidlong.creeper.model.*;
+import com.davidlong.creeper.model.result.ExecutionResult;
 import com.davidlong.creeper.model.seq.RequestChainEntity;
 import com.davidlong.creeper.model.seq.control.Looper;
 import org.apache.log4j.Logger;

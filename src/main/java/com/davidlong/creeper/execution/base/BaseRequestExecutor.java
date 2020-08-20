@@ -12,7 +12,7 @@ import com.davidlong.creeper.execution.registry.base.RequestExecutionResultHandl
 import com.davidlong.creeper.execution.request.DefaultRequestBuilder;
 import com.davidlong.creeper.execution.request.HttpRequestBuilder;
 import com.davidlong.creeper.execution.resolver.SimpleExecutionResultResolver;
-import com.davidlong.creeper.model.ExecutionResult;
+import com.davidlong.creeper.model.result.ExecutionResult;
 import com.davidlong.creeper.model.HandlerMethodWrapper;
 import com.davidlong.creeper.model.log.ResponseLogInfo;
 import com.davidlong.creeper.model.seq.RequestChainEntity;

@@ -1,7 +1,7 @@
 package com.davidlong.creeper.resolver;
 
-import com.davidlong.creeper.annotation.control.DatabaseRecordsIgnore;
-import com.davidlong.creeper.annotation.control.FileRecordsIgnore;
+import com.davidlong.creeper.annotation.control.recorder.DatabaseRecordsIgnore;
+import com.davidlong.creeper.annotation.control.recorder.FileRecordsIgnore;
 import com.davidlong.creeper.annotation.control.looper.ForEach;
 import com.davidlong.creeper.annotation.control.looper.ForIndex;
 import com.davidlong.creeper.annotation.control.looper.While;
