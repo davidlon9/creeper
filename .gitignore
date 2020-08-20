@@ -3,4 +3,4 @@ target/
 
 # ignore idea files
 .idea/
-.creeper.iml
+creeper.iml
