@@ -1,7 +1,6 @@
-package com.davidlong.http.model;
+package com.davidlong.creeper.model;
 
-import com.davidlong.http.model.seq.RequestChainEntity;
-import com.davidlong.http.model.seq.SequentialEntity;
+import com.davidlong.creeper.model.seq.RequestChainEntity;
 
 import java.util.ArrayList;
 import java.util.List;

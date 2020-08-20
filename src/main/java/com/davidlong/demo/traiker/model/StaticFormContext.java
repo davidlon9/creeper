@@ -1,4 +1,4 @@
-package com.davidlong.traiker.model;
+package com.davidlong.demo.traiker.model;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;

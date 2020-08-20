@@ -1,7 +1,7 @@
-package com.davidlong.http.util;
+package com.davidlong.creeper.util;
 
-import com.davidlong.http.HttpConst;
-import com.davidlong.http.model.Param;
+import com.davidlong.creeper.HttpConst;
+import com.davidlong.creeper.model.Param;
 
 public class UrlUtil {
     public static String host(String host){

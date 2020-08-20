@@ -1,12 +1,12 @@
-package com.davidlong.http.resolver.base;
+package com.davidlong.creeper.resolver.base;
 
-import com.davidlong.http.HttpConst;
-import com.davidlong.http.annotation.Host;
-import com.davidlong.http.annotation.Path;
-import com.davidlong.http.annotation.http.*;
-import com.davidlong.http.model.seq.RequestInfo;
-import com.davidlong.http.resolver.RequestUrlInfoResolver;
-import com.davidlong.http.resolver.util.ResolveUtil;
+import com.davidlong.creeper.HttpConst;
+import com.davidlong.creeper.annotation.Host;
+import com.davidlong.creeper.annotation.Path;
+import com.davidlong.creeper.annotation.http.*;
+import com.davidlong.creeper.model.seq.RequestInfo;
+import com.davidlong.creeper.resolver.RequestUrlInfoResolver;
+import com.davidlong.creeper.resolver.util.ResolveUtil;
 import org.apache.log4j.Logger;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.ReflectionUtils;

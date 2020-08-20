@@ -1,4 +1,4 @@
-package com.davidlong.traiker.util;
+package com.davidlong.demo.traiker.util;
 
 public class Unicoder {
     public static String unicodeToCn(String unicode) {

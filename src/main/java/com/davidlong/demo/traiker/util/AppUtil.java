@@ -1,4 +1,4 @@
-package com.davidlong.traiker.util;
+package com.davidlong.demo.traiker.util;
 
 
 import java.net.URLEncoder;

@@ -1,6 +1,6 @@
-package com.davidlong.http.execution.handler.info;
+package com.davidlong.creeper.execution.handler.info;
 
-import com.davidlong.http.execution.context.ExecutionContext;
+import com.davidlong.creeper.execution.context.ExecutionContext;
 import org.apache.http.client.fluent.Request;
 import org.apache.log4j.Logger;
 

@@ -1,13 +1,13 @@
-package com.davidlong.http.model.seq;
+package com.davidlong.creeper.model.seq;
 
-import com.davidlong.http.execution.context.ExecutionContext;
-import com.davidlong.http.execution.handler.entity.AfterHandler;
-import com.davidlong.http.execution.handler.entity.BeforeHandler;
-import com.davidlong.http.execution.handler.entity.ExecutionHandler;
-import com.davidlong.http.execution.handler.info.JsonResultCookieInfo;
-import com.davidlong.http.execution.request.DefaultRequestBuilder;
-import com.davidlong.http.model.log.RequestLogInfo;
-import com.davidlong.http.model.log.ResponseLogInfo;
+import com.davidlong.creeper.execution.context.ExecutionContext;
+import com.davidlong.creeper.execution.handler.entity.AfterHandler;
+import com.davidlong.creeper.execution.handler.entity.BeforeHandler;
+import com.davidlong.creeper.execution.handler.entity.ExecutionHandler;
+import com.davidlong.creeper.execution.handler.info.JsonResultCookieInfo;
+import com.davidlong.creeper.execution.request.DefaultRequestBuilder;
+import com.davidlong.creeper.model.log.RequestLogInfo;
+import com.davidlong.creeper.model.log.ResponseLogInfo;
 import org.apache.http.client.fluent.Request;
 
 import java.lang.reflect.AnnotatedElement;

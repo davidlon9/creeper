@@ -1,4 +1,4 @@
-package com.davidlong.http.model.seq;
+package com.davidlong.creeper.model.seq;
 
 import java.util.HashSet;
 import java.util.Set;

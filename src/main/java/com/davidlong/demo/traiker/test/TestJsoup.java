@@ -1,4 +1,4 @@
-package com.davidlong.traiker.test;
+package com.davidlong.demo.traiker.test;
 
 import com.alibaba.fastjson.JSONObject;
 import com.davidlong.creeper.util.FileUtil;

@@ -1,4 +1,4 @@
-package com.davidlong.http.control;
+package com.davidlong.creeper.control;
 
 public class ContinueAction extends IntervalAction {
 

@@ -1,6 +1,6 @@
-package com.davidlong.http.annotation.control.looper;
+package com.davidlong.creeper.annotation.control.looper;
 
-import com.davidlong.http.annotation.control.ExecutionMode;
+import com.davidlong.creeper.annotation.control.ExecutionMode;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

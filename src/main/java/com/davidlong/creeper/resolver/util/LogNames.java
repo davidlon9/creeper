@@ -1,7 +1,7 @@
-package com.davidlong.http.resolver.util;
+package com.davidlong.creeper.resolver.util;
 
-import com.davidlong.http.model.seq.RequestChainEntity;
-import com.davidlong.http.model.seq.RequestEntity;
+import com.davidlong.creeper.model.seq.RequestChainEntity;
+import com.davidlong.creeper.model.seq.RequestEntity;
 
 public class LogNames {
     public static String request(RequestEntity requestEntity){

@@ -1,8 +1,8 @@
-package com.davidlong.http.execution.registry;
+package com.davidlong.creeper.execution.registry;
 
-import com.davidlong.http.execution.registry.base.RequestExecutionResultHandlerRegistry;
-import com.davidlong.http.execution.handler.CookieResultHandler;
-import com.davidlong.http.execution.handler.MultiRequestExecutionResultHandler;
+import com.davidlong.creeper.execution.registry.base.RequestExecutionResultHandlerRegistry;
+import com.davidlong.creeper.execution.handler.CookieResultHandler;
+import com.davidlong.creeper.execution.handler.MultiRequestExecutionResultHandler;
 
 public class ExecutionMethodResultHandlerRegistry extends RequestExecutionResultHandlerRegistry {
     public ExecutionMethodResultHandlerRegistry() {

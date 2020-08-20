@@ -1,6 +1,6 @@
-package com.davidlong.http.model;
+package com.davidlong.creeper.model;
 
-import com.davidlong.http.model.seq.RequestEntity;
+import com.davidlong.creeper.model.seq.RequestEntity;
 import org.apache.http.HttpResponse;
 
 public class RequestOutputParam extends ExecutionOutputParam<RequestEntity>{

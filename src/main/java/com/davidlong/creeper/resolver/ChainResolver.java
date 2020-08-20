@@ -1,6 +1,6 @@
-package com.davidlong.http.resolver;
+package com.davidlong.creeper.resolver;
 
-import com.davidlong.http.model.seq.RequestChainEntity;
+import com.davidlong.creeper.model.seq.RequestChainEntity;
 
 public interface ChainResolver{
     RequestChainEntity resolveChain();

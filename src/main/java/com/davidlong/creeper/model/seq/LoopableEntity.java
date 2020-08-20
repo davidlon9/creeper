@@ -1,8 +1,8 @@
-package com.davidlong.http.model.seq;
+package com.davidlong.creeper.model.seq;
 
-import com.davidlong.http.execution.handler.help.ThreadLocalMap;
-import com.davidlong.http.model.seq.control.Looper;
-import com.davidlong.http.model.seq.recorder.UrlRecorder;
+import com.davidlong.creeper.execution.handler.help.ThreadLocalMap;
+import com.davidlong.creeper.model.seq.control.Looper;
+import com.davidlong.creeper.model.seq.recorder.UrlRecorder;
 
 public class LoopableEntity extends HandleableEntity{
     private Looper looper;

@@ -1,4 +1,4 @@
-package com.davidlong.traiker.model;
+package com.davidlong.demo.traiker.model;
 
 public class Passenger {
 //可选的ticketType

@@ -1,15 +1,14 @@
-package com.davidlong.traiker.resovle;
+package com.davidlong.demo.traiker.resovle;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.davidlong.traiker.StringConsts;
-import com.davidlong.traiker.UserConfig;
-import com.davidlong.traiker.model.AcceptHourTime;
-import com.davidlong.traiker.model.LeftTicketDesc;
-import com.davidlong.traiker.model.SeatType;
-import com.davidlong.traiker.model.TicketInfo;
+import com.davidlong.demo.traiker.StringConsts;
+import com.davidlong.demo.traiker.UserConfig;
+import com.davidlong.demo.traiker.model.AcceptHourTime;
+import com.davidlong.demo.traiker.model.LeftTicketDesc;
+import com.davidlong.demo.traiker.model.SeatType;
+import com.davidlong.demo.traiker.model.TicketInfo;
 
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class LeftTicketResovler {

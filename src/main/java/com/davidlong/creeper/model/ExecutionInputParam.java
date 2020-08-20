@@ -1,7 +1,6 @@
-package com.davidlong.http.model;
+package com.davidlong.creeper.model;
 
-import com.davidlong.http.model.seq.SequentialEntity;
-import org.apache.http.client.fluent.Request;
+import com.davidlong.creeper.model.seq.SequentialEntity;
 
 public class ExecutionInputParam<T extends SequentialEntity>{
     private T entity;

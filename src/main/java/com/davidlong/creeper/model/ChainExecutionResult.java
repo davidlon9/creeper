@@ -1,7 +1,7 @@
-package com.davidlong.http.model;
+package com.davidlong.creeper.model;
 
-import com.davidlong.http.execution.context.ExecutionContext;
-import com.davidlong.http.model.seq.RequestChainEntity;
+import com.davidlong.creeper.execution.context.ExecutionContext;
+import com.davidlong.creeper.model.seq.RequestChainEntity;
 
 import java.util.ArrayList;
 import java.util.List;

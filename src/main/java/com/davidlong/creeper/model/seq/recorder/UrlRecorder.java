@@ -1,4 +1,4 @@
-package com.davidlong.http.model.seq.recorder;
+package com.davidlong.creeper.model.seq.recorder;
 
 import java.io.IOException;
 import java.util.Set;

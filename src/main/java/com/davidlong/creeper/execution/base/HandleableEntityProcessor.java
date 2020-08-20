@@ -1,7 +1,7 @@
-package com.davidlong.http.execution.base;
+package com.davidlong.creeper.execution.base;
 
-import com.davidlong.http.exception.ExecutionException;
-import com.davidlong.http.model.seq.HandleableEntity;
+import com.davidlong.creeper.exception.ExecutionException;
+import com.davidlong.creeper.model.seq.HandleableEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.fluent.Request;
 

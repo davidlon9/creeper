@@ -1,4 +1,4 @@
-package com.davidlong.http.control;
+package com.davidlong.creeper.control;
 
 public abstract class IntervalAction extends AutoCurrentIndexAction {
     private int interval;

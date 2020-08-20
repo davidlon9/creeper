@@ -1,4 +1,4 @@
-package com.davidlong.http.exception;
+package com.davidlong.creeper.exception;
 
 public class RuntimeResolveException extends RuntimeException {
     public RuntimeResolveException(String message) {

@@ -1,4 +1,4 @@
-package com.davidlong.http.exception;
+package com.davidlong.creeper.exception;
 
 public class LoginFailedException extends Exception{
     public LoginFailedException() {

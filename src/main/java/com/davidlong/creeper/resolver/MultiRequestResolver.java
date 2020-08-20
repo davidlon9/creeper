@@ -1,10 +1,10 @@
-package com.davidlong.http.resolver;
+package com.davidlong.creeper.resolver;
 
-import com.davidlong.http.annotation.seq.multi.MultiRequest;
-import com.davidlong.http.exception.AnnotationNotFoundException;
-import com.davidlong.http.model.seq.RequestInfo;
-import com.davidlong.http.model.seq.multi.MultiRequestEntity;
-import com.davidlong.http.resolver.base.BaseRequestResolver;
+import com.davidlong.creeper.annotation.seq.multi.MultiRequest;
+import com.davidlong.creeper.exception.AnnotationNotFoundException;
+import com.davidlong.creeper.model.seq.RequestInfo;
+import com.davidlong.creeper.model.seq.multi.MultiRequestEntity;
+import com.davidlong.creeper.resolver.base.BaseRequestResolver;
 
 import java.lang.reflect.AnnotatedElement;
 

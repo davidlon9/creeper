@@ -1,4 +1,4 @@
-package com.davidlong.traiker.resovle;
+package com.davidlong.demo.traiker.resovle;
 
 public class SpecialParam {
 

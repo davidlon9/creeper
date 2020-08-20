@@ -1,6 +1,6 @@
-package com.davidlong.http;
+package com.davidlong.creeper;
 
-import com.davidlong.http.util.PathBuilder;
+import com.davidlong.creeper.util.PathBuilder;
 
 public class Env {
     public static final String CONFIG_DIR_PATH = new PathBuilder().project().next("config").build();

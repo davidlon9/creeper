@@ -1,4 +1,4 @@
-package com.davidlong.http.annotation.control;
+package com.davidlong.creeper.annotation.control;
 
 public class FailedStrategy {
     public static final int defualtFailedWait=50;

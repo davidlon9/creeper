@@ -1,4 +1,4 @@
-package com.davidlong.http.resolver;
+package com.davidlong.creeper.resolver;
 
 import org.apache.log4j.Logger;
 import org.springframework.core.annotation.AnnotationUtils;

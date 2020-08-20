@@ -1,12 +1,12 @@
-package com.davidlong.http.execution.context;
+package com.davidlong.creeper.execution.context;
 
-import com.davidlong.http.exception.RuntimeExecuteException;
-import com.davidlong.http.expression.ContextExpressionParser;
-import com.davidlong.http.model.Param;
-import com.davidlong.http.model.seq.RequestChainEntity;
-import com.davidlong.http.model.seq.RequestEntity;
-import com.davidlong.http.model.seq.SequentialEntity;
-import com.davidlong.http.util.SSLUtil;
+import com.davidlong.creeper.exception.RuntimeExecuteException;
+import com.davidlong.creeper.expression.ContextExpressionParser;
+import com.davidlong.creeper.model.Param;
+import com.davidlong.creeper.model.seq.RequestChainEntity;
+import com.davidlong.creeper.model.seq.RequestEntity;
+import com.davidlong.creeper.model.seq.SequentialEntity;
+import com.davidlong.creeper.util.SSLUtil;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.fluent.Executor;
 import org.apache.http.client.fluent.Request;

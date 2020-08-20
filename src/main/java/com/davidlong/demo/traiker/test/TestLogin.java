@@ -1,12 +1,12 @@
-package com.davidlong.traiker.test;
+package com.davidlong.demo.traiker.test;
 
 import com.alibaba.fastjson.JSONObject;
 import com.davidlong.creeper.model.Param;
 import com.davidlong.creeper.util.LogUtil;
-import com.davidlong.traiker.AppUrl;
-import com.davidlong.traiker.Env;
-import com.davidlong.traiker.resovle.CallbackParam;
-import com.davidlong.traiker.resovle.CaptchaImage;
+import com.davidlong.demo.traiker.AppUrl;
+import com.davidlong.demo.traiker.Env;
+import com.davidlong.demo.traiker.resovle.CallbackParam;
+import com.davidlong.demo.traiker.resovle.CaptchaImage;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.fluent.Executor;

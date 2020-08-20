@@ -1,9 +1,9 @@
-package com.davidlong.http.resolver;
+package com.davidlong.creeper.resolver;
 
-import com.davidlong.http.annotation.seq.RequestChain;
-import com.davidlong.http.exception.AnnotationNotFoundException;
-import com.davidlong.http.model.seq.RequestChainEntity;
-import com.davidlong.http.resolver.base.BaseChainResolver;
+import com.davidlong.creeper.annotation.seq.RequestChain;
+import com.davidlong.creeper.exception.AnnotationNotFoundException;
+import com.davidlong.creeper.model.seq.RequestChainEntity;
+import com.davidlong.creeper.resolver.base.BaseChainResolver;
 
 public class RequestChainResolver extends BaseChainResolver implements ChainResolver{
     public RequestChainResolver(Class<?> handleClass) {

@@ -1,9 +1,9 @@
-package com.davidlong.http.execution.resolver.method;
+package com.davidlong.creeper.execution.resolver.method;
 
-import com.davidlong.http.exception.ExecutionException;
-import com.davidlong.http.execution.context.ExecutionContext;
-import com.davidlong.http.model.ExecutionResult;
-import com.davidlong.http.model.seq.SequentialEntity;
+import com.davidlong.creeper.exception.ExecutionException;
+import com.davidlong.creeper.execution.context.ExecutionContext;
+import com.davidlong.creeper.model.ExecutionResult;
+import com.davidlong.creeper.model.seq.SequentialEntity;
 
 public class StringAfterResultResolver implements HandlerMethodResultResolver {
 

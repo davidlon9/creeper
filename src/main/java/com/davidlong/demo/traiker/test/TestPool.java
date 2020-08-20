@@ -1,4 +1,4 @@
-package com.davidlong.traiker.test;
+package com.davidlong.demo.traiker.test;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

@@ -8,4 +8,5 @@ import com.davidlong.creeper.model.seq.LoopableEntity;
 public interface LoopExecutionResultHandler {
     void  beforeExecute(LoopExecutionResult<? extends LoopableEntity> executionResult, ExecutionContext context) throws ExecutionException;
 
-    void afterExecute(LoopExecutionResult<? extends LoopableEntity> executionResult, ExecutionContext context) throws Execution
+    void afterExecute(LoopExecutionResult<? extends LoopableEntity> executionResult, ExecutionContext context) throws ExecutionException;
+}

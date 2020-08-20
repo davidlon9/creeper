@@ -1,4 +1,4 @@
-package com.davidlong.traiker.test;
+package com.davidlong.demo.traiker.test;
 
 public class Test1 {
     public static void main(String[] args) {

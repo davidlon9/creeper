@@ -1,6 +1,6 @@
-package com.davidlong.traiker.model;
+package com.davidlong.demo.traiker.model;
 
-import com.davidlong.traiker.StringConsts;
+import com.davidlong.demo.traiker.StringConsts;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

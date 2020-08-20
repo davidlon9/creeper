@@ -1,4 +1,4 @@
-package com.davidlong.traiker;
+package com.davidlong.demo.traiker;
 
 public class StringConsts {
     public static final String GJRW = "高级软卧";

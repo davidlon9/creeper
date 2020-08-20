@@ -1,4 +1,4 @@
-package com.davidlong.pdf.model;
+package com.davidlong.demo.pdf.model;
 
 import java.util.List;
 

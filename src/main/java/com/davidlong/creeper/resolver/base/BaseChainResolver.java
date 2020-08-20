@@ -1,8 +1,8 @@
-package com.davidlong.http.resolver.base;
+package com.davidlong.creeper.resolver.base;
 
-import com.davidlong.http.exception.AnnotationNotFoundException;
-import com.davidlong.http.exception.ExecutorInitializeException;
-import com.davidlong.http.model.seq.RequestChainEntity;
+import com.davidlong.creeper.exception.AnnotationNotFoundException;
+import com.davidlong.creeper.exception.ExecutorInitializeException;
+import com.davidlong.creeper.model.seq.RequestChainEntity;
 import org.apache.log4j.Logger;
 
 import java.lang.annotation.Annotation;

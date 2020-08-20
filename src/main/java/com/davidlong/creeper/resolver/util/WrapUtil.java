@@ -1,4 +1,4 @@
-package com.davidlong.http.resolver.util;
+package com.davidlong.creeper.resolver.util;
 
 public class WrapUtil {
     public static String enBrackets(String str,boolean space){

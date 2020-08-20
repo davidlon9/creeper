@@ -1,10 +1,10 @@
-package com.davidlong.http.resolver;
+package com.davidlong.creeper.resolver;
 
-import com.davidlong.http.annotation.seq.SeqRequest;
-import com.davidlong.http.exception.AnnotationNotFoundException;
-import com.davidlong.http.model.seq.RequestInfo;
-import com.davidlong.http.model.seq.SeqRequestEntity;
-import com.davidlong.http.resolver.base.BaseRequestResolver;
+import com.davidlong.creeper.annotation.seq.SeqRequest;
+import com.davidlong.creeper.exception.AnnotationNotFoundException;
+import com.davidlong.creeper.model.seq.RequestInfo;
+import com.davidlong.creeper.model.seq.SeqRequestEntity;
+import com.davidlong.creeper.resolver.base.BaseRequestResolver;
 
 import java.lang.reflect.AnnotatedElement;
 

@@ -1,9 +1,9 @@
-package com.davidlong.http.execution.context;
+package com.davidlong.creeper.execution.context;
 
-import com.davidlong.http.exception.RuntimeExecuteException;
-import com.davidlong.http.execution.DynamicChainSwitcher;
-import com.davidlong.http.model.seq.RequestChainEntity;
-import com.davidlong.http.model.seq.SequentialEntity;
+import com.davidlong.creeper.exception.RuntimeExecuteException;
+import com.davidlong.creeper.execution.DynamicChainSwitcher;
+import com.davidlong.creeper.model.seq.RequestChainEntity;
+import com.davidlong.creeper.model.seq.SequentialEntity;
 
 import java.util.*;
 

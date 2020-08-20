@@ -1,4 +1,4 @@
-package com.davidlong.http.model.seq.multi;
+package com.davidlong.creeper.model.seq.multi;
 
 public class MultiRequestQueueEntity extends MultiRequestEntity {
     private String queueContextKey;

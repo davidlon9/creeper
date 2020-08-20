@@ -1,10 +1,10 @@
-package com.davidlong.http.execution.resolver.method;
+package com.davidlong.creeper.execution.resolver.method;
 
-import com.davidlong.http.control.BreakAction;
-import com.davidlong.http.control.RetryAction;
-import com.davidlong.http.exception.ExecutionException;
-import com.davidlong.http.execution.context.ExecutionContext;
-import com.davidlong.http.model.ExecutionResult;
+import com.davidlong.creeper.control.BreakAction;
+import com.davidlong.creeper.control.RetryAction;
+import com.davidlong.creeper.exception.ExecutionException;
+import com.davidlong.creeper.execution.context.ExecutionContext;
+import com.davidlong.creeper.model.ExecutionResult;
 import org.apache.log4j.Logger;
 
 public class SimpleLoopAfterResultResolver implements HandlerMethodResultResolver {

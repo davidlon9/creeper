@@ -1,4 +1,4 @@
-package com.davidlong.traiker;
+package com.davidlong.demo.traiker;
 
 public class AppConsts {
     //        wc: "往返",

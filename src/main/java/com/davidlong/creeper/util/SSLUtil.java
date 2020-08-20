@@ -1,4 +1,4 @@
-package com.davidlong.http.util;
+package com.davidlong.creeper.util;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpClient;

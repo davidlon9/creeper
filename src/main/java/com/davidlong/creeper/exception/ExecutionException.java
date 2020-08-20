@@ -1,4 +1,4 @@
-package com.davidlong.http.exception;
+package com.davidlong.creeper.exception;
 
 public class ExecutionException extends Exception{
     public ExecutionException(String message) {

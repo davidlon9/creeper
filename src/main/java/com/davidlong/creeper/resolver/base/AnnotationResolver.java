@@ -1,6 +1,6 @@
-package com.davidlong.http.resolver.base;
+package com.davidlong.creeper.resolver.base;
 
-import com.davidlong.http.exception.AnnotationNotFoundException;
+import com.davidlong.creeper.exception.AnnotationNotFoundException;
 import org.springframework.core.annotation.AnnotationUtils;
 
 import java.lang.annotation.Annotation;

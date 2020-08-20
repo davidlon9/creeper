@@ -1,11 +1,11 @@
-package com.davidlong.http.resolver;
+package com.davidlong.creeper.resolver;
 
-import com.davidlong.http.annotation.seq.multi.MultiUserChain;
-import com.davidlong.http.annotation.seq.multi.LoginUser;
-import com.davidlong.http.exception.AnnotationNotFoundException;
-import com.davidlong.http.model.seq.multi.MultiUserChainEntity;
-import com.davidlong.http.model.seq.multi.LoginUserInfo;
-import com.davidlong.http.resolver.base.BaseChainResolver;
+import com.davidlong.creeper.annotation.seq.multi.MultiUserChain;
+import com.davidlong.creeper.annotation.seq.multi.LoginUser;
+import com.davidlong.creeper.exception.AnnotationNotFoundException;
+import com.davidlong.creeper.model.seq.multi.MultiUserChainEntity;
+import com.davidlong.creeper.model.seq.multi.LoginUserInfo;
+import com.davidlong.creeper.resolver.base.BaseChainResolver;
 
 import java.util.ArrayList;
 import java.util.List;

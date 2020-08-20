@@ -1,6 +1,6 @@
-package com.davidlong.http.model.seq;
+package com.davidlong.creeper.model.seq;
 
-import com.davidlong.http.execution.handler.entity.SequentialHandler;
+import com.davidlong.creeper.execution.handler.entity.SequentialHandler;
 
 public class HandleableEntity extends SequentialEntity{
     private Object afterHandler;

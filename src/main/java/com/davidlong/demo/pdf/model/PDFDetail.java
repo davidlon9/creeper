@@ -1,4 +1,4 @@
-package com.davidlong.pdf.model;
+package com.davidlong.demo.pdf.model;
 
 public class PDFDetail {
 //    书名：硬核运营

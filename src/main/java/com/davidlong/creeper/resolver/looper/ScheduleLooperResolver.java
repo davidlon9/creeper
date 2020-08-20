@@ -1,8 +1,8 @@
-package com.davidlong.http.resolver.looper;
+package com.davidlong.creeper.resolver.looper;
 
-import com.davidlong.http.annotation.control.looper.scheduler.Scheduler;
-import com.davidlong.http.exception.AnnotationNotFoundException;
-import com.davidlong.http.model.seq.control.ScheduleLooper;
+import com.davidlong.creeper.annotation.control.looper.scheduler.Scheduler;
+import com.davidlong.creeper.exception.AnnotationNotFoundException;
+import com.davidlong.creeper.model.seq.control.ScheduleLooper;
 import org.springframework.core.annotation.AnnotationUtils;
 
 import java.lang.annotation.Annotation;

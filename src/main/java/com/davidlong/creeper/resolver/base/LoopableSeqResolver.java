@@ -1,13 +1,13 @@
-package com.davidlong.http.resolver.base;
+package com.davidlong.creeper.resolver.base;
 
-import com.davidlong.http.exception.AnnotationNotFoundException;
-import com.davidlong.http.model.seq.LoopableEntity;
-import com.davidlong.http.model.seq.control.Looper;
-import com.davidlong.http.model.seq.recorder.UrlRecorder;
-import com.davidlong.http.resolver.ResolverFactory;
-import com.davidlong.http.resolver.looper.LooperResolver;
-import com.davidlong.http.resolver.recorder.RecorderResolver;
-import com.davidlong.http.resolver.util.WrapUtil;
+import com.davidlong.creeper.exception.AnnotationNotFoundException;
+import com.davidlong.creeper.model.seq.LoopableEntity;
+import com.davidlong.creeper.model.seq.control.Looper;
+import com.davidlong.creeper.model.seq.recorder.UrlRecorder;
+import com.davidlong.creeper.resolver.ResolverFactory;
+import com.davidlong.creeper.resolver.looper.LooperResolver;
+import com.davidlong.creeper.resolver.recorder.RecorderResolver;
+import com.davidlong.creeper.resolver.util.WrapUtil;
 import org.apache.log4j.Logger;
 
 import java.lang.annotation.Annotation;

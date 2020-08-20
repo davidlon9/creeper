@@ -1,11 +1,11 @@
-package com.davidlong.http.execution.resolver;
+package com.davidlong.creeper.execution.resolver;
 
-import com.davidlong.http.annotation.control.FailedStrategy;
-import com.davidlong.http.control.MoveAction;
-import com.davidlong.http.exception.ExecutionException;
-import com.davidlong.http.execution.context.ExecutionContext;
-import com.davidlong.http.execution.resolver.method.*;
-import com.davidlong.http.model.ExecutionResult;
+import com.davidlong.creeper.annotation.control.FailedStrategy;
+import com.davidlong.creeper.control.MoveAction;
+import com.davidlong.creeper.exception.ExecutionException;
+import com.davidlong.creeper.execution.context.ExecutionContext;
+import com.davidlong.creeper.execution.resolver.method.*;
+import com.davidlong.creeper.model.ExecutionResult;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;

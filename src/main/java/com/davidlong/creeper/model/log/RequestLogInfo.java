@@ -1,4 +1,4 @@
-package com.davidlong.http.model.log;
+package com.davidlong.creeper.model.log;
 
 public class RequestLogInfo {
     private boolean showUrl = true;

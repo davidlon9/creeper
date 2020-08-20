@@ -1,7 +1,7 @@
-package com.davidlong.http.util;
+package com.davidlong.creeper.util;
 
-import com.davidlong.http.HttpConst;
-import com.davidlong.http.model.Param;
+import com.davidlong.creeper.HttpConst;
+import com.davidlong.creeper.model.Param;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.client.utils.URIBuilder;
@@ -10,8 +10,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class FastURI {

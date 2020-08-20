@@ -1,6 +1,6 @@
-package com.davidlong.traiker;
+package com.davidlong.demo.traiker;
 
-import com.davidlong.traiker.model.AcceptHourTime;
+import com.davidlong.demo.traiker.model.AcceptHourTime;
 
 import java.util.Arrays;
 import java.util.List;

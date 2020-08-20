@@ -1,4 +1,4 @@
-package com.davidlong.http.util;
+package com.davidlong.creeper.util;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,9 +1,7 @@
-package com.davidlong.traiker.model;
+package com.davidlong.demo.traiker.model;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.davidlong.traiker.StringConsts;
-import com.davidlong.traiker.UserConfig;
+import com.davidlong.demo.traiker.StringConsts;
+import com.davidlong.demo.traiker.UserConfig;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

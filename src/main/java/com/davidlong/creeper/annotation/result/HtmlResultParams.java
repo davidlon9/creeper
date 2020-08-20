@@ -1,4 +1,4 @@
-package com.davidlong.http.annotation.result;
+package com.davidlong.creeper.annotation.result;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

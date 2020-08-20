@@ -1,4 +1,4 @@
-package com.davidlong.traiker.test;
+package com.davidlong.demo.traiker.test;
 
 import com.alibaba.fastjson.JSONObject;
 import com.davidlong.creeper.annotation.Host;
@@ -28,8 +28,8 @@ import com.davidlong.creeper.model.ExecutionResult;
 import com.davidlong.creeper.model.seq.RequestChainEntity;
 import com.davidlong.creeper.resolver.ChainsMappingResolver;
 import com.davidlong.creeper.util.ResultUtil;
-import com.davidlong.traiker.model.StationDesc;
-import com.davidlong.traiker.resovle.CallbackParam;
+import com.davidlong.demo.traiker.model.StationDesc;
+import com.davidlong.demo.traiker.resovle.CallbackParam;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.CookieStore;
 

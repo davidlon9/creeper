@@ -1,12 +1,12 @@
-package com.davidlong.http.execution.request;
+package com.davidlong.creeper.execution.request;
 
-import com.davidlong.http.execution.context.ExecutionContext;
-import com.davidlong.http.execution.context.FormParamStore;
-import com.davidlong.http.expression.ContextExpressionParser;
-import com.davidlong.http.model.Param;
-import com.davidlong.http.model.log.RequestLogInfo;
-import com.davidlong.http.model.seq.RequestEntity;
-import com.davidlong.http.model.seq.RequestInfo;
+import com.davidlong.creeper.execution.context.ExecutionContext;
+import com.davidlong.creeper.execution.context.FormParamStore;
+import com.davidlong.creeper.expression.ContextExpressionParser;
+import com.davidlong.creeper.model.Param;
+import com.davidlong.creeper.model.log.RequestLogInfo;
+import com.davidlong.creeper.model.seq.RequestEntity;
+import com.davidlong.creeper.model.seq.RequestInfo;
 import org.apache.http.Header;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.message.BasicHeader;

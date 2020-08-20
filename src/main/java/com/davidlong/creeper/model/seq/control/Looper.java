@@ -1,6 +1,6 @@
-package com.davidlong.http.model.seq.control;
+package com.davidlong.creeper.model.seq.control;
 
-import com.davidlong.http.annotation.control.ExecutionMode;
+import com.davidlong.creeper.annotation.control.ExecutionMode;
 
 public class Looper {
     private ExecutionMode executionMode;

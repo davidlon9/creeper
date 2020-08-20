@@ -1,16 +1,16 @@
-package com.davidlong.http.execution.multi;
+package com.davidlong.creeper.execution.multi;
 
-import com.davidlong.http.exception.ExecutionException;
-import com.davidlong.http.exception.RuntimeExecuteException;
-import com.davidlong.http.execution.base.BaseRequestExecutor;
-import com.davidlong.http.execution.base.RequestExecutor;
-import com.davidlong.http.execution.context.ContextParamStore;
-import com.davidlong.http.execution.context.ExecutionContext;
-import com.davidlong.http.execution.looper.BaseExecuteLooper;
-import com.davidlong.http.execution.resolver.AutoNextSeqResultResolver;
-import com.davidlong.http.execution.resolver.MultiExecutionResultResolver;
-import com.davidlong.http.model.*;
-import com.davidlong.http.model.seq.multi.MultiRequestQueueEntity;
+import com.davidlong.creeper.exception.ExecutionException;
+import com.davidlong.creeper.exception.RuntimeExecuteException;
+import com.davidlong.creeper.execution.base.BaseRequestExecutor;
+import com.davidlong.creeper.execution.base.RequestExecutor;
+import com.davidlong.creeper.execution.context.ContextParamStore;
+import com.davidlong.creeper.execution.context.ExecutionContext;
+import com.davidlong.creeper.execution.looper.BaseExecuteLooper;
+import com.davidlong.creeper.execution.resolver.AutoNextSeqResultResolver;
+import com.davidlong.creeper.execution.resolver.MultiExecutionResultResolver;
+import com.davidlong.creeper.model.*;
+import com.davidlong.creeper.model.seq.multi.MultiRequestQueueEntity;
 import org.apache.http.impl.execchain.RequestAbortedException;
 import org.apache.log4j.Logger;
 

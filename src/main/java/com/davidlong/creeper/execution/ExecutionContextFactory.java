@@ -1,9 +1,9 @@
-package com.davidlong.http.execution;
+package com.davidlong.creeper.execution;
 
-import com.davidlong.http.execution.context.ExecutionContext;
-import com.davidlong.http.model.Param;
-import com.davidlong.http.model.seq.RequestChainEntity;
-import com.davidlong.http.resolver.ChainsMappingResolver;
+import com.davidlong.creeper.execution.context.ExecutionContext;
+import com.davidlong.creeper.model.Param;
+import com.davidlong.creeper.model.seq.RequestChainEntity;
+import com.davidlong.creeper.resolver.ChainsMappingResolver;
 
 import java.util.List;
 

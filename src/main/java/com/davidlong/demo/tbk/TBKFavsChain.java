@@ -1,4 +1,4 @@
-package com.davidlong.tbk;
+package com.davidlong.demo.tbk;
 
 import com.davidlong.creeper.annotation.Host;
 import com.davidlong.creeper.annotation.RequestLog;

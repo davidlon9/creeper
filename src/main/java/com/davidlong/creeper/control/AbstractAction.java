@@ -1,4 +1,4 @@
-package com.davidlong.http.control;
+package com.davidlong.creeper.control;
 
 public abstract class AbstractAction implements MoveAction {
     private String name;

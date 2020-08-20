@@ -1,10 +1,10 @@
-package com.davidlong.http.execution.base;
-import com.davidlong.http.exception.ExecutionException;
-import com.davidlong.http.model.ChainExecutionResult;
-import com.davidlong.http.model.ExecutionResult;
-import com.davidlong.http.model.seq.RequestChainEntity;
-import com.davidlong.http.model.seq.RequestEntity;
-import com.davidlong.http.model.seq.SequentialEntity;
+package com.davidlong.creeper.execution.base;
+import com.davidlong.creeper.exception.ExecutionException;
+import com.davidlong.creeper.model.ChainExecutionResult;
+import com.davidlong.creeper.model.ExecutionResult;
+import com.davidlong.creeper.model.seq.RequestChainEntity;
+import com.davidlong.creeper.model.seq.RequestEntity;
+import com.davidlong.creeper.model.seq.SequentialEntity;
 
 import java.io.IOException;
 

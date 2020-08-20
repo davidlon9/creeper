@@ -1,7 +1,7 @@
-package com.davidlong.http.resolver;
+package com.davidlong.creeper.resolver;
 
-import com.davidlong.http.model.seq.RequestEntity;
-import com.davidlong.http.model.seq.RequestInfo;
+import com.davidlong.creeper.model.seq.RequestEntity;
+import com.davidlong.creeper.model.seq.RequestInfo;
 
 public interface RequestResolver{
     RequestEntity resolve(RequestInfo requestInfo);

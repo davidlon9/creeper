@@ -1,7 +1,6 @@
-package com.davidlong.http.model.seq.multi;
+package com.davidlong.creeper.model.seq.multi;
 
-import com.davidlong.http.exception.RuntimeResolveException;
-import com.davidlong.http.model.Multiple;
+import com.davidlong.creeper.exception.RuntimeResolveException;
 
 import java.util.List;
 

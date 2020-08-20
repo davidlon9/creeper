@@ -1,7 +1,7 @@
-package com.davidlong.http.resolver.recorder;
+package com.davidlong.creeper.resolver.recorder;
 
-import com.davidlong.http.exception.AnnotationNotFoundException;
-import com.davidlong.http.model.seq.recorder.UrlRecorder;
+import com.davidlong.creeper.exception.AnnotationNotFoundException;
+import com.davidlong.creeper.model.seq.recorder.UrlRecorder;
 
 public interface RecorderResolver {
     UrlRecorder resolve() throws AnnotationNotFoundException;

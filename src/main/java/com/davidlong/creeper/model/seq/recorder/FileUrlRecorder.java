@@ -1,6 +1,6 @@
-package com.davidlong.http.model.seq.recorder;
+package com.davidlong.creeper.model.seq.recorder;
 
-import com.davidlong.http.util.FileUtil;
+import com.davidlong.creeper.util.FileUtil;
 
 import java.io.BufferedReader;
 import java.io.File;

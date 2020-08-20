@@ -1,6 +1,6 @@
-package com.davidlong.http.model.seq;
+package com.davidlong.creeper.model.seq;
 
-import com.davidlong.http.model.Param;
+import com.davidlong.creeper.model.Param;
 import org.apache.http.Header;
 
 import java.util.LinkedList;

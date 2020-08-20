@@ -1,4 +1,4 @@
-package com.davidlong.pdf;
+package com.davidlong.demo.pdf;
 
 import com.davidlong.creeper.annotation.Host;
 import com.davidlong.creeper.annotation.http.Get;

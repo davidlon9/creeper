@@ -1,6 +1,6 @@
-package com.davidlong.http.model.seq;
+package com.davidlong.creeper.model.seq;
 
-import com.davidlong.http.control.MoveAction;
+import com.davidlong.creeper.control.MoveAction;
 
 public class MoveableEntity extends HandleableEntity {
     private MoveAction moveAction;

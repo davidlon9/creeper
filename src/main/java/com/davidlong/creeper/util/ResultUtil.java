@@ -1,8 +1,7 @@
-package com.davidlong.http.util;
+package com.davidlong.creeper.util;
 
 import com.alibaba.fastjson.JSONObject;
-import com.davidlong.http.HttpConst;
-import org.apache.http.Header;
+import com.davidlong.creeper.HttpConst;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;

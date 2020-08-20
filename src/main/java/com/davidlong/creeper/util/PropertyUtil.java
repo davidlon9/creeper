@@ -1,4 +1,4 @@
-package com.davidlong.http.util;
+package com.davidlong.creeper.util;
 
 import java.io.FileInputStream;
 import java.io.IOException;

@@ -1,8 +1,8 @@
-package com.davidlong.http.execution.base;
+package com.davidlong.creeper.execution.base;
 
-import com.davidlong.http.execution.context.ExecutionContext;
-import com.davidlong.http.model.result.ChainResult;
-import com.davidlong.http.model.result.HttpResult;
+import com.davidlong.creeper.execution.context.ExecutionContext;
+import com.davidlong.creeper.model.result.ChainResult;
+import com.davidlong.creeper.model.result.HttpResult;
 
 public interface ContextExecutor{
     HttpResult exeucteRequest(String name, boolean withHandle);

@@ -1,6 +1,6 @@
-package com.davidlong.http.model;
+package com.davidlong.creeper.model;
 
-import com.davidlong.http.execution.context.ParamStore;
+import com.davidlong.creeper.execution.context.ParamStore;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 

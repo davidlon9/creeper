@@ -1,4 +1,4 @@
-package com.davidlong.traiker.test;
+package com.davidlong.demo.traiker.test;
 
 import org.apache.http.client.fluent.Content;
 import org.apache.http.client.fluent.Executor;

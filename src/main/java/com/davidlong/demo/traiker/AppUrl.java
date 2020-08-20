@@ -1,8 +1,8 @@
-package com.davidlong.traiker;
+package com.davidlong.demo.traiker;
 
 import com.davidlong.creeper.model.Param;
 import com.davidlong.creeper.util.FastURI;
-import com.davidlong.traiker.model.StaticFormContext;
+import com.davidlong.demo.traiker.model.StaticFormContext;
 import org.apache.http.NameValuePair;
 
 import java.net.URI;

@@ -1,10 +1,10 @@
-package com.davidlong.http.model.seq;
+package com.davidlong.creeper.model.seq;
 
-import com.davidlong.http.execution.handler.entity.ChainAfterHandler;
-import com.davidlong.http.execution.handler.entity.ChainBeforeHandler;
-import com.davidlong.http.execution.handler.entity.ChainExecutionHandler;
-import com.davidlong.http.model.log.RequestLogInfo;
-import com.davidlong.http.model.log.ResponseLogInfo;
+import com.davidlong.creeper.execution.handler.entity.ChainAfterHandler;
+import com.davidlong.creeper.execution.handler.entity.ChainBeforeHandler;
+import com.davidlong.creeper.execution.handler.entity.ChainExecutionHandler;
+import com.davidlong.creeper.model.log.RequestLogInfo;
+import com.davidlong.creeper.model.log.ResponseLogInfo;
 
 import java.util.*;
 

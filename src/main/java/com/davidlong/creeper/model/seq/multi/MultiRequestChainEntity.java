@@ -1,9 +1,9 @@
-package com.davidlong.http.model.seq.multi;
+package com.davidlong.creeper.model.seq.multi;
 
-import com.davidlong.http.execution.handler.help.ThreadLocalMap;
-import com.davidlong.http.model.ExecutionStrategy;
-import com.davidlong.http.model.Multiple;
-import com.davidlong.http.model.seq.RequestChainEntity;
+import com.davidlong.creeper.execution.handler.help.ThreadLocalMap;
+import com.davidlong.creeper.model.ExecutionStrategy;
+import com.davidlong.creeper.model.Multiple;
+import com.davidlong.creeper.model.seq.RequestChainEntity;
 
 import java.util.concurrent.ExecutorService;
 

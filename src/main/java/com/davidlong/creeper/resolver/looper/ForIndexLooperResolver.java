@@ -1,8 +1,8 @@
-package com.davidlong.http.resolver.looper;
+package com.davidlong.creeper.resolver.looper;
 
-import com.davidlong.http.annotation.control.looper.ForIndex;
-import com.davidlong.http.exception.AnnotationNotFoundException;
-import com.davidlong.http.model.seq.control.ForIndexLooper;
+import com.davidlong.creeper.annotation.control.looper.ForIndex;
+import com.davidlong.creeper.exception.AnnotationNotFoundException;
+import com.davidlong.creeper.model.seq.control.ForIndexLooper;
 import org.springframework.core.annotation.AnnotationUtils;
 
 import java.lang.reflect.AnnotatedElement;

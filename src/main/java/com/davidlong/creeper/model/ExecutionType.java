@@ -1,4 +1,4 @@
-package com.davidlong.http.model;
+package com.davidlong.creeper.model;
 
 public enum ExecutionType {
     Request,

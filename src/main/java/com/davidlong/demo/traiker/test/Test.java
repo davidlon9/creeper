@@ -1,8 +1,8 @@
-package com.davidlong.traiker.test;
+package com.davidlong.demo.traiker.test;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.davidlong.traiker.model.LeftTicketDesc;
+import com.davidlong.demo.traiker.model.LeftTicketDesc;
 
 import java.util.*;
 

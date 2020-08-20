@@ -1,4 +1,4 @@
-package com.davidlong.http.exception;
+package com.davidlong.creeper.exception;
 
 public class ResolveException extends Exception {
     public ResolveException(String message) {

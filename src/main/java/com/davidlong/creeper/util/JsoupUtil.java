@@ -1,4 +1,4 @@
-package com.davidlong.http.util;
+package com.davidlong.creeper.util;
 
 public class JsoupUtil {
     public static String getVarValue(String html,String varName){

@@ -1,4 +1,4 @@
-package com.davidlong.traiker;
+package com.davidlong.demo.traiker;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -22,12 +22,12 @@ import com.davidlong.creeper.model.Param;
 import com.davidlong.creeper.model.seq.RequestChainEntity;
 import com.davidlong.creeper.resolver.ChainsMappingResolver;
 import com.davidlong.creeper.util.ResultUtil;
-import com.davidlong.traiker.model.LeftTicketDesc;
-import com.davidlong.traiker.model.Passenger;
-import com.davidlong.traiker.model.StationDesc;
-import com.davidlong.traiker.model.TicketInfo;
-import com.davidlong.traiker.resovle.DomResolve;
-import com.davidlong.traiker.resovle.LeftTicketResovler;
+import com.davidlong.demo.traiker.model.LeftTicketDesc;
+import com.davidlong.demo.traiker.model.Passenger;
+import com.davidlong.demo.traiker.model.StationDesc;
+import com.davidlong.demo.traiker.model.TicketInfo;
+import com.davidlong.demo.traiker.resovle.DomResolve;
+import com.davidlong.demo.traiker.resovle.LeftTicketResovler;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.fluent.Request;

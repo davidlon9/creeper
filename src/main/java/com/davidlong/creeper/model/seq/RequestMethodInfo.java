@@ -1,4 +1,4 @@
-package com.davidlong.http.model.seq;
+package com.davidlong.creeper.model.seq;
 public class RequestMethodInfo {
     private String httpMethod;
     private String url;

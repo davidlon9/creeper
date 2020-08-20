@@ -1,16 +1,16 @@
-package com.davidlong.http.execution.looper;
+package com.davidlong.creeper.execution.looper;
 
-import com.davidlong.http.exception.ExecutionException;
-import com.davidlong.http.execution.base.LoopableExecutor;
-import com.davidlong.http.execution.context.ExecutionContext;
-import com.davidlong.http.execution.resolver.AutoNextSeqResultResolver;
-import com.davidlong.http.model.ExecutionResult;
-import com.davidlong.http.execution.context.ParamStore;
-import com.davidlong.http.model.LoopExecutionResult;
-import com.davidlong.http.model.Multiple;
-import com.davidlong.http.model.seq.LoopableEntity;
-import com.davidlong.http.model.seq.control.ForEachLooper;
-import com.davidlong.http.model.seq.control.Looper;
+import com.davidlong.creeper.exception.ExecutionException;
+import com.davidlong.creeper.execution.base.LoopableExecutor;
+import com.davidlong.creeper.execution.context.ExecutionContext;
+import com.davidlong.creeper.execution.resolver.AutoNextSeqResultResolver;
+import com.davidlong.creeper.model.ExecutionResult;
+import com.davidlong.creeper.execution.context.ParamStore;
+import com.davidlong.creeper.model.LoopExecutionResult;
+import com.davidlong.creeper.model.Multiple;
+import com.davidlong.creeper.model.seq.LoopableEntity;
+import com.davidlong.creeper.model.seq.control.ForEachLooper;
+import com.davidlong.creeper.model.seq.control.Looper;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;

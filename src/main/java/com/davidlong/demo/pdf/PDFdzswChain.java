@@ -1,4 +1,4 @@
-package com.davidlong.pdf;
+package com.davidlong.demo.pdf;
 
 import com.alibaba.fastjson.JSONObject;
 import com.davidlong.creeper.annotation.*;
@@ -24,8 +24,8 @@ import com.davidlong.creeper.model.result.ChainResult;
 import com.davidlong.creeper.util.FileUtil;
 import com.davidlong.creeper.util.HttpDownload;
 import com.davidlong.creeper.util.ResultUtil;
-import com.davidlong.pdf.model.PDFDetail;
-import com.davidlong.pdf.serivce.DZSWService;
+import com.davidlong.demo.pdf.model.PDFDetail;
+import com.davidlong.demo.pdf.serivce.DZSWService;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.util.EntityUtils;

@@ -1,6 +1,6 @@
-package com.davidlong.http.model;
+package com.davidlong.creeper.model;
 
-import com.davidlong.http.exception.RuntimeExecuteException;
+import com.davidlong.creeper.exception.RuntimeExecuteException;
 import org.apache.log4j.Logger;
 
 import java.lang.reflect.InvocationTargetException;

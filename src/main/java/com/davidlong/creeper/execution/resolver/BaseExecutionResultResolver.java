@@ -1,9 +1,9 @@
-package com.davidlong.http.execution.resolver;
+package com.davidlong.creeper.execution.resolver;
 
-import com.davidlong.http.execution.context.ExecutionContext;
-import com.davidlong.http.execution.resolver.method.HandlerMethodResultResolver;
-import com.davidlong.http.model.ExecutionResult;
-import com.davidlong.http.model.seq.SequentialEntity;
+import com.davidlong.creeper.execution.context.ExecutionContext;
+import com.davidlong.creeper.execution.resolver.method.HandlerMethodResultResolver;
+import com.davidlong.creeper.model.ExecutionResult;
+import com.davidlong.creeper.model.seq.SequentialEntity;
 import org.apache.log4j.Logger;
 
 import java.util.Map;

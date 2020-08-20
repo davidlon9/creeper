@@ -1,7 +1,7 @@
-package com.davidlong.traiker.resovle;
+package com.davidlong.demo.traiker.resovle;
 
 import com.alibaba.fastjson.JSONObject;
-import com.davidlong.traiker.AppConsts;
+import com.davidlong.demo.traiker.AppConsts;
 import com.davidlong.creeper.util.JsoupUtil;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;

@@ -1,6 +1,6 @@
-package com.davidlong.http.annotation.seq.multi;
+package com.davidlong.creeper.annotation.seq.multi;
 
-import com.davidlong.http.annotation.seq.Request;
+import com.davidlong.creeper.annotation.seq.Request;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

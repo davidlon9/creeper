@@ -1,6 +1,6 @@
-package com.davidlong.http.model;
+package com.davidlong.creeper.model;
 
-import com.davidlong.http.execution.handler.help.ThreadLocalMap;
+import com.davidlong.creeper.execution.handler.help.ThreadLocalMap;
 
 import java.util.concurrent.ExecutorService;
 

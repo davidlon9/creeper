@@ -1,8 +1,8 @@
-package com.davidlong.http.resolver.util;
+package com.davidlong.creeper.resolver.util;
 
-import com.davidlong.http.annotation.seq.Chain;
-import com.davidlong.http.annotation.seq.Request;
-import com.davidlong.pdf.PDFdzswChain;
+import com.davidlong.creeper.annotation.seq.Chain;
+import com.davidlong.creeper.annotation.seq.Request;
+import com.davidlong.demo.pdf.PDFdzswChain;
 import org.springframework.core.annotation.AnnotationUtils;
 
 import java.lang.annotation.Annotation;

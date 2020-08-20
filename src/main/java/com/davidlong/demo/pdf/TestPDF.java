@@ -1,4 +1,4 @@
-package com.davidlong.pdf;
+package com.davidlong.demo.pdf;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSString;

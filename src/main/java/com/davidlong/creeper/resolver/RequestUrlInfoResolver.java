@@ -1,6 +1,6 @@
-package com.davidlong.http.resolver;
+package com.davidlong.creeper.resolver;
 
-import com.davidlong.http.model.seq.RequestInfo;
+import com.davidlong.creeper.model.seq.RequestInfo;
 
 import java.lang.reflect.AnnotatedElement;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package com.davidlong.http.model.result;
+package com.davidlong.creeper.model.result;
 
 import org.apache.http.HttpResponse;
 

@@ -1,11 +1,11 @@
-package com.davidlong.http.resolver.recorder;
+package com.davidlong.creeper.resolver.recorder;
 
-import com.davidlong.http.annotation.control.DataSource;
-import com.davidlong.http.annotation.control.DatabaseRecordsIgnore;
-import com.davidlong.http.exception.AnnotationNotFoundException;
-import com.davidlong.http.model.seq.recorder.DatabaseUrlRecorder;
-import com.davidlong.http.model.seq.recorder.UrlRecorder;
-import com.davidlong.http.resolver.base.AnnotationResolver;
+import com.davidlong.creeper.annotation.control.DataSource;
+import com.davidlong.creeper.annotation.control.DatabaseRecordsIgnore;
+import com.davidlong.creeper.exception.AnnotationNotFoundException;
+import com.davidlong.creeper.model.seq.recorder.DatabaseUrlRecorder;
+import com.davidlong.creeper.model.seq.recorder.UrlRecorder;
+import com.davidlong.creeper.resolver.base.AnnotationResolver;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;

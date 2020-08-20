@@ -1,8 +1,8 @@
-package com.davidlong.http.model;
+package com.davidlong.creeper.model;
 
-import com.davidlong.http.control.MoveAction;
-import com.davidlong.http.model.seq.RequestChainEntity;
-import com.davidlong.http.model.seq.SequentialEntity;
+import com.davidlong.creeper.control.MoveAction;
+import com.davidlong.creeper.model.seq.RequestChainEntity;
+import com.davidlong.creeper.model.seq.SequentialEntity;
 import org.apache.http.HttpResponse;
 
 public class ExecutionResult<T extends SequentialEntity> {

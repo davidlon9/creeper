@@ -1,4 +1,4 @@
-package com.davidlong.http.control;
+package com.davidlong.creeper.control;
 
 public class TerminateAction extends AbstractAction {
     private boolean isGlobal=false;

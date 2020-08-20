@@ -1,4 +1,4 @@
-package com.davidlong.http.execution.handler.info;
+package com.davidlong.creeper.execution.handler.info;
 
 public class JsonResultCookieInfo {
     /**
