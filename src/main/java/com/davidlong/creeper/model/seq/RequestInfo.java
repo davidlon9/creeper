@@ -46,6 +46,9 @@ public class RequestInfo {
 
     @Override
     public String toString() {
-        return "< "+httpMethod.toUpperCase()+" "+url+" >";
+        if(httpMethod!=null){
+            return "< "+httpMethod.toUpperCase()+" "+url+" >";
+        }
+        return "< "+url+" >";
     }
 }

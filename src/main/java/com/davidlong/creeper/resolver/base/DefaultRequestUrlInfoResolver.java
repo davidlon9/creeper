@@ -2,11 +2,12 @@ package com.davidlong.creeper.resolver.base;
 
 import com.davidlong.creeper.HttpConst;
 import com.davidlong.creeper.annotation.Host;
-import com.davidlong.creeper.annotation.Path;
 import com.davidlong.creeper.annotation.http.*;
+import com.davidlong.creeper.exception.RuntimeResolveException;
 import com.davidlong.creeper.model.seq.RequestInfo;
 import com.davidlong.creeper.resolver.RequestUrlInfoResolver;
 import com.davidlong.creeper.resolver.util.ResolveUtil;
+import com.davidlong.creeper.resolver.util.WrapUtil;
 import org.apache.log4j.Logger;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.ReflectionUtils;
@@ -22,7 +23,7 @@ import java.util.Map;
 public class DefaultRequestUrlInfoResolver implements RequestUrlInfoResolver {
     private Logger logger=Logger.getLogger(DefaultRequestUrlInfoResolver.class);
 
-    public static final List<Class> ACTION_ANNOS = Arrays.asList(new Class[]{Action.class, Get.class, Post.class, Delete.class, Put.class});
+    public static final List<Class> ACTION_ANNOS = Arrays.asList(new Class[]{Path.class, Get.class, Post.class, Delete.class, Put.class});
 
     public Map<AnnotatedElement,RequestInfo> resolve(Class chainClass){
         Map<AnnotatedElement,RequestInfo> requestInfoMap = new HashMap<>();
@@ -34,7 +35,7 @@ public class DefaultRequestUrlInfoResolver implements RequestUrlInfoResolver {
     }
 
     public Map<AnnotatedElement,RequestInfo> resolve(String basePath,Class resolveClass,Map<AnnotatedElement,RequestInfo> requestInfoMap){
-        basePath = "".equals(basePath)?getPath("", resolveClass):basePath;
+        basePath = "".equals(basePath) ? getPath("", resolveClass) : basePath;
 
         requestInfoMap.putAll(resolveRequestTarget(basePath, resolveClass));
 
@@ -57,6 +58,10 @@ public class DefaultRequestUrlInfoResolver implements RequestUrlInfoResolver {
     private void putRequestInfo(AnnotatedElement target,String basePath, Map<AnnotatedElement, RequestInfo> requestInfoMap) {
         RequestInfo requestInfo = new RequestInfo();
         String url = getPath(basePath, target);
+        if("".equals(basePath) && !(url.startsWith("http") || url.startsWith("${"))){
+            throw new RuntimeResolveException("resolved prepare url "+ WrapUtil.enDoubleQuote(url)+ " is invalid, url dose't have scheme, please make sure url start with http or class/method of sequential entity annotated with @Host");
+        }
+
         requestInfo.setUrl(url);
         requestInfo.setHttpMethod(getHttpMethod(target));
         Member member = (Member) target;
@@ -91,14 +96,14 @@ public class DefaultRequestUrlInfoResolver implements RequestUrlInfoResolver {
 
     private String buildBase(String base,Object obj) {
         Host host =null;
-        Path path =null;
+        com.davidlong.creeper.annotation.Path path =null;
         if(obj instanceof Class){
             Class clz = (Class) obj;
             host = AnnotationUtils.findAnnotation(clz, Host.class);
-            path = AnnotationUtils.findAnnotation(clz, Path.class);
+            path = AnnotationUtils.findAnnotation(clz, com.davidlong.creeper.annotation.Path.class);
         }else if(obj instanceof AnnotatedElement){
             host = AnnotationUtils.getAnnotation((AnnotatedElement) obj, Host.class);
-            path = AnnotationUtils.getAnnotation((AnnotatedElement) obj, Path.class);
+            path = AnnotationUtils.getAnnotation((AnnotatedElement) obj, com.davidlong.creeper.annotation.Path.class);
         }
 
         if(host!=null){
@@ -118,7 +123,7 @@ public class DefaultRequestUrlInfoResolver implements RequestUrlInfoResolver {
         Annotation[] annotations = element.getAnnotations();
         for (Annotation annotation : annotations) {
             if(isActionAnno(annotation)){
-                if (annotation.annotationType().equals(Action.class)) {
+                if (annotation.annotationType().equals(Path.class)) {
                     return (String) AnnotationUtils.getAnnotationAttributes(annotation).get("method");
                 }
                 return annotation.annotationType().getSimpleName().toLowerCase();

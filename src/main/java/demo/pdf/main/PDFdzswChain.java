@@ -37,8 +37,8 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
-@Host(value = "www.xgv5.com", scheme = "https")
 @RequestChain(index = 1)
+@Host(value = "www.xgv5.com", scheme = "https")
 @RequestLog(showFilledParams = false, showFilledHeaders = false)
 @FileRecordsIgnore(filePath = "D:\\repository\\traiker\\records\\demo.txt")
 public class PDFdzswChain {
