@@ -57,14 +57,24 @@ public class DefaultRequestUrlInfoResolver implements RequestUrlInfoResolver {
 
     private void putRequestInfo(AnnotatedElement target,String basePath, Map<AnnotatedElement, RequestInfo> requestInfoMap) {
         RequestInfo requestInfo = new RequestInfo();
+        Member member = (Member) target;
+
         String url = getPath(basePath, target);
+
         if("".equals(basePath) && !(url.startsWith("http") || url.startsWith("${"))){
-            throw new RuntimeResolveException("resolved prepare url "+ WrapUtil.enDoubleQuote(url)+ " is invalid, url dose't have scheme, please make sure url start with http or class/method of sequential entity annotated with @Host");
+            if("".equals(url)){
+                throw new RuntimeResolveException("resolved prepare url is empty string, please annotate Path/Get/Post/Put/Delete annotation at request target "+WrapUtil.enDoubleQuote(member.getName()));
+            }else{
+                throw new RuntimeResolveException("resolved prepare url "+ WrapUtil.enDoubleQuote(url)+ " is invalid, url dose't have scheme, please make sure url start with http or class/method of sequential entity annotated with @Host");
+            }
+        }
+
+        if(basePath.equals(url)){
+            logger.warn("request target "+WrapUtil.enBrackets(member.getName())+" does't have a path of host, request url resolved as host");
         }
 
         requestInfo.setUrl(url);
         requestInfo.setHttpMethod(getHttpMethod(target));
-        Member member = (Member) target;
         logger.info("resolved prepare url "+requestInfo+" for target ["+ member.getName()+"] in ["+member.getDeclaringClass().getSimpleName()+"]");
         requestInfoMap.put(target, requestInfo);
     }
