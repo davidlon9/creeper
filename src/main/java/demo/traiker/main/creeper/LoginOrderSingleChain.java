@@ -33,7 +33,7 @@ import java.util.*;
 @RequestChain(index =1,name="AppChain",description="App")
 public class LoginOrderSingleChain {
 
-//    @RequestChain(value=1,name="LoginChain",description="登陆请求链")
+//    @RequestChain(jsonKey=1,name="LoginChain",description="登陆请求链")
 //    public LoginChain loginChain;
 
     @RequestChain(index =1,name="LoginChain",description="登陆请求链")
@@ -48,8 +48,8 @@ public class LoginOrderSingleChain {
                 @Parameter(name = "index",value = "${#index}")
         })
         @JsonResultCookies({
-                @JsonResultCookie(value="dfp",name = "RAIL_DEVICEID",domain = ".12306.cn",cache = true),
-                @JsonResultCookie(value="exp",name = "RAIL_EXPIRATION",domain = ".12306.cn",cache = true)
+                @JsonResultCookie(jsonKey ="dfp",name = "RAIL_DEVICEID",domain = ".12306.cn",cache = true),
+                @JsonResultCookie(jsonKey ="exp",name = "RAIL_EXPIRATION",domain = ".12306.cn",cache = true)
         })
         @FailedTerminate
         public Object deivceCookie(JSONObject result,HttpResponse httpResponse, FormParamStore paramStore,ContextParamStore contextParamStore, CookieStore cookieStore){
@@ -125,7 +125,7 @@ public class LoginOrderSingleChain {
         @SeqRequest(index =5,name="uamtk",description="获取token")
         @Post("/passport/web/auth/uamtk")
         @Parameters({@Parameter(name="appid",value="otn")})
-        @JsonResultCookie(value="newapptk",name="tk",domain = "kyfw.12306.cn",path = "/otn")
+        @JsonResultCookie(jsonKey ="newapptk",name="tk",domain = "kyfw.12306.cn",path = "/otn")
         public void uamtk(HttpResponse response){
         }
 
@@ -136,7 +136,7 @@ public class LoginOrderSingleChain {
         }
     }
 
-//    @MultiRequestChain(value=2,name="OrderChain",description="订单请求链",threadSize = 5)
+//    @MultiRequestChain(jsonKey=2,name="OrderChain",description="订单请求链",threadSize = 5)
     @RequestChain(index =2,name="OrderChain",description="订单请求链")
     public class Order{
         //        dc: "单程",

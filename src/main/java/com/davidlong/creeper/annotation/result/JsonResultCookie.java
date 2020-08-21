@@ -12,7 +12,7 @@ public @interface JsonResultCookie {
      * 返回的JsonResponse中,要作为cookie的key，多级用. 例如：result.token
      * @return
      */
-   String value();
+   String jsonKey();
 
     /**
      * Cookie的属性

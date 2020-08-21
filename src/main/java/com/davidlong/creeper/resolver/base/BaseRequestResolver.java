@@ -65,7 +65,7 @@ public class BaseRequestResolver extends LoopableSeqResolver{
         for (JsonResultCookie jsonResultCookie : jsonResultCookies) {
             JsonResultCookieInfo info=new JsonResultCookieInfo();
             info.setName(jsonResultCookie.name());
-            info.setJsonKey(jsonResultCookie.value());
+            info.setJsonKey(jsonResultCookie.jsonKey());
             info.setDefaultValue(jsonResultCookie.defaultValue());
             info.setCache(jsonResultCookie.cache());
             info.setExpiry(jsonResultCookie.expiry());
@@ -149,12 +149,12 @@ public class BaseRequestResolver extends LoopableSeqResolver{
 //            Annotation[] annotations = AnnotationUtils.getAnnotations(method);
 //            for (Annotation annotation : annotations) {
 //                if(HttpConst.isFailedStrategyAnno(annotation)){
-//                    Object value = AnnotationUtils.getAnnotationAttributes(annotation).get("value");
+//                    Object jsonKey = AnnotationUtils.getAnnotationAttributes(annotation).get("jsonKey");
 //                    if(annotation.annotationType().equals(FailedJump.class)){
-//                        return FailedStrategy.JUMP((Integer) value);
+//                        return FailedStrategy.JUMP((Integer) jsonKey);
 //                    }else if(annotation.annotationType().equals(FailedRetry.class)){
 //                        FailedStrategy failedStrategy = HttpConst.FAILED_ANNO_MAPPING.get(FailedRetry.class);
-//                        failedStrategy.setWait((Integer) value);
+//                        failedStrategy.setWait((Integer) jsonKey);
 //                        return failedStrategy;
 //                    }
 //                    return HttpConst.FAILED_ANNO_MAPPING.get(annotation.annotationType());

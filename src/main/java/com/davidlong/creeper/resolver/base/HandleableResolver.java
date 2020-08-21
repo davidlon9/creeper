@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 public class HandleableResolver extends SequentialResolver{
-    private Logger logger=Logger.getLogger(HandleableResolver.class);
+    private static Logger logger=Logger.getLogger(HandleableResolver.class);
 
     private Class<?> handleClass;
 

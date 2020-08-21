@@ -48,8 +48,8 @@ public class LoginChain {
             @Parameter(name = "timestamp",value = "${time.now()}"),
     })
     @JsonResultCookies({
-            @JsonResultCookie(value="dfp",name = "RAIL_DEVICEID",domain = ".12306.cn",cache = true),
-            @JsonResultCookie(value="exp",name = "RAIL_EXPIRATION",domain = ".12306.cn",cache = true)
+            @JsonResultCookie(jsonKey ="dfp",name = "RAIL_DEVICEID",domain = ".12306.cn",cache = true),
+            @JsonResultCookie(jsonKey ="exp",name = "RAIL_EXPIRATION",domain = ".12306.cn",cache = true)
     })
     public Object deivceCookie(JSONObject result,HttpResponse httpResponse, FormParamStore paramStore,ContextParamStore contextParamStore, CookieStore cookieStore) throws IOException {
         paramStore.addParams(callbackParam.getExtraParams());

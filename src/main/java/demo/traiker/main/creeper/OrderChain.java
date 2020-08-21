@@ -332,16 +332,16 @@ public class OrderChain {
     })
     @RequestHeaders({
             @RequestHeader(name="Content-Type",value = "application/x-www-form-urlencoded; charset=UTF-8"),
-//            @RequestHeader(name="Accept",value = "application/json, text/javascript, */*; q=0.01"),
-//            @RequestHeader(name="Accept-Encoding",value = "gzip, deflate, br"),
-//            @RequestHeader(name="Accept-Language",value = "zh-CN,zh;q=0.9"),
-////            @RequestHeader(name="Referer",value = "https://kyfw.12306.cn/otn/confirmPassenger/initDc"),
-//            @RequestHeader(name="Origin",value = "https://kyfw.12306.cn"),
-//            @RequestHeader(name="Connection",value = "keep-alive"),
-//            @RequestHeader(name="Host",value = "kyfw.12306.cn"),
-////            @RequestHeader(name="Sec-Fetch-Dest",value = "empty"),
-//            @RequestHeader(name="Sec-Fetch-Site",value = "same-origin"),
-//            @RequestHeader(name="Sec-Fetch-Mode",value = "cors"),
+//            @RequestHeader(name="Accept",jsonKey = "application/json, text/javascript, */*; q=0.01"),
+//            @RequestHeader(name="Accept-Encoding",jsonKey = "gzip, deflate, br"),
+//            @RequestHeader(name="Accept-Language",jsonKey = "zh-CN,zh;q=0.9"),
+////            @RequestHeader(name="Referer",jsonKey = "https://kyfw.12306.cn/otn/confirmPassenger/initDc"),
+//            @RequestHeader(name="Origin",jsonKey = "https://kyfw.12306.cn"),
+//            @RequestHeader(name="Connection",jsonKey = "keep-alive"),
+//            @RequestHeader(name="Host",jsonKey = "kyfw.12306.cn"),
+////            @RequestHeader(name="Sec-Fetch-Dest",jsonKey = "empty"),
+//            @RequestHeader(name="Sec-Fetch-Site",jsonKey = "same-origin"),
+//            @RequestHeader(name="Sec-Fetch-Mode",jsonKey = "cors"),
             @RequestHeader(name="X-Requested-With",value = "XMLHttpRequest")
     })
     @AfterMethod("confirmSingleForQueue")

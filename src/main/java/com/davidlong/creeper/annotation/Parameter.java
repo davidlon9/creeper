@@ -5,7 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target({ElementType.FIELD,ElementType.METHOD,ElementType.ANNOTATION_TYPE})
+@Target({ElementType.FIELD,ElementType.METHOD,ElementType.ANNOTATION_TYPE,ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Parameter {
    String value() default "$NULL";

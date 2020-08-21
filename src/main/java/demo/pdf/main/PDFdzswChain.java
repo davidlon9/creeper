@@ -97,8 +97,8 @@ public class PDFdzswChain {
 
 //    //stopConditionExpr使用的是main线程的context
 //    //queueElement在线程的context中，mainContext中的变量无法获取
-//    @MultiRequestQueue(value = 2,stopConditionExpr = "${#isHandlePage}",queueContextKey = "downQueue",queueElementKey = "downUrl",threadSize = 5, delay = 2000,description = "多线程下载队列")
-//    @Get(value = "${#downUrl}",urlInheritable = false)
+//    @MultiRequestQueue(jsonKey = 2,stopConditionExpr = "${#isHandlePage}",queueContextKey = "downQueue",queueElementKey = "downUrl",threadSize = 5, delay = 2000,description = "多线程下载队列")
+//    @Get(jsonKey = "${#downUrl}",urlInheritable = false)
 //    public MoveAction multiDownloadQueue(HttpResponse response,ContextParamStore contextParamStore) throws IOException {
 //        String html = EntityUtils.toString(response.getEntity());
 //        return new ContinueAction(100);

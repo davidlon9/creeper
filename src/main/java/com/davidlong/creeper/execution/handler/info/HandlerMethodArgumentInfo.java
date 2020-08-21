@@ -65,7 +65,7 @@ public class HandlerMethodArgumentInfo {
         for (int i = 0; i < parameterTypes.length; i++) {
             if(!isSupportArgType(parameterTypes[i])){
                 args[i]=null;
-                logger.warn(parameterTypes[i]+" can't as a arg for handler entityTarget,this arg value will be null. please try these parameter types:"+getSupportedTypeList().toString());
+                logger.warn(parameterTypes[i]+" can't as a arg for handler entity method,this arg value will be null. please try these parameter types:"+getSupportedTypeList().toString());
                 continue;
             }
             args[i] = getArgInstance(parameterTypes[i]);
@@ -105,7 +105,7 @@ public class HandlerMethodArgumentInfo {
 //                args[i]=null;
 //            }
 //            if(args[i]==null){
-//                logger.warn(parameterTypes[i]+" can't as parameter,,this param value will be null. please try these parameter types:Request, ExecutionContext, ParamStore, CookieStore");
+//                logger.warn(parameterTypes[i]+" can't as parameter,,this param jsonKey will be null. please try these parameter types:Request, ExecutionContext, ParamStore, CookieStore");
 //            }
 //        }
 //        return args;

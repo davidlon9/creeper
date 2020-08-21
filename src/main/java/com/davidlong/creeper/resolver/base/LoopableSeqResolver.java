@@ -14,7 +14,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 
 public class LoopableSeqResolver extends HandleableResolver{
-    private Logger logger = Logger.getLogger(LoopableSeqResolver.class);
+    private static Logger logger = Logger.getLogger(LoopableSeqResolver.class);
 
     public LoopableSeqResolver(Class<?> handleClass, AnnotatedElement target, Class<? extends Annotation> annoClass) {
         super(handleClass, target, annoClass);

@@ -9,7 +9,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 
 public class BaseChainResolver extends LoopableSeqResolver{
-    private Logger logger=Logger.getLogger(BaseChainResolver.class);
+    private static Logger logger=Logger.getLogger(BaseChainResolver.class);
 
     public BaseChainResolver(Class<?> handleClass,Class<? extends Annotation> chainAnnoClass) {
         super(handleClass,handleClass,chainAnnoClass);

@@ -112,8 +112,8 @@ public class TestMulti {
                 @Parameter(name = "index",value = "${#index}")
         })
         @JsonResultCookies({
-                @JsonResultCookie(value="dfp",name = "RAIL_DEVICEID",domain = ".12306.cn",cache = true),
-                @JsonResultCookie(value="exp",name = "RAIL_EXPIRATION",domain = ".12306.cn",cache = true)
+                @JsonResultCookie(jsonKey ="dfp",name = "RAIL_DEVICEID",domain = ".12306.cn",cache = true),
+                @JsonResultCookie(jsonKey ="exp",name = "RAIL_EXPIRATION",domain = ".12306.cn",cache = true)
         })
         @FailedTerminate
         public Object deivceCookie(JSONObject result, HttpResponse httpResponse, FormParamStore paramStore, ContextParamStore contextParamStore, CookieStore cookieStore){
