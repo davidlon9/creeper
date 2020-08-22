@@ -21,6 +21,8 @@ import com.davidlong.creeper.execution.context.ExecutionContext;
 import com.davidlong.creeper.execution.context.FormParamStore;
 import com.davidlong.creeper.execution.handler.entity.ExecutionHandler;
 import com.davidlong.creeper.model.result.ChainResult;
+import com.davidlong.creeper.model.seq.RequestInfo;
+import com.davidlong.creeper.resolver.DefaultRequestInfoResolver;
 import com.davidlong.creeper.util.FileUtil;
 import com.davidlong.creeper.util.HttpDownload;
 import com.davidlong.creeper.util.ResultUtil;
@@ -34,10 +36,11 @@ import org.jsoup.nodes.Document;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.AnnotatedElement;
 import java.util.Map;
 import java.util.Set;
 
-@RequestChain(index = 1)
+//@RequestChain(index = 1)
 @Host(value = "www.xgv5.com", scheme = "https")
 @RequestLog(showFilledParams = false, showFilledHeaders = false)
 @FileRecordsIgnore(filePath = "D:\\repository\\traiker\\records\\demo.txt")
@@ -226,6 +229,8 @@ public class PDFdzswChain {
     }
 
     public static void main(String[] args) {
+        DefaultRequestInfoResolver defaultRequestInfoResolver = new DefaultRequestInfoResolver();
+        Map<AnnotatedElement, RequestInfo> resolve = defaultRequestInfoResolver.resolve(PDFdzswChain.class);
         //Chain调用方式
         ContextExecutor executor = new ChainContextExecutor(PDFdzswChain.class);
         ChainResult chainResult = executor.exeucteRootChain();
