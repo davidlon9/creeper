@@ -1,5 +1,7 @@
 package com.davidlong.creeper.execution.request;
 
+import com.davidlong.creeper.exception.RuntimeExecuteException;
+import com.davidlong.creeper.execution.context.ContextParamStore;
 import com.davidlong.creeper.execution.context.ExecutionContext;
 import com.davidlong.creeper.execution.context.FormParamStore;
 import com.davidlong.creeper.expression.ContextExpressionParser;
@@ -7,6 +9,7 @@ import com.davidlong.creeper.model.Param;
 import com.davidlong.creeper.model.log.RequestLogInfo;
 import com.davidlong.creeper.model.seq.RequestEntity;
 import com.davidlong.creeper.model.seq.RequestInfo;
+import com.davidlong.creeper.resolver.util.WrapUtil;
 import org.apache.http.Header;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.message.BasicHeader;
@@ -17,17 +20,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DefaultRequestBuilder implements HttpRequestBuilder {
-    private ExecutionContext context;
+    private ContextParamStore contextStore;
+    private FormParamStore paramStore;
+    private RequestLogInfo logInfo;
 
     public static final String templateIdentifier="${";
 
     private static Logger logger=Logger.getLogger(DefaultRequestBuilder.class);
 
     public DefaultRequestBuilder(ExecutionContext context) {
-        this.context = context;
+        this(context.getContextStore(),context.getParamStore());
     }
 
-    private List<Param> parseExpressionOfParameters(List<Param> params,ContextExpressionParser expressionParser) {
+    public DefaultRequestBuilder(ContextParamStore contextStore, FormParamStore paramStore) {
+        this(contextStore,paramStore,new RequestLogInfo());
+    }
+
+    public DefaultRequestBuilder(ContextParamStore contextStore, FormParamStore paramStore,RequestLogInfo logInfo) {
+        this.contextStore = contextStore;
+        this.paramStore = paramStore;
+        this.logInfo = logInfo;
+    }
+
+    private List<Param> parseExpressionOfParameters(List<Param> params, ContextExpressionParser expressionParser) {
         List<Param> parsedParams=new ArrayList<>();
         int size = params.size();
         for (int i = 0; i < size; i++) {
@@ -45,26 +60,23 @@ public class DefaultRequestBuilder implements HttpRequestBuilder {
     }
 
     @Override
-    public Request buildRequest(RequestEntity requestEntity){
-        RequestInfo requestInfo = requestEntity.getRequestInfo();
+    public Request buildRequest(RequestInfo requestInfo){
+        logger.info("start build request "+requestInfo);
+
         String method = requestInfo.getHttpMethod().toUpperCase();
         Request request;
         String url = requestInfo.getUrl();
         List<Param> params = requestInfo.getParams();
 
-        ContextExpressionParser expressionParser = context.getExpressionParser();
+        ContextExpressionParser expressionParser = contextStore.getExpressionParser();
         //解析url中的表达式
         url = expressionParser.parse(url, String.class);
-        if(url==null){
-            return null;
+        if(url == null){
+            throw new RuntimeExecuteException("url "+requestInfo.getUrl()+" parsed as null");
         }
         //解析参数中的表达式
         params = parseExpressionOfParameters(params,expressionParser);
 
-        if(requestEntity.getName().equals("getPdfDownloadUrls")){
-            System.out.println();
-        }
-        RequestLogInfo requestLogInfo = requestEntity.getRequestLogInfo();
         if(method.equals("POST")){
             request=Request.Post(url);
         }else if(method.equals("PUT")){
@@ -72,24 +84,26 @@ public class DefaultRequestBuilder implements HttpRequestBuilder {
         }else if(method.equals("DELETE")){
             request=Request.Delete(url);
         }else{
-            request=Request.Get(fillUrlParams(url, params, requestLogInfo));
+            request=Request.Get(fillUrlParams(url, params));
         }
         if(!method.equals("GET")){
-            fillParams(request, params , requestLogInfo);
+            fillParams(request, params);
         }
 
         Header[] headers = requestInfo.getHeaders().toArray(new Header[]{});
-        if(requestLogInfo.isShowFilledHeaders()){
+        if(logInfo.isShowFilledHeaders()){
             for (Header header : headers) {
                 logger.info("filled header < "+header+" >");
             }
         }
         request.setHeaders(headers);
         request.setHeader(new BasicHeader("User-Agents","Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.26 Safari/537.36 Core/1.63.6788.400 QQBrowser/10.3.2864.400"));
+
+        logger.info("finish build request "+ WrapUtil.enAngleBrackets(request.toString(),true) +"\n");
         return request;
     }
 
-    private String fillUrlParams(String url,List<Param> params,RequestLogInfo logInfo) {
+    private String fillUrlParams(String url,List<Param> params) {
         if(params.size()==0){
             return url;
         }
@@ -102,11 +116,10 @@ public class DefaultRequestBuilder implements HttpRequestBuilder {
         for (Param param : params) {
             String value=param.getValue();
             if(!value.contains("$")){
-                appendParam(hasParam,urlBuilder,param,logInfo);
+                appendParam(hasParam,urlBuilder,param);
                 continue;
             }
 
-            FormParamStore paramStore = context.getParamStore();
             String contextKey = param.getGlobalKey();
             //先从paramStore中获取value
             if(contextKey!=null && !"".equals(contextKey)){
@@ -125,13 +138,13 @@ public class DefaultRequestBuilder implements HttpRequestBuilder {
                 param = new Param(param.getName(),value);
             }
 
-            hasParam = appendParam(hasParam,urlBuilder,param,logInfo);
+            hasParam = appendParam(hasParam,urlBuilder,param);
         }
         urlBuilder.delete(urlBuilder.length()-1,urlBuilder.length());
         return  urlBuilder.toString();
     }
 
-    private boolean appendParam(boolean hasParam, StringBuilder urlBuilder, Param param, RequestLogInfo logInfo) {
+    private boolean appendParam(boolean hasParam, StringBuilder urlBuilder, Param param) {
         if(hasParam){
             urlBuilder.append("&");
             hasParam=false;
@@ -147,7 +160,6 @@ public class DefaultRequestBuilder implements HttpRequestBuilder {
 
     private List<Param> getFilledParams(List<Param> params, RequestLogInfo logInfo) {
         List<Param> filledParams=new ArrayList<>(params.size());
-        FormParamStore paramStore = context.getParamStore();
         for (Param param : params) {
             String value=param.getValue();
             String globalKey = param.getGlobalKey();
@@ -185,9 +197,8 @@ public class DefaultRequestBuilder implements HttpRequestBuilder {
         return filledParams;
     }
 
-    private Request fillParams(Request request, List<Param> params, RequestLogInfo logInfo) {
+    private Request fillParams(Request request, List<Param> params) {
         List<Param> filledParams=new ArrayList<>(params.size());
-        FormParamStore paramStore = context.getParamStore();
         for (Param param : params) {
             String value=param.getValue();
             String globalKey = param.getGlobalKey();
@@ -223,5 +234,9 @@ public class DefaultRequestBuilder implements HttpRequestBuilder {
             }
         }
         return request.bodyForm(filledParams,Charset.forName("UTF-8"));
+    }
+
+    public void setLogInfo(RequestLogInfo logInfo) {
+        this.logInfo = logInfo;
     }
 }
