@@ -70,7 +70,7 @@ public class RequestEntity extends LoopableEntity{
     }
 
     public Request buildRequest(ExecutionContext context) {
-        return this.request = new DefaultRequestBuilder(context).buildRequest(this);
+        return this.request = new DefaultRequestBuilder(context).buildRequest(this.requestInfo);
     }
 
     public void setExecutionHandler(ExecutionHandler handler) {

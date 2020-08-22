@@ -81,7 +81,7 @@ public class BaseRequestExecutor<T extends RequestEntity> extends AbstractLoopab
 
         logger.info("+ begin execute request "+requestEntity);
 
-        Request request = requestBuilder.buildRequest(requestEntity);
+        Request request = requestBuilder.buildRequest(requestEntity.getRequestInfo());
         if(request==null){
             logger.error("request build error, no url parsed out");
         }
