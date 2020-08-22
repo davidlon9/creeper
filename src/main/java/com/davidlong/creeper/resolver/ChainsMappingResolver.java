@@ -9,7 +9,6 @@ import com.davidlong.creeper.exception.RuntimeResolveException;
 import com.davidlong.creeper.model.log.RequestLogInfo;
 import com.davidlong.creeper.model.log.ResponseLogInfo;
 import com.davidlong.creeper.model.seq.*;
-import com.davidlong.creeper.resolver.base.DefaultRequestUrlInfoResolver;
 import com.davidlong.creeper.resolver.base.SequentialResolver;
 import com.davidlong.creeper.resolver.util.LogNames;
 import com.davidlong.creeper.resolver.util.ResolveUtil;
@@ -43,7 +42,7 @@ public class ChainsMappingResolver {
     public ChainsMappingResolver(Class<?> rootClass,boolean fixIndex) {
         this.rootClass = rootClass;
         this.fixIndex = fixIndex;
-        this.rootMethodInfoMap = new DefaultRequestUrlInfoResolver().resolve(rootClass);
+        this.rootMethodInfoMap = new DefaultRequestInfoResolver().resolve(rootClass);
     }
 
     public RequestChainEntity resolve() {
@@ -178,7 +177,7 @@ public class ChainsMappingResolver {
             methodInfoMap = rootMethodInfoMap;
         }else{
             //否则使用Request的ChainClass
-            methodInfoMap = new DefaultRequestUrlInfoResolver().resolve(chainClass);
+            methodInfoMap = new DefaultRequestInfoResolver().resolve(chainClass);
         }
         RequestInfo requestInfo = methodInfoMap.get(chainMethod);
         Assert.notNull(requestInfo);

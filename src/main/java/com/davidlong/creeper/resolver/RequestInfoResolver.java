@@ -5,6 +5,6 @@ import com.davidlong.creeper.model.seq.RequestInfo;
 import java.lang.reflect.AnnotatedElement;
 import java.util.Map;
 
-public interface RequestUrlInfoResolver {
+public interface RequestInfoResolver {
     Map<AnnotatedElement,RequestInfo> resolve(Class<?> chainClass);
 }
