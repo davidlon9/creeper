@@ -7,6 +7,7 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.FIELD,ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
+@Path
 public @interface Delete {
    String value() default "";
    boolean urlInheritable() default true;
