@@ -1,4 +1,4 @@
-package demo.traiker.main.oldway;
+package demo.traiker.main.fluent;
 
 import com.davidlong.creeper.model.Param;
 import demo.traiker.util.FastURI;

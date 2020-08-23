@@ -1,4 +1,4 @@
-package demo.traiker.main.oldway;
+package demo.traiker.main.fluent;
 
 import com.alibaba.fastjson.JSONObject;
 import com.davidlong.creeper.model.Param;
@@ -34,11 +34,10 @@ public class LoginByCode {
             log.info(response4);
             String data = EntityUtils.toString(response4.getEntity());
             data=data.substring(data.indexOf("'")+1,data.lastIndexOf("'"));
-//        a.substring(a.indexOf('{'),a.lastIndexOf('}') + 1)
 
             JSONObject json = JSONObject.parseObject(data);
             BasicClientCookie basicClientCookie = new BasicClientCookie("RAIL_DEVICEID", json.getString("dfp"));
-//            BasicClientCookie basicClientCookie = new BasicClientCookie("RAIL_DEVICEID","ZT_ZjKDsP476h8dfWg2eshaBjk-LoKFmQpjiqe6kZHGSwZiNhHS7ezGwm_KJCZSXFSC0t5OQYSrWH0dzEsgxpJlHiwAq3eLQA79hQGVv1Hn07hE1ghddlpIw6rGEKHSigpqyuy05JNjjxfxoMrh3_i017TnxXfgw");
+//          BasicClientCookie basicClientCookie = new BasicClientCookie("RAIL_DEVICEID","ZT_ZjKDsP476h8dfWg2eshaBjk-LoKFmQpjiqe6kZHGSwZiNhHS7ezGwm_KJCZSXFSC0t5OQYSrWH0dzEsgxpJlHiwAq3eLQA79hQGVv1Hn07hE1ghddlpIw6rGEKHSigpqyuy05JNjjxfxoMrh3_i017TnxXfgw");
             basicClientCookie.setDomain(".12306.cn");
             basicClientCookie.setAttribute("domain",".12306.cn");
             basicClientCookie.setAttribute("path","/");

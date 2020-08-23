@@ -25,7 +25,7 @@ public class CallbackParam {
     public List<Param> getExtraParams(){
         List<Param> params = new ArrayList<>();
         params.add(new Param("callback",callback));
-        params.add(new Param("_",(ajaxNonce)));
+        params.add(new Param("_",ajaxNonce));
         return params;
     }
 
@@ -38,6 +38,10 @@ public class CallbackParam {
 
     public String getCallback() {
         return callback;
+    }
+
+    public String getAjaxNonce() {
+        return String.valueOf(ajaxNonce);
     }
 
     public static void main(String[] args) {
