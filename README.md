@@ -112,7 +112,7 @@ String tokenData = loginMapping.uamtk();
 String token = JSONObject.parseObject(tokenData).getString("newapptk");
 
 //第六步 用户客户端认证，传入token
-loginMapping.uamauthclient(token);
+String uamauthclient = loginMapping.uamauthclient(token);
 
 //最后，访问用户信息页面，测试是否登录成功
 String userinfo = loginMapping.userinfo();
