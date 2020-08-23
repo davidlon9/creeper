@@ -1,7 +1,7 @@
 package demo.traiker.util;
 
-import com.davidlong.creeper.HttpConst;
-import com.davidlong.creeper.model.Param;
+import com.dlong.creeper.HttpConst;
+import com.dlong.creeper.model.Param;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.client.utils.URIBuilder;

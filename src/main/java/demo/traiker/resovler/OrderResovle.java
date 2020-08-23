@@ -2,7 +2,7 @@ package demo.traiker.resovler;
 
 import com.alibaba.fastjson.JSONObject;
 import demo.traiker.AppConsts;
-import com.davidlong.creeper.util.JsoupUtil;
+import com.dlong.creeper.util.JsoupUtil;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;

@@ -1,11 +1,12 @@
 package demo.traiker.main.fluent;
 
 import com.alibaba.fastjson.JSONObject;
-import com.davidlong.creeper.resolver.FluentRequestMappingMananger;
+import com.dlong.creeper.resolver.FluentRequestMappingMananger;
 import demo.traiker.resovler.CallbackParam;
 
 public class LoginHandleSimple {
     public static void main(String[] args) {
+        //创建一个请求管理器，在该管理器下获取一个LoginMapping代理对象
         LoginMapping loginMapping = new FluentRequestMappingMananger().getClassProxy(LoginMapping.class);
         //第一步 deviceCookie中提取两个必备cookie
         String deivceCookie = loginMapping.deivceCookie();
@@ -30,7 +31,7 @@ public class LoginHandleSimple {
         String token = JSONObject.parseObject(tokenData).getString("newapptk");
 
         //第六步 用户客户端认证，传入token
-        loginMapping.uamauthclient(token);
+        String uamauthclient = loginMapping.uamauthclient(token);
 
         //最后，访问用户信息页面，测试是否登录成功
         String userinfo = loginMapping.userinfo();

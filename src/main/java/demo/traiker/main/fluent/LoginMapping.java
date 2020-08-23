@@ -1,8 +1,8 @@
 package demo.traiker.main.fluent;
 
-import com.davidlong.creeper.annotation.*;
-import com.davidlong.creeper.annotation.http.Get;
-import com.davidlong.creeper.annotation.http.Post;
+import com.dlong.creeper.annotation.*;
+import com.dlong.creeper.annotation.http.Get;
+import com.dlong.creeper.annotation.http.Post;
 
 //接口上注解Host，该接口下所有的请求链接都以该host为域名
 @Host(value="kyfw.12306.cn",scheme="https")

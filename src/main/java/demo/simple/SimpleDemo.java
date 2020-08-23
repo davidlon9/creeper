@@ -1,7 +1,7 @@
 package demo.simple;
 
-import com.davidlong.creeper.annotation.*;
-import com.davidlong.creeper.annotation.http.Get;
+import com.dlong.creeper.annotation.*;
+import com.dlong.creeper.annotation.http.Get;
 import org.apache.http.client.fluent.Request;
 
 @Host(value = "www.xgv5.com", scheme = "https")

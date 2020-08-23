@@ -1,7 +1,7 @@
 package demo.traiker.main.fluent;
 
 import com.alibaba.fastjson.JSONObject;
-import com.davidlong.creeper.resolver.FluentRequestMappingMananger;
+import com.dlong.creeper.resolver.FluentRequestMappingMananger;
 import demo.traiker.resovler.CallbackParam;
 import demo.traiker.resovler.CaptchaImage;
 import org.apache.http.client.CookieStore;
