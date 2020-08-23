@@ -9,4 +9,23 @@
 也就是说，仅需要一个类，就能够迅速完成一个复杂的爬虫程序。
 
 ## 示例
+首先熟悉一下HttpClient-Fluent的基本使用方式
+
+```java
+//构建一个Request请求对象
+Request get = Request.Get("http://www.giftcat.com").bodyForm(
+                new BasicNameValuePair("param1","value1"),
+                new BasicNameValuePair("param2","value2"));
+//创建Executor实例
+Executor executor = Executor.newInstance();
+//使用Executor执行Request
+Response response = executor.execute(get);
+//获取执行后的Response字符串
+String stringResult = response.returnContent().asString();
+//获取执行后apache封装的HttpResponse对象(可以获取一系列Response相关的信息)
+HttpResponse httpResponse = response.returnResponse();
+```
+HttpClient-Fluent已经帮助我们节省了很多代码，但是对于请求创建的链接参数等信息仍然需要编写代码。而且当代码累积过多，就很难管理，缺乏统一的管理性
+上述例子对问题的暴露可能不够明显，可以参考我写的使用HttpClient-Fluent写的[12306爬虫程序](https://github.com/davidlon9/creeper/blob/master/src/main/java/demo/traiker/main/oldway/LoginByCode.java)
+
 
