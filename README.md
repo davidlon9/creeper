@@ -29,7 +29,7 @@ HttpClient-Fluent已经帮助我们节省了很多代码，但是对于请求创
 上述例子对问题的暴露可能不够明显，可以参考我写的使用HttpClient-Fluent写的[12306爬虫程序](https://github.com/davidlon9/creeper/blob/master/src/main/java/demo/traiker/main/fluent/LoginByCode.java)
 
 #### 构建Request映射配置类
-针对12306登陆编写的链接配置类
+针对12306登陆编写的链接配置类LoginMapping
 ```java
 //接口上注解Host，该接口下所有的请求链接都以该host为域名
 @Host(value="kyfw.12306.cn",scheme="https")
@@ -84,39 +84,37 @@ public interface LoginMapping {
 }
 ```
 
-生成12306登陆请求配置接口的代理对象，直接调用代理对象获取请求结果并做处理，代码省略了对结果的处理部分，完整代码请查看[12306映射配置登陆处理](https://github.com/davidlon9/creeper/blob/master/src/main/java/demo/traiker/main/fluent/LoginHandle.java)
+#### 调用Request配置接口实例
+生成12306登陆请求配置接口的代理对象，然后调用代理对象获取请求结果并做处理，代码省略了对结果的处理部分，完整代码请查看[12306映射配置登陆处理](https://github.com/davidlon9/creeper/blob/master/src/main/java/demo/traiker/main/fluent/LoginHandle.java)
 ```java
-public class LoginHandleSimple {
-    public static void main(String[] args) {
-        LoginMapping loginMapping = new FluentRequestMappingMananger().getClassProxy(LoginMapping.class);
-        //第一步 deviceCookie中提取两个必备cookie
-        String deivceCookie = loginMapping.deivceCookie();
-        //此处处理代码省略
+//创建一个请求管理器，在该管理器下获取一个LoginMapping代理对象
+LoginMapping loginMapping = new FluentRequestMappingMananger().getClassProxy(LoginMapping.class);
+//第一步 deviceCookie中提取两个必备cookie
+String deivceCookie = loginMapping.deivceCookie();
+//此处处理代码省略
 
-        //第二步 从captchaImageData中获取图片
-        CallbackParam callbackParam = new CallbackParam();
-        String callback = callbackParam.getCallback();
-        String ajaxNonce = callbackParam.getAjaxNonce();
-        String captchaImageData = loginMapping.captchaImage(callback, ajaxNonce);
-        //此处处理代码省略
+//第二步 从captchaImageData中获取图片
+CallbackParam callbackParam = new CallbackParam();
+String callback = callbackParam.getCallback();
+String ajaxNonce = callbackParam.getAjaxNonce();
+String captchaImageData = loginMapping.captchaImage(callback, ajaxNonce);
+//此处处理代码省略
 
-        //第三步 根据图片，判断正确的有哪些，并输入对应坐标
-        String captchaCheckResult = loginMapping.captchaCheck("11,22,33,44");
-        //获取验证码答案是否正确
+//第三步 根据图片，判断正确的有哪些，并输入对应坐标
+String captchaCheckResult = loginMapping.captchaCheck("11,22,33,44");
+//获取验证码答案是否正确
 
-        //第四步 如果验证码输入正确，就可以登录了,输入用户名密码
-        String loginResult = loginMapping.login("zhangsan","123");
+//第四步 如果验证码输入正确，就可以登录了,输入用户名密码
+String loginResult = loginMapping.login("zhangsan","123");
 
-        //第五步 获取token
-        String tokenData = loginMapping.uamtk();
-        String token = JSONObject.parseObject(tokenData).getString("newapptk");
+//第五步 获取token
+String tokenData = loginMapping.uamtk();
+String token = JSONObject.parseObject(tokenData).getString("newapptk");
 
-        //第六步 用户客户端认证，传入token
-        loginMapping.uamauthclient(token);
+//第六步 用户客户端认证，传入token
+loginMapping.uamauthclient(token);
 
-        //最后，访问用户信息页面，测试是否登录成功
-        String userinfo = loginMapping.userinfo();
-    }
-}
+//最后，访问用户信息页面，测试是否登录成功
+String userinfo = loginMapping.userinfo();
 ```
 可以看到上述代码，将请求链接的配置与请求执行后的处理完全分离了，使开发者将重心放在请求结果的处理上
