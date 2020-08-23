@@ -26,7 +26,7 @@ String stringResult = response.returnContent().asString();
 HttpResponse httpResponse = response.returnResponse();
 ```
 HttpClient-Fluent已经帮助我们节省了很多代码，但是对于请求创建的链接参数等信息仍然需要编写代码。而且当代码累积过多，就很难管理，缺乏统一的管理性
-上述例子对问题的暴露可能不够明显，可以参考我写的使用HttpClient-Fluent写的[12306爬虫程序](https://github.com/davidlon9/creeper/blob/master/src/main/java/demo/traiker/main/oldway/LoginByCode.java)
+上述例子对问题的暴露可能不够明显，可以参考我写的使用HttpClient-Fluent写的[12306爬虫程序](https://github.com/davidlon9/creeper/blob/master/src/main/java/demo/traiker/main/fluent/LoginByCode.java)
 
 #### 构建Request映射配置类
 针对12306登陆编写的链接配置类
@@ -84,7 +84,7 @@ public interface LoginMapping {
 }
 ```
 
-生成12306登陆请求配置接口的代理对象，直接调用代理对象获取请求结果并做处理，代码省略了对结果的处理部分，完整代码请查看[12306映射配置登陆处理](https://github.com/davidlon9/creeper/blob/master/src/main/java/demo/traiker/main/oldway/LoginByCode.java)
+生成12306登陆请求配置接口的代理对象，直接调用代理对象获取请求结果并做处理，代码省略了对结果的处理部分，完整代码请查看[12306映射配置登陆处理](https://github.com/davidlon9/creeper/blob/master/src/main/java/demo/traiker/main/fluent/LoginHandle.java)
 ```java
 public class LoginHandleSimple {
     public static void main(String[] args) {
