@@ -70,18 +70,15 @@ public class LoginByCode {
             HttpResponse response2 = executor.execute(AppUrl.Login.CAPTCHA_CHECK.paramValues(answer, callbackParam.getExtraParamValues()).buildRequest()).returnResponse();
             log.info(response2);
 
-
             //登录
             Request loginRequest = AppUrl.Login.LOGIN.params(
                     new Param("appid", "otn"),
                     new Param("usernameVal", "qq744941378"),
                     new Param("passwordVal", "long123481"),
                     new Param("answer", answer)).buildRequest();
-
             System.out.println(loginRequest.toString());
             HttpResponse response3 = executor.execute(loginRequest).returnResponse();
             log.info(response3);
-
 
             Request request2 = AppUrl.Login.UAMTK.buildRequest();
             System.out.println(request2);

@@ -3,6 +3,7 @@ package com.davidlong.creeper.resolver;
 import com.alibaba.fastjson.JSONObject;
 import com.davidlong.creeper.execution.context.ContextParamStore;
 import demo.simple.SimpleDemo;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.fluent.Executor;
 import org.apache.http.client.fluent.Request;
 import org.apache.log4j.Logger;
@@ -20,6 +21,10 @@ public class FluentRequestMappingMananger {
     public FluentRequestMappingMananger(ContextParamStore context, Executor executor) {
         this.context = context;
         this.executor = executor;
+    }
+
+    public FluentRequestMappingMananger(Executor executor) {
+        this(new ContextParamStore(),Executor.newInstance());
     }
 
     public FluentRequestMappingMananger(ContextParamStore context) {
