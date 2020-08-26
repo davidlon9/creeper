@@ -120,11 +120,11 @@ String uamauthclient = loginMapping.uamauthclient(token);
 //最后，访问用户信息页面，测试是否登录成功
 String userinfo = loginMapping.userinfo();
 ```
-可以看到上述代码，将请求链接的配置与请求执行后的处理完全分离了，使开发者将重心放在请求结果的处理上。在使用接口代理对象方法调用后的返回值，有多种可选，String表示该请求执行后的响应体字符串，更多可用返回值请查看[Request配置接口方法返回类型](#returnTypes1)
+可以看到上述代码，将请求链接的配置与请求执行后的处理完全分离了，使开发者将重心放在请求结果的处理上。在使用接口代理对象方法调用后的返回值，有多种可选，String表示该请求执行后的响应体字符串，更多可用返回值请查看[Request配置接口方法返回类型](#RequestChain配置类的方法返回类型)
 
-<h2 id="returnTypes">可用返回类型</h2>
+## 可用返回类型
   
-<h3 id="returnTypes1">Request配置接口的方法返回类型</h3>
+### Request配置接口的方法返回类型
 
 | 返回值类名   | 所属包                        |对应HttpClient-Fluent的获取方式                                               | 
 | :----------- | :---------------------------- | :-------------------------------------------------------------------------- |
@@ -136,7 +136,7 @@ String userinfo = loginMapping.userinfo();
 | InputStream  | java.io                       | Executor.newInstance().execute(Request.Get(URL)).returnContent().asStream() |
 | byte[]       |                               | Executor.newInstance().execute(Request.Get(URL)).returnContent().asBytes()  |
 
-<h3 id="returnTypes2">RequestChain配置类的方法返回类型</h3>
+### RequestChain配置类的方法返回类型
 
 ReuqestChain配置类的方法，一般是Chain或Request的BeforeHandler、AfterHandler，分别在请求的执行前后进行处理，详细解释请看[ExecutionHandler](#ExecutionHandler)，以下是其可用返回值类型与解释
 | 返回值类型   | BeforeHandler返回值对应动作 | AfterHandler返回值对应动作 |
