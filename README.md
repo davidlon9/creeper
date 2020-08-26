@@ -122,7 +122,7 @@ String uamauthclient = loginMapping.uamauthclient(token);
 //最后，访问用户信息页面，测试是否登录成功
 String userinfo = loginMapping.userinfo();
 ```
-可以看到上述代码，将请求链接的配置与请求执行后的处理完全分离了，使开发者将重心放在请求结果的处理上。在使用接口代理对象方法调用后的返回值，有多种可选，String表示该请求执行后的响应体字符串，更多可用返回值请查看[Request配置接口方法返回类型](#Request配置接口的方法返回类型)
+可以看到上述代码，将请求链接的配置与请求执行后的处理完全分离了，使开发者将重心放在请求结果的处理上。
 
 ## 可用返回类型
   
