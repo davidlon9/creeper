@@ -31,7 +31,7 @@ HttpClient-Fluent已经帮助我们节省了很多代码，但是对于请求创
 ### Request映射
 使用一个接口来配置HttpClient请求，在接口方法中使用注解来配置请求的参数与请求头，调用接口中的方法，可以返回一个请求或请求执行后的结果，以下是使用示例
 #### 构建Request映射配置类
-针对12306登陆编写的链接配置类LoginMapping
+针对12306登陆编写的链接配置类LoginMapping，以下例子中的方法均返回了String，表示该请求执行后的响应体字符串，更多可用返回值请查看[Request配置接口方法返回类型](#Request配置接口的方法返回类型)
 ```java
 //接口上注解Host，该接口下所有的请求链接都以该host为域名
 @Host(value="kyfw.12306.cn",scheme="https")
