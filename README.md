@@ -28,7 +28,9 @@ HttpResponse httpResponse = response.returnResponse();
 ```
 HttpClient-Fluent已经帮助我们节省了很多代码，但是对于请求创建的链接参数等信息仍然需要编写代码。而且当代码累积过多，就很难管理，上述例子对问题的暴露可能不够明显，可以参考我使用HttpClient-Fluent写的[12306爬虫程序](https://github.com/davidlon9/creeper/blob/master/src/main/java/demo/traiker/main/fluent/LoginByCode.java)
 
-### 构建Request映射配置类
+### Request映射
+使用一个接口来配置HttpClient请求，在接口方法中使用注解来配置请求的参数与请求头，调用接口中的方法，可以返回一个请求或请求执行后的结果，以下是使用示例
+#### 构建Request映射配置类
 针对12306登陆编写的链接配置类LoginMapping
 ```java
 //接口上注解Host，该接口下所有的请求链接都以该host为域名
@@ -84,7 +86,7 @@ public interface LoginMapping {
 }
 ```
 
-### 调用Request配置接口实例
+#### 调用Request配置接口实例
 生成12306登陆请求配置接口的代理对象，然后调用代理对象获取请求结果并做处理，代码省略了对结果的处理部分，完整代码请查看  
 [12306映射配置登陆处理](https://github.com/davidlon9/creeper/blob/master/src/main/java/demo/traiker/main/fluent/LoginHandle.java)
 ```java
@@ -136,8 +138,8 @@ String userinfo = loginMapping.userinfo();
 
 <h3 id="returnTypes2">RequestChain配置类方法返回类型</h3>
 
-ReuqestChain配置类的方法，一般是Chain或Request的BeforeHandler、AfterHandler，分别在请求的执行前后进行处理，以下是可用返回值类型与解释
-| 返回值类型   | BeforeHandler方法返回值对应动作 | AfterHandler方法返回值对应动作 |
+ReuqestChain配置类的方法，一般是Chain或Request的BeforeHandler、AfterHandler，分别在请求的执行前后进行处理，详细解释请看[ExecutionHandler](#)，以下是其可用返回值类型与解释
+| 返回值类型   | BeforeHandler返回值对应动作 | AfterHandler返回值对应动作 |
 | :----------- | :-------------------------------------------- | --------------------------------------------------------- |
 | com.dlong.creeper.control.MoveAction | 仅支持ContinueAction，表示在循环执行跳过当前的执行，若使用其他MoveAction实现类则会抛出异常 | 不同的MoveAction实现类，对应不同的执行动作，详情参考[MoveActions](#moveActions) | 
 | Boolean/boolean                      | true表示可以执行，false表示跳过当前执行| true表示继续执行下一请求等价于ForwardAction，false表示执行失败终结执行等价于TerminateAction |
