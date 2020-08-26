@@ -33,7 +33,7 @@ HttpClient-Fluent已经帮助我们节省了很多代码，但是对于请求创
 - 第一步 ([构建Request映射配置类](#构建Request映射配置类))：用一个接口来配置HttpClient请求，在接口方法中使用注解来配置请求的链接、参数、请求头。
 - 第二步 ([调用Request配置接口实例](#调用Request配置接口实例))：生成请求配置接口的代理对象，然后使用代理对象调用接口中的方法，返回一个请求或请求执行后的结果，接下来只需要对结果做处理即可。
 #### 构建Request映射配置类
-针对12306登陆编写一个链接配置类LoginMapping，以下例子中的方法均返回了String，表示该请求执行后的响应体字符串，更多可用返回值请查看[Request配置接口方法返回类型](#Request配置接口的方法返回类型)。
+针对12306登陆编写一个链接配置类LoginMapping，以下例子中的方法均返回了String，表示该请求执行后的响应体字符串，更多可用返回值请查看[Request配置接口方法返回类型](#Request配置接口的方法返回类型)
 ```java
 //接口上注解Host，该接口下所有的请求链接都以该host为域名
 @Host(value="kyfw.12306.cn",scheme="https")
@@ -90,7 +90,7 @@ public interface LoginMapping {
 
 #### 调用Request配置接口实例
 生成12306登陆请求配置接口的代理对象，然后调用代理对象获取请求结果并做处理，代码省略了对结果的处理部分，完整代码请查看  
-[12306映射配置登陆处理](https://github.com/davidlon9/creeper/blob/master/src/main/java/demo/traiker/main/fluent/LoginHandle.java)。
+[12306映射配置登陆处理](https://github.com/davidlon9/creeper/blob/master/src/main/java/demo/traiker/main/fluent/LoginHandle.java)
 ```java
 //创建一个请求管理器，在该管理器下获取一个LoginMapping代理对象
 LoginMapping loginMapping = new FluentRequestMappingMananger().getClassProxy(LoginMapping.class);
