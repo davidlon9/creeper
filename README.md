@@ -26,7 +26,7 @@ String stringResult = response.returnContent().asString();
 //获取执行后apache封装的HttpResponse对象(可以获取一系列Response相关的信息)
 HttpResponse httpResponse = response.returnResponse();
 ```
-HttpClient-Fluent已经帮助我们节省了很多代码，但是对于请求创建的链接参数等信息仍然需要编写代码。而且当代码累积过多，就很难管理，上述例子对问题的暴露可能不够明显，可以参考我使用HttpClient-Fluent写的[12306爬虫程序](https://github.com/davidlon9/creeper/blob/master/src/main/java/demo/traiker/main/fluent/LoginByCode.java)
+HttpClient-Fluent已经帮助我们节省了很多代码，但是对于请求创建的链接参数等信息仍然需要编写代码。而且当代码累积过多，就很难管理，上述例子对问题的暴露可能不够明显，可以参考我使用HttpClient-Fluent写的[12306爬虫程序](https://github.com/davidlon9/creeper/blob/master/src/main/java/demo/traiker/main/fluent/LoginByCode.java)，接下来我将用Creeper来重构这个12306爬虫程序
 
 ### Request映射
 使用一个接口来配置HttpClient请求，在接口方法中使用注解来配置请求的参数与请求头，调用接口中的方法，可以返回一个请求或请求执行后的结果，以下是使用示例
@@ -124,7 +124,7 @@ String userinfo = loginMapping.userinfo();
 
 <h2 id="returnTypes">可用返回类型</h2>
   
-<h3 id="returnTypes1">Request配置接口方法返回类型</h3>
+<h3 id="returnTypes1">Request配置接口的方法返回类型</h3>
 
 | 返回值类名   | 所属包                        |对应HttpClient-Fluent的获取方式                                               | 
 | :----------- | :---------------------------- | :-------------------------------------------------------------------------- |
@@ -136,7 +136,7 @@ String userinfo = loginMapping.userinfo();
 | InputStream  | java.io                       | Executor.newInstance().execute(Request.Get(URL)).returnContent().asStream() |
 | byte[]       |                               | Executor.newInstance().execute(Request.Get(URL)).returnContent().asBytes()  |
 
-<h3 id="returnTypes2">RequestChain配置类方法返回类型</h3>
+<h3 id="returnTypes2">RequestChain配置类的方法返回类型</h3>
 
 ReuqestChain配置类的方法，一般是Chain或Request的BeforeHandler、AfterHandler，分别在请求的执行前后进行处理，详细解释请看[ExecutionHandler](#ExecutionHandler)，以下是其可用返回值类型与解释
 | 返回值类型   | BeforeHandler返回值对应动作 | AfterHandler返回值对应动作 |
