@@ -138,10 +138,10 @@ String userinfo = loginMapping.userinfo();
 
 <h3 id="returnTypes2">RequestChain配置类方法返回类型</h3>
 
-ReuqestChain配置类的方法，一般是Chain或Request的BeforeHandler、AfterHandler，分别在请求的执行前后进行处理，详细解释请看[ExecutionHandler](#)，以下是其可用返回值类型与解释
+ReuqestChain配置类的方法，一般是Chain或Request的BeforeHandler、AfterHandler，分别在请求的执行前后进行处理，详细解释请看[ExecutionHandler](#ExecutionHandler)，以下是其可用返回值类型与解释
 | 返回值类型   | BeforeHandler返回值对应动作 | AfterHandler返回值对应动作 |
 | :----------- | :-------------------------------------------- | --------------------------------------------------------- |
-| com.dlong.creeper.control.MoveAction | 仅支持ContinueAction，表示在循环执行跳过当前的执行，若使用其他MoveAction实现类则会抛出异常 | 不同的MoveAction实现类，对应不同的执行动作，详情参考[MoveActions](#moveActions) | 
+| com.dlong.creeper.control.MoveAction | 仅支持ContinueAction，表示在循环执行跳过当前的执行，若使用其他MoveAction实现类则会抛出异常 | 不同的MoveAction实现类，对应不同的执行动作，详情参考[MoveActions](#MoveActions) | 
 | Boolean/boolean                      | true表示可以执行，false表示跳过当前执行| true表示继续执行下一请求等价于ForwardAction，false表示执行失败终结执行等价于TerminateAction |
 | Object                               | 仅可使用上面两种类型的值 | 仅可使用上面两种类型的值 |
 
