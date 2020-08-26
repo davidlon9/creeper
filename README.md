@@ -8,7 +8,7 @@
 
 也就是说，仅需要一个类，就能够迅速完成一个复杂的爬虫程序。
 
-<h2 id="jump">示例</h2>
+## 示例
 
 首先熟悉一下HttpClient-Fluent的基本使用方式
 
@@ -28,7 +28,7 @@ HttpResponse httpResponse = response.returnResponse();
 ```
 HttpClient-Fluent已经帮助我们节省了很多代码，但是对于请求创建的链接参数等信息仍然需要编写代码。而且当代码累积过多，就很难管理，上述例子对问题的暴露可能不够明显，可以参考我使用HttpClient-Fluent写的[12306爬虫程序](https://github.com/davidlon9/creeper/blob/master/src/main/java/demo/traiker/main/fluent/LoginByCode.java)
 
-#### 构建Request映射配置类
+### 构建Request映射配置类
 针对12306登陆编写的链接配置类LoginMapping
 ```java
 //接口上注解Host，该接口下所有的请求链接都以该host为域名
@@ -84,7 +84,7 @@ public interface LoginMapping {
 }
 ```
 
-#### 调用Request配置接口实例
+### 调用Request配置接口实例
 生成12306登陆请求配置接口的代理对象，然后调用代理对象获取请求结果并做处理，代码省略了对结果的处理部分，完整代码请查看  
 [12306映射配置登陆处理](https://github.com/davidlon9/creeper/blob/master/src/main/java/demo/traiker/main/fluent/LoginHandle.java)
 ```java
@@ -118,4 +118,28 @@ String uamauthclient = loginMapping.uamauthclient(token);
 //最后，访问用户信息页面，测试是否登录成功
 String userinfo = loginMapping.userinfo();
 ```
-可以看到上述代码，将请求链接的配置与请求执行后的处理完全分离了，使开发者将重心放在请求结果的处理上。在使用接口代理对象方法调用后的返回值，有多种可选，String表示该请求执行后的响应体字符串，更多可用返回值请[点击跳转到标题一](#jump)
+可以看到上述代码，将请求链接的配置与请求执行后的处理完全分离了，使开发者将重心放在请求结果的处理上。在使用接口代理对象方法调用后的返回值，有多种可选，String表示该请求执行后的响应体字符串，更多可用返回值请查看[Request配置接口方法返回类型](#returnTypes1)
+
+<h2 id="returnTypes">可用返回类型</h2>
+  
+<h3 id="returnTypes1">Request配置接口方法返回类型</h3>
+
+| 返回值类名   | 所属包                        |对应HttpClient-Fluent的获取方式                                               | 
+| :----------- | :---------------------------- | :-------------------------------------------------------------------------- |
+| Request      | org.apache.http.client.fluent | Request.Get(URL)                                                            |
+| Response     | org.apache.http.client.fluent | Executor.newInstance().execute(Request.Get(URL));                           |
+| Content      | org.apache.http.client.fluent | Executor.newInstance().execute(Request.Get(URL)).returnContent()            |
+| HttpResponse | org.apache.http               | Executor.newInstance().execute(Request.Get(URL)).returnResponse()           |
+| String       | java.lang                     | Executor.newInstance().execute(Request.Get(URL)).returnContent().asString() |
+| InputStream  | java.io                       | Executor.newInstance().execute(Request.Get(URL)).returnContent().asStream() |
+| byte[]       |                               | Executor.newInstance().execute(Request.Get(URL)).returnContent().asBytes()  |
+
+<h3 id="returnTypes2">RequestChain配置类方法返回类型</h3>
+
+ReuqestChain配置类的方法，一般是Chain或Request的BeforeHandler、AfterHandler，分别在请求的执行前后进行处理，以下是可用返回值类型与解释
+| 返回值类型   | BeforeHandler方法返回值对应动作 | AfterHandler方法返回值对应动作 |
+| :----------- | :-------------------------------------------- | --------------------------------------------------------- |
+| com.dlong.creeper.control.MoveAction | 仅支持ContinueAction，表示在循环执行跳过当前的执行，若使用其他MoveAction实现类则会抛出异常 | 不同的MoveAction实现类，对应不同的执行动作，详情参考[MoveActions](#moveActions) | 
+| Boolean/boolean                      | true表示可以执行，false表示跳过当前执行| true表示继续执行下一请求等价于ForwardAction，false表示执行失败终结执行等价于TerminateAction |
+| Object                               | 仅可使用上面两种类型的值 | 仅可使用上面两种类型的值 |
+
