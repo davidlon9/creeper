@@ -125,6 +125,16 @@ String userinfo = loginMapping.userinfo();
 可以看到上述代码，将请求链接的配置与请求执行后的处理完全分离了，使开发者将重心放在请求结果的处理上。
 
 ### RequestChain映射处理类
+与Request映射配置的方式类似，只不过RequestChain对于请求的执行又增加了顺序与处理，使用注解配置请求的同时，可以直接处理对应请求。  
+使用步骤：
+- 第一步[创建RequestChain映射处理类](#创建RequestChain映射处理类)：创建一个类，并在类上注解[RequestChain类型注解](#RequestChain类型注解)，将该类视为一个请求链
+- 第二步[创建RequestChain映射处理类](#创建RequestChain映射处理类)：在类中创建方法，并在方法上注解[SeqRequest类型注解](#SeqRequest类型注解)，将该方法视为一个在该请求链中的序列请求
+- 第三步[执行RequestChain](#执行RequestChain)：生成一个请求链执行器，将前两步中创建好的请求链类传入，然后执行该请求链。该请求链内的所有请求会依次执行，直至最后一个请求执行成功，视为该请求链执行成功。
+#### 创建RequestChain映射处理类
+针对12306登陆编写一个RequestChain映射处理类，请求的方法格式将与之前Request映射配置类不同。  
+- 请求执行后的结果，将放在参数中，然后直接在方法体中处理结果，可用参数请参考[可用参数](#可用参数)。
+- 而返回值将用来控制请求的执行顺序，具体请参考[控制请求执行顺序](#可用参数)。
+- 请求的动态参数，将使用一个容器来一起存储，即FormParamStore，所有的参数统一存储在一起。
 ```java
 //@RequestChain注解将当前类视为一个请求链配置类，该类中的所有序列请求，将会按顺序依次执行，并处理
 @RequestChain(description="登陆请求链")
@@ -274,8 +284,18 @@ public class LoginChainSimple {
         return true;//返回true表示执行成功，由于该序列请求为最后一个请求，因此表示当前请求链执行成功
     }
 }
-
 ```
+#### 执行RequestChain
+创建一个RequestChain执行器，传入上面已经编写好的12306登陆请求链类（LoginChainSimple.class），然后执行该请求链。  
+执行器将会按顺序执行每个请求，然后在每个请求执行后，会调用请求处理方法，即上面例子中的每个被注解了@SeqRequest的方法。  
+每个请求处理方法，除了对当前请求的执行结果处理外，还需要对下一请求中的动态参数进行赋值。  
+```java
+//创建一个ChainContextExecutor，并传入Chain配置类
+ContextExecutor executor = new ChainContextExecutor(LoginChainSimple.class);
+//执行Chain
+executor.exeucteRootChain();
+```
+上述代码一运行，执行器就会依次请求链接，直至登陆成功访问用户中心。
 
 ## 可用返回类型
   
