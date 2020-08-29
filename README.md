@@ -296,8 +296,9 @@ ContextExecutor executor = new ChainContextExecutor(LoginChainSimple.class);
 executor.exeucteRootChain();
 ```
 上述代码一运行，执行器就会依次请求链接，直至登陆成功访问用户中心。
-以下是请求链的执行流程图
-![请求链执行流程图](https://raw.githubusercontent.com/davidlon9/creeper/master/doc/images/%E8%AF%B7%E6%B1%82%E9%93%BE%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B%E5%9B%BE.png "请求链执行流程图")
+#### 请求链的执行流程图
+<img src="https://raw.githubusercontent.com/davidlon9/creeper/master/doc/images/%E8%AF%B7%E6%B1%82%E9%93%BE%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B%E5%9B%BE.png" width="80%">
+
 
 ## 可用返回类型
   
