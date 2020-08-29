@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Chain
 public @interface RequestChain {
-    int index();
+    int index() default 1;
     String name() default "";
     String path() default ""; //TODO 添加chainPath到chainentity
     String description() default "";

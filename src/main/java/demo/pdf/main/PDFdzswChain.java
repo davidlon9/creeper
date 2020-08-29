@@ -120,9 +120,8 @@ public class PDFdzswChain {
 
         @SeqRequest(index = 1, description = "处理列表页面")
         @Get("/category-30${#index==1?'':'_'+#index}.html")
-        public MoveAction handlePDFListBook(HttpResponse response, ContextParamStore contextParamStore) throws IOException {
-            String html = EntityUtils.toString(response.getEntity());
-            Document rootPage = Jsoup.parse(html);
+        public MoveAction handlePDFListBook(String result, ContextParamStore contextParamStore){
+            Document rootPage = Jsoup.parse(result);
             DZSWService.handlePDFListBook(rootPage, contextParamStore);
             return MoveActions.FORWARD();
         }
@@ -131,9 +130,8 @@ public class PDFdzswChain {
         @SeqRequest(index = 2, description = "处理详情页面")
         @Get(value = "${#detailUrl}", urlInheritable = false)
         @FileRecordsIgnore(filePath = "D:\\repository\\traiker\\records\\demo.txt")
-        public MoveAction handlePDFBookDetial(HttpResponse response, ContextParamStore contextParamStore) throws IOException {
-            String html = EntityUtils.toString(response.getEntity());
-            Document rootPage = Jsoup.parse(html);
+        public MoveAction handlePDFBookDetial(String result, ContextParamStore contextParamStore) throws IOException {
+            Document rootPage = Jsoup.parse(result);
             DZSWService.handlePDFDetail(rootPage, contextParamStore);
             return new ContinueAction(100);
         }
@@ -146,8 +144,8 @@ public class PDFdzswChain {
             @SeqRequest(index = 1, description = "获取下载文件信息")
             @Get(value = "${#getFileUrl}")
             @RequestHeader(name = "Origin", value = "https://sn9.us")
-            public MoveAction getFileInfo(JSONObject result, HttpResponse response, FormParamStore formParamStore, ContextParamStore contextParamStore) throws IOException {
-                JSONObject json = ResultUtil.getJsonBody(result);
+            public MoveAction getFileInfo(String result, FormParamStore formParamStore, ContextParamStore contextParamStore) throws IOException {
+                JSONObject json = JSONObject.parseObject(result);
                 String file_id = json.getString("file_id");
                 String userid = json.getString("userid");
                 String file_chk = json.getString("file_chk");
@@ -162,9 +160,8 @@ public class PDFdzswChain {
             @Get(value = "/get_file_url.php")
             @Parameters({@Parameter(name = "uid"), @Parameter(name = "fid"), @Parameter(name = "file_chk"),})
             @RequestHeader(name = "Origin", value = "https://sn9.us")
-            public MoveAction getPDFDownloadUrl(JSONObject result, HttpResponse response, ContextParamStore contextParamStore) throws IOException {
-                String s = EntityUtils.toString(response.getEntity());
-                JSONObject json = ResultUtil.getJsonBody(result);
+            public MoveAction getPDFDownloadUrl(String result, ContextParamStore contextParamStore) throws IOException {
+                JSONObject json = JSONObject.parseObject(result);
                 String downurl = json.getString("downurl");
                 if (downurl != null) {
                     contextParamStore.addParam("downUrl", downurl);

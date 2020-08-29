@@ -1,11 +1,15 @@
 package com.dlong.creeper.execution.handler.info;
 
 import com.alibaba.fastjson.JSONObject;
+import com.dlong.creeper.exception.RuntimeExecuteException;
 import com.dlong.creeper.execution.context.ExecutionContext;
 import com.dlong.creeper.util.ResultUtil;
 import org.apache.http.HttpResponse;
+import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.Map;
 
@@ -14,8 +18,7 @@ public class RequestAfterMethodArgumentInfo extends HandlerMethodArgumentInfo {
 
     static {
         supportedTypeList.add(HttpResponse.class);
-        supportedTypeList.add(JSONObject.class);
-        supportedTypeList.add(Map.class);
+        supportedTypeList.add(String.class);
     }
 
     public RequestAfterMethodArgumentInfo(ExecutionContext context) {
@@ -31,12 +34,16 @@ public class RequestAfterMethodArgumentInfo extends HandlerMethodArgumentInfo {
                 logger.warn(parameterTypes[i]+" can't as a arg for handler entity method,this arg value will be null. please try these parameter types:"+getSupportedTypeList().toString());
                 continue;
             }
-            if (parameterTypes[i].equals(HttpResponse.class)) {
-                args[i] = response;
-            }else if(Map.class.isAssignableFrom(parameterTypes[i])){
-                args[i] = ResultUtil.getResult(response);
-            }else{
-                args[i] = getArgInstance(parameterTypes[i]);
+            try {
+                if (parameterTypes[i].equals(HttpResponse.class)) {
+                    args[i] = response;
+                }else if(parameterTypes[i].equals(String.class)){
+                    args[i] = EntityUtils.toString(response.getEntity());
+                }else{
+                    args[i] = getArgInstance(parameterTypes[i]);
+                }
+            } catch (IOException e) {
+                throw new RuntimeExecuteException(e);
             }
         }
         return args;

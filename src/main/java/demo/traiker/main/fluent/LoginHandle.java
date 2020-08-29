@@ -20,7 +20,7 @@ public class LoginHandle {
         executor.use(cookieStore);
         LoginMapping loginMapping = new FluentRequestMappingMananger(executor).getClassProxy(LoginMapping.class);
         //第一步 deviceCookie中提取两个必备cookie
-        String deivceCookie = loginMapping.deivceCookie();
+        String deivceCookie = loginMapping.deviceCookie();
         handleDeivceCookie(deivceCookie,cookieStore);
 
         //第二步 从captchaImageData中提取图片

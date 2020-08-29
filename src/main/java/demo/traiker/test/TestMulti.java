@@ -105,7 +105,7 @@ public class TestMulti {
     public class LoginChain {
         CallbackParam callbackParam=new CallbackParam();
 
-        @SeqRequest(index =1,name="deivceCookie",description="获取登陆必需Cookie")
+        @SeqRequest(index =1,name="deviceCookie",description="获取登陆必需Cookie")
         @Get("/otn/HttpZF/logdevice?algID=LV8VaeMQEV&hashCode=7ajVAXlEPHxJyTqvGceqr7AB3y1_l5XKpLo1JxnVHhw&FMQw=0&q4f3=zh-CN&VySQ=FGHxRx9RbokXS7ActSqH8dwSbIPTC0s8&VPIf=1&custID=133&VEek=unknown&dzuS=0&yD16=0&EOQP=4902a61a235fbb59700072139347967d&lEnu=3318022501&jp76=52d67b2a5aa5e031084733d5006cc664&hAqN=Win32&platform=WEB&ks0Q=d22ca0b81584fbea62237b14bd04c866&TeRS=824x1536&tOHY=24xx864x1536&Fvje=i1l1o1s1&q5aJ=-8&wNLf=99115dfb07133750ba677d055874de87&0aew=Mozilla/5.0%20(Windows%20NT%2010.0;%20Win64;%20x64)%20AppleWebKit/537.36%20(KHTML,%20like%20Gecko)%20Chrome/73.0.3683.103%20Safari/537.36&E3gR=0a91931ab794bb4ed8037488e7c471bc")
         @Parameters({
                 @Parameter(name = "timestamp",value = "${time.now()}"),

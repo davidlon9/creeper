@@ -2,6 +2,7 @@ package com.dlong.creeper.execution.resolver.method;
 
 import com.dlong.creeper.control.*;
 import com.dlong.creeper.exception.ExecutionException;
+import com.dlong.creeper.exception.UnsupportedReturnTypeException;
 import com.dlong.creeper.execution.context.ExecutionContext;
 import com.dlong.creeper.model.result.ExecutionResult;
 import com.dlong.creeper.model.seq.RequestChainEntity;
@@ -17,6 +18,10 @@ public class MoveStrategyAfterResultResolver implements HandlerMethodResultResol
         SequentialEntity next=null;
         if(methodResult instanceof MoveAction){
             MoveAction moveAction;
+            if(methodResult instanceof ContinueAction){
+                throw new UnsupportedReturnTypeException("ContinueAction not support in AfterHandler");
+            }
+
             if(methodResult instanceof AutoCurrentIndexAction){
                 AutoCurrentIndexAction autoCurrentIndexStrategy = (AutoCurrentIndexAction) methodResult;
                 autoCurrentIndexStrategy.setCurrent(executionResult.getOrginalIndex());

@@ -9,6 +9,7 @@ import com.dlong.creeper.execution.request.HttpRequestBuilder;
 import com.dlong.creeper.model.Param;
 import com.dlong.creeper.model.seq.RequestInfo;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.fluent.Content;
 import org.apache.http.client.fluent.Executor;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.client.fluent.Response;
@@ -29,7 +30,7 @@ public class FluentRequestInvocationHandler implements InvocationHandler{
     private Map<AnnotatedElement, RequestInfo> requestInfoMap;
     private Executor executor;
 
-    private static final List<Class<?>> AFTER_EXECUTE_RETURN_TYPES = Arrays.asList(HttpResponse.class,String.class, InputStream.class, Response.class);
+    private static final List<Class<?>> AFTER_EXECUTE_RETURN_TYPES = Arrays.asList(HttpResponse.class, Content.class, String.class, InputStream.class, Response.class);
     private static final Class<com.dlong.creeper.annotation.Parameter> PARAMETER_ANNO_CLASS = com.dlong.creeper.annotation.Parameter.class;
 
     public FluentRequestInvocationHandler(Class<?> mappingClass, ContextParamStore context, Executor executor) {
@@ -71,11 +72,15 @@ public class FluentRequestInvocationHandler implements InvocationHandler{
                 result = response.returnContent().asString();
             }else if(returnType.equals(HttpResponse.class)){
                 result = response.returnResponse();
+            }else if(returnType.equals(Content.class)){
+                result = response.returnContent();
             }else if(returnType.equals(InputStream.class)){
                 result = response.returnContent().asStream();
             }else{
                 result = response;
             }
+        }else if(returnType.getSimpleName().equals("byte[]")){
+            result = executor.execute(request).returnContent().asBytes();
         }else{
             throw new UnsupportedFluentReturnTypeException("please use these types as return type. [org.apache.http.client.fluent.Request.class, org.apache.http.HttpResponse.class, String.class, InputStream.class, Response.class]");
         }
