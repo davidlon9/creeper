@@ -314,7 +314,7 @@ executor.exeucteRootChain();
 ### 请求链
 请求链[RequestChain]是一系列按顺序排序的[序列请求](#序列请求)[SeqRequest]或请求链的集合，支持嵌套请求链。
 ### 序列请求
-序列请求仅存在于请求链中，序列请求的基本构成要素，除了拥有请求的链接、参数、头等信息外，还多了一个后处理器，用于在请求自动执行过后，负责处理响应信息。当然也可以添加一个前处理，用于在执行前处理，详情请查看[前后处理器](#前后处理器)
+序列请求[SeqRequest]仅存在于请求链中，序列请求的基本构成要素，除了拥有请求的链接、参数、头等信息外，还多了一个后处理器，用于在请求自动执行过后，负责处理响应信息。当然也可以添加一个前处理，用于在执行前处理，详情请查看[前后处理器](#前后处理器)
 
 ### 请求链执行流程图
 <img src="https://raw.githubusercontent.com/davidlon9/creeper/master/doc/images/%E8%AF%B7%E6%B1%82%E9%93%BE%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B%E5%9B%BE.png" width="80%">
@@ -357,6 +357,7 @@ public boolean userinfo(HttpResponse response){
     //处理响应结果，若下一请求没有BeforeHandler，则必需在此时添加下一请求的动态参数。
     return true;//继续执行下一请求
 }
+
 @BeforeMethod("userinfo")//指定SeqRequest或RequestChain的name
 public boolean checkUserInfo(Request request, ExecutionContext context){
     //检查添加各种参数
@@ -375,6 +376,7 @@ public class ChainBeforeAfterHandlerDemo{
         //检查添加各种参数
         return true;//不跳过执行
     }
+    
     @AfterMethod("ChainName")//指定RequestChain的name
     public boolean chainAfterHandle(ExecutionContext context){
         //执行结束的处理
@@ -385,13 +387,14 @@ public class ChainBeforeAfterHandlerDemo{
 当然RequestChain的前后处理器都不是必须的，可以自己按需求来选择，甚至可以不要。
 
 #### 前后处理器方法的可用参数类型
-| 参数类型         | 所属包                               | BeforeHandler是否可用 | AfterHandler是否可用 | 
-| :---------------- | :---------------------------------- | :------------------- | -------------------- |
+如果使用了不支持的参数，则该参数为空
+| 参数类型         | 所属包                               | BeforeHandler是否可用  | AfterHandler是否可用  | 
+| :---------------- | :---------------------------------- | :-------------------: | :--------------------: |
 | Request           | org.apache.http.client.fluent       | √ | × |
 | HttpResponse      | org.apache.http                     | × | √ |
 | String            | java.lang                           | × | √ |
 | [FormParamStore](#FormParamStore)    | com.dlong.creeper.execution.context | √ | √ | 
-| [ContextParamStore](#ContextParamStore) | com.dlong.creeper.execution.context | √ | √ | | √ | √ |  
+| [ContextParamStore](#ContextParamStore) | com.dlong.creeper.execution.context | √ | √ |
 | CookieStore       | org.apache.http.client              | √ | √ |  
 | [ExecutionContext](#执行上下文ExecutionContext)  | com.dlong.creeper.execution.context | √ | √ |  
 
@@ -403,7 +406,7 @@ public class ChainBeforeAfterHandlerDemo{
 | Object | 仅可使用上面两种类型的值 | 仅可使用上面两种类型的值 |
 
 ### 执行上下文ExecutionContext
-ExecutionContext用于存储请求链中的所有参数，Cookie，以及SpringEl中用于的上下文参数，每个ExecutionContext实例中都会包含一个[FormParamStore](#FormParamStore)、[ContextParamStore](#ContextParamStore)、CookieStore、Executor
+ExecutionContext用于存储请求链中的所有参数，Cookie，以及SpringEl表达式中的参数，每个ExecutionContext实例中都会包含一个[FormParamStore](#FormParamStore)、[ContextParamStore](#ContextParamStore)、CookieStore、Executor
 ### FormParamStore
 FormParamStore用于存储请求链中的所有参数，每个请求链只拥有一个FormParamStore，可以作为前后处理器的参数，可以使用其来添加参数，并作用到整个请求链。
 #### 参数Parameter
@@ -448,4 +451,18 @@ public boolean login(String result) throws IOException {
     return true;
 }
 ```
-##### 
+### ContextParamStore
+ContextParamStore用于存储SpringEl表达式中的参数，SpringEl表达式一般用在链接，参数上，其他可用注解值请看下表
+#### 支持SpringEl表达式的注解属性
+| 注解                      | 支持SpringEl的属性        |
+| :------------------------ | :------------------------ |
+| @Path/Get/Post/Put/Delete | url                       |
+| @Parameter                | name/value                |
+| @JsonResultCookie         | defaultValue              |
+| @ForIndex                 | start/end                 |
+| @While                    | coniditionExpression      |
+| @Trigger                  | startTimeExpr/endTimeExpr |
+| @MultiRequestQueue        | stopConditionExpr         |  
+
+### 控制RequestChain的执行
+
