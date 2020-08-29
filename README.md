@@ -308,16 +308,16 @@ ContextExecutor executor = new ChainContextExecutor(LoginChainSimple.class);
 executor.exeucteRootChain();
 ```
 上述代码一运行，执行器就会依次请求链接，直至登陆成功访问用户中心。
+关于RequestChain映射处理类的详细文档请查看[RequestChain使用文档](#RequestChain使用文档)
 
-## RequestChain的使用文档
+## RequestChain使用文档
 ### 请求链
-请求链[RequestChain]是一系列按顺序排序的[序列请求](#序列请求)的集合。
+请求链[RequestChain]是一系列按顺序排序的[序列请求](#序列请求)[SeqRequest]或请求链的集合，支持嵌套请求链。
 ### 序列请求
 序列请求仅存在于请求链中，序列请求的基本构成要素，除了拥有请求的链接、参数、头等信息外，还多了一个后处理器，用于在请求自动执行过后，负责处理响应信息。当然也可以添加一个前处理，用于在执行前处理，详情请查看[前后处理器](#前后处理器)
 
 ### 请求链执行流程图
 <img src="https://raw.githubusercontent.com/davidlon9/creeper/master/doc/images/%E8%AF%B7%E6%B1%82%E9%93%BE%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B%E5%9B%BE.png" width="80%">
-关于RequestChain映射处理类的详细文档请查看[RequestChain文档](#RequestChain文档)
 
 ### 前后处理器
 使用@AfterMethod与@BeforeMethod，来将一个方法声明为序列请求或请求链的AfterHandler与BeforeHandler，并在执行前后进行处理，可用参数请查看[AfterHandler与BeforeHandler的参数](#AfterHandler与BeforeHandler的参数)
@@ -383,26 +383,69 @@ public class ChainBeforeAfterHandlerDemo{
 }
 ```
 当然RequestChain的前后处理器都不是必须的，可以自己按需求来选择，甚至可以不要。
-### ExecutionHandler
-ExecutionHandler就是AfterHandler与BeforeHandler的集合，AfterHandler与BeforeHandler分别拥有一个抽象方法即afterHandle与beforeHandle，
-```java
-ExecutionHandler executionHandler = new ExecutionHandler() {
-    @Override
-    public Boolean beforeHandle(Request request, ExecutionContext context) throws IOException {
-        return true;
-    }
-    @Override
-    public MoveAction afterHandle(HttpResponse response, ExecutionContext context) throws IOException {
-        return MoveActions.FORWARD();
-    }
-};
-```
-##### ExecutionHandler方法的可用返回类型
 
-ReuqestChain配置类的方法，一般是Chain或Request的BeforeHandler、AfterHandler，分别在请求的执行前后进行处理，详细解释请看[ExecutionHandler](#ExecutionHandler)，以下是其可用返回值类型与解释
+#### 前后处理器方法的可用参数类型
+| 参数类型         | 所属包                               | BeforeHandler是否可用 | AfterHandler是否可用 | 
+| :---------------- | :---------------------------------- | :------------------- | -------------------- |
+| Request           | org.apache.http.client.fluent       | √ | × |
+| HttpResponse      | org.apache.http                     | × | √ |
+| String            | java.lang                           | × | √ |
+| [FormParamStore](#FormParamStore)    | com.dlong.creeper.execution.context | √ | √ | 
+| [ContextParamStore](#ContextParamStore) | com.dlong.creeper.execution.context | √ | √ | | √ | √ |  
+| CookieStore       | org.apache.http.client              | √ | √ |  
+| [ExecutionContext](#执行上下文ExecutionContext)  | com.dlong.creeper.execution.context | √ | √ |  
+
+#### 前后处理器方法的可用返回类型
 | 返回值类型   | BeforeHandler返回值对应动作 | AfterHandler返回值对应动作 |
 | :----------- | :------------------------- | -------------------------- |
 | com.dlong.creeper.control.MoveAction | 仅支持ContinueAction，表示在循环执行跳过当前的执行，若使用其他MoveAction实现类则会抛出异常 | 不同的MoveAction实现类，对应不同的执行动作，详情参考[MoveActions](#MoveActions) | 
 | Boolean/boolean | true表示可以执行，false表示跳过当前执行| true表示继续执行下一请求等价于ForwardAction，false表示执行失败终结执行等价于TerminateAction |
 | Object | 仅可使用上面两种类型的值 | 仅可使用上面两种类型的值 |
 
+### 执行上下文ExecutionContext
+ExecutionContext用于存储请求链中的所有参数，Cookie，以及SpringEl中用于的上下文参数，每个ExecutionContext实例中都会包含一个[FormParamStore](#FormParamStore)、[ContextParamStore](#ContextParamStore)、CookieStore、Executor
+### FormParamStore
+FormParamStore用于存储请求链中的所有参数，每个请求链只拥有一个FormParamStore，可以作为前后处理器的参数，可以使用其来添加参数，并作用到整个请求链。
+#### 参数Parameter
+注解在序列请求下，未指定值时，需要向FormParamStore添加一个相同名称的Param对象，若FormParamStore中也没有，则为空值，如下例中的answer参数:
+```java
+@SeqRequest(index = 3,description="检测验证码答案")
+@Get("/passport/captcha/captcha-check")
+public boolean captchaCheck(String result,FormParamStore formParamStore){
+    formParamStore.addParam("answer",result);//添加下一请求中未赋值的参数
+    return true;
+}
+
+@SeqRequest(index = 4,description = "登陆")
+@Post("/passport/web/login")
+@Parameters({
+        @Parameter(name="appid",value="otn"),
+        @Parameter(name="username",value="zhangsan"),
+        @Parameter(name="password",value="123456"),
+        @Parameter(name="answer")})//自动从FormParamStore中读取answer参数的值
+public boolean login(String result) throws IOException {
+    return true;
+}
+```
+当两个参数名不同，但是参数的值一致时，例如有个参数名为answer1，又有个参数为answer2，他们两个的值是相同的，可以使用@Parameter注解的globalKey，如下例:
+@Parameter(name = "test",globalKey = "globalName")
+```java
+@SeqRequest(index = 3,description="检测验证码答案")
+@Get("/passport/captcha/captcha-check")
+public boolean captchaCheck(String result,FormParamStore formParamStore){
+    formParamStore.addParam("answer1",result);//添加下一请求中未赋值的参数
+    return true;
+}
+
+@SeqRequest(index = 4,description = "登陆")
+@Post("/passport/web/login")
+@Parameters({
+        @Parameter(name="appid",value="otn"),
+        @Parameter(name="username",value="zhangsan"),
+        @Parameter(name="password",value="123456"),
+        @Parameter(name="answer2",globalKey = "answer1")})//自动从FormParamStore中读取name为answer1参数的值
+public boolean login(String result) throws IOException {
+    return true;
+}
+```
+##### 
