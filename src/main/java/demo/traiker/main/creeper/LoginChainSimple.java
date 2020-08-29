@@ -127,7 +127,7 @@ public class LoginChainSimple {
         }else{
             //登陆失败重新跳转至captchaImage序列请求
             System.out.println(body.getString("result_message")+"\n登陆失败，请重试");
-            return MoveActions.JUMP("captchaImage");//跳转至captchaImage序列请求，并执行该请求
+            return MoveActions.JUMP("captchaImage");//跳转并执行captchaImage序列请求
         }
     }
 
