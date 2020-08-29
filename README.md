@@ -33,7 +33,7 @@ HttpClient-Fluent已经帮助我们节省了很多代码，但是对于请求创
 - 第一步 ([构建Request映射配置类](#构建Request映射配置类))：用一个接口来配置HttpClient请求，在接口方法中使用注解来配置请求的链接、参数、请求头。
 - 第二步 ([调用Request配置接口实例](#调用Request配置接口实例))：生成请求配置接口的代理对象，然后使用代理对象调用接口中的方法，返回一个请求或请求执行后的结果，接下来只需要对结果做处理即可。
 #### 构建Request映射配置类
-针对12306登陆编写一个链接配置类LoginMapping，以下例子中的方法均返回了String，表示该请求执行后的响应体字符串，更多可用返回值请查看[Request配置接口方法返回类型](#Request配置接口的方法返回类型)
+针对12306登陆编写一个链接配置类LoginMapping，以下例子中的方法均返回了String，表示该请求执行后的响应体字符串，更多可用返回值请查看[Request配置接口方法的可用返回类型](#Request配置接口方法的可用返回类型)
 ```java
 //接口上注解Host，该接口下所有的请求链接都以该host为域名
 @Host(value="kyfw.12306.cn",scheme="https")
@@ -123,6 +123,18 @@ String uamauthclient = loginMapping.uamauthclient(token);
 String userinfo = loginMapping.userinfo();
 ```
 可以看到上述代码，将请求链接的配置与请求执行后的处理完全分离了，使开发者将重心放在请求结果的处理上。
+#### Request配置接口方法的可用返回类型
+上述示例中均返回了String类型，可以使用以下类型替换Sting类型，下面也列举出了HttpClient-Fluent中对应类型实例的获取方式
+
+| 返回值类名   | 所属包                        |对应HttpClient-Fluent的获取方式                                               | 
+| :----------- | :---------------------------- | :-------------------------------------------------------------------------- |
+| Request      | org.apache.http.client.fluent | Request.Get(URL)                                                            |
+| Response     | org.apache.http.client.fluent | Executor.newInstance().execute(Request.Get(URL));                           |
+| Content      | org.apache.http.client.fluent | Executor.newInstance().execute(Request.Get(URL)).returnContent()            |
+| HttpResponse | org.apache.http               | Executor.newInstance().execute(Request.Get(URL)).returnResponse()           |
+| String       | java.lang                     | Executor.newInstance().execute(Request.Get(URL)).returnContent().asString() |
+| InputStream  | java.io                       | Executor.newInstance().execute(Request.Get(URL)).returnContent().asStream() |
+| byte[]       |                               | Executor.newInstance().execute(Request.Get(URL)).returnContent().asBytes()  |
 
 ### RequestChain映射处理类
 与Request映射配置的方式类似，只不过RequestChain对于请求的执行又增加了顺序与处理，使用注解配置请求的同时，可以直接处理对应请求。  
@@ -296,25 +308,97 @@ ContextExecutor executor = new ChainContextExecutor(LoginChainSimple.class);
 executor.exeucteRootChain();
 ```
 上述代码一运行，执行器就会依次请求链接，直至登陆成功访问用户中心。
-#### 请求链的执行流程图
+
+## RequestChain的使用文档
+### 介绍
+#### 请求链
+请求链[RequestChain]是一系列按顺序排序的[序列请求](#序列请求)的集合。
+#### 序列请求
+序列请求仅存在于请求链中，序列请求的基本构成要素，除了拥有请求的链接、参数、头等信息外，还多了一个后处理器，用于在请求自动执行过后，负责处理响应信息。当然也可以添加一个前处理，用于在执行前处理，详情请查看[前后处理器](#前后处理器)
+
+### 请求链执行流程图
 <img src="https://raw.githubusercontent.com/davidlon9/creeper/master/doc/images/%E8%AF%B7%E6%B1%82%E9%93%BE%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B%E5%9B%BE.png" width="80%">
+关于RequestChain映射处理类的详细文档请查看[RequestChain文档](#RequestChain文档)
 
+### 前后处理器
+使用@AfterMethod与@BeforeMethod，来将一个方法声明为序列请求或请求链的AfterHandler与BeforeHandler，并在执行前后进行处理，可用参数请查看[AfterHandler与BeforeHandler的参数](#AfterHandler与BeforeHandler的参数)
 
-## 可用返回类型
-  
-### Request配置接口的方法返回类型
+#### 注解了SeqRequest类型的方法
+在一个RequestChain类中，若方法上被注解了@SeqRequest类型的注解，则可以省略掉@AfterMethod注解，并默认视为该方法为一个AfterHandler。
+在请求执行后会调用该方法，返回true会继续执行下一请求，false表示执行失败终止执行。 
+```java
+@SeqRequest(index =7,name="userinfo",description="获取用户信息")
+@Post("/otn/modifyUser/initQueryUserInfoApi")
+@Parameters({@Parameter(name="appid",value="otn")})
+//@AfterMethod 可以省略掉该注解，因为方法注解了@SeqRequest
+public boolean userinfo(HttpResponse response){
+    return true;
+}
+```
+若需要可以修改上面的方法，添加注解@BeforeMethod，可将该方法视为一个BeforeHandler，在请求执行前会调用该方法，返回false会跳过请求的执行，如下例：
+```java
+@SeqRequest(index =7,name="userinfo",description="获取用户信息")
+@Post("/otn/modifyUser/initQueryUserInfoApi")
+@Parameters({@Parameter(name="appid",value="otn")})
+@BeforeMethod
+public boolean userinfo(HttpResponse response){
+    return true;
+}
+```
+注意，此时的AfterHandler将为空
 
-| 返回值类名   | 所属包                        |对应HttpClient-Fluent的获取方式                                               | 
-| :----------- | :---------------------------- | :-------------------------------------------------------------------------- |
-| Request      | org.apache.http.client.fluent | Request.Get(URL)                                                            |
-| Response     | org.apache.http.client.fluent | Executor.newInstance().execute(Request.Get(URL));                           |
-| Content      | org.apache.http.client.fluent | Executor.newInstance().execute(Request.Get(URL)).returnContent()            |
-| HttpResponse | org.apache.http               | Executor.newInstance().execute(Request.Get(URL)).returnResponse()           |
-| String       | java.lang                     | Executor.newInstance().execute(Request.Get(URL)).returnContent().asString() |
-| InputStream  | java.io                       | Executor.newInstance().execute(Request.Get(URL)).returnContent().asStream() |
-| byte[]       |                               | Executor.newInstance().execute(Request.Get(URL)).returnContent().asBytes()  |
+#### 序列请求同时拥有前后处理器
+当同时需要BeforeHandler与AfterHandler时，新增一个方法并注解@BeforeMethod("name")，name指定为SeqRequest的name，如下例：
+```java
+@SeqRequest(index =7,name="userinfo",description="获取用户信息")//name默认为方法名（RequestChain的name默认为类名）
+@Post("/otn/modifyUser/initQueryUserInfoApi")
+@Parameters({@Parameter(name="appid",value="otn")})
+//@AfterMethod 可以省略掉该注解，因为方法注解了@SeqRequest
+public boolean userinfo(HttpResponse response){
+    //处理响应结果，若下一请求没有BeforeHandler，则必需在此时添加下一请求的动态参数。
+    return true;//继续执行下一请求
+}
+@BeforeMethod("userinfo")//指定SeqRequest或RequestChain的name
+public boolean checkUserInfo(Request request, ExecutionContext context){
+    //检查添加各种参数
+    return true;//不跳过执行
+}
+```
+上述例子中，当然也可以在@SeqRequest注解的方法下注解@BeforeMethod，然后再新增一个方法注解@AfterMethod("")，并指定SeqRequest的name。
 
-### RequestChain配置类的方法返回类型
+#### RequestChain中的前后处理器
+BeforeHandler与AfterHandler也可以用在RequestChain中，用来控制RequestChain的执行前后的处理，如下例：
+```java
+@RequestChain(name="ChainName",description = "演示")//name默认为类名ChainBeforeAfterHandlerDemo
+public class ChainBeforeAfterHandlerDemo{
+    @BeforeMethod("ChainName")//指定RequestChain的name
+    public boolean chainBeforeHandle(ExecutionContext context){
+        //检查添加各种参数
+        return true;//不跳过执行
+    }
+    @AfterMethod("ChainName")//指定RequestChain的name
+    public boolean chainAfterHandle(ExecutionContext context){
+        //执行结束的处理
+        return true;//继续执行下一请求
+    }
+}
+```
+当然RequestChain的前后处理器都不是必须的，可以自己按需求来选择，甚至可以不要。
+### ExecutionHandler
+ExecutionHandler就是AfterHandler与BeforeHandler的集合，AfterHandler与BeforeHandler分别拥有一个抽象方法即afterHandle与beforeHandle，
+```java
+ExecutionHandler executionHandler = new ExecutionHandler() {
+    @Override
+    public Boolean beforeHandle(Request request, ExecutionContext context) throws IOException {
+        return true;
+    }
+    @Override
+    public MoveAction afterHandle(HttpResponse response, ExecutionContext context) throws IOException {
+        return MoveActions.FORWARD();
+    }
+};
+```
+##### ExecutionHandler方法的可用返回类型
 
 ReuqestChain配置类的方法，一般是Chain或Request的BeforeHandler、AfterHandler，分别在请求的执行前后进行处理，详细解释请看[ExecutionHandler](#ExecutionHandler)，以下是其可用返回值类型与解释
 | 返回值类型   | BeforeHandler返回值对应动作 | AfterHandler返回值对应动作 |
