@@ -18,36 +18,7 @@
 <img src="https://raw.githubusercontent.com/davidlon9/creeper/master/doc/images/%E8%AF%B7%E6%B1%82%E9%93%BE%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B%E5%9B%BE.png" width="80%">
 ### 请求链示例
 ```java
-@RequestChain(index =1,name="LoginChain",description="登陆请求链")
-@Host(value="kyfw.12306.cn",scheme="https")
-public class LoginChain {
 
-    @SeqRequest(index = 1,description="获取登陆必需Cookie")
-    @Get("/otn/HttpZF/logdevice?algID=ZGB0eNTCXV&hashCode=s-hLl13iA3-UAXc9O4cfNSsDk203zmJffFi5kG43fxE&FMQw=0&q4f3=zh-CN&VySQ=FGEEJev5tTvG6q3axISQE1DJ36r7gqiH&VPIf=1&custID=133&VEek=unknown&dzuS=0&yD16=0&EOQP=4902a61a235fbb59700072139347967d&jp76=52d67b2a5aa5e031084733d5006cc664&hAqN=Win32&platform=WEB&ks0Q=d22ca0b81584fbea62237b14bd04c866&TeRS=824x1536&tOHY=24xx864x1536&Fvje=i1l1o1s1&q5aJ=-8&wNLf=99115dfb07133750ba677d055874de87&0aew=Mozilla/5.0%20(Windows%20NT%2010.0;%20Win64;%20x64)%20AppleWebKit/537.36%20(KHTML,%20like%20Gecko)%20Chrome/80.0.3987.116%20Safari/537.36&E3gR=4230a15ab4eb447d31ce29cfff1c2961")
-    @Parameters({
-            @Parameter(name = "timestamp",value = "${time.now()}"),
-    })
-    public Object deivceCookie(JSONObject result, HttpResponse httpResponse, FormParamStore paramStore, ContextParamStore contextParamStore, CookieStore cookieStore) throws IOException {
-        //请求执行过后的处理
-        CallbackParam callbackParam = new CallbackParam();
-        String callback = callbackParam.getCallback();
-        String ajaxNonce = callbackParam.getAjaxNonce();
-        //由于下一次请求中callback参数与_参数未赋值，因此需要在前一个请求处理方法中添加参数（即当前方法），否则将默认为空值
-        paramStore.addParam("callback",callback);//添加下一请求中需要的callback参数至FormParamStore中
-        paramStore.addParam("_",ajaxNonce);//添加下一请求中需要的_参数至FormParamStore中
-        return true;//返回true表示执行成功，继续执行下一请求
-    }
-
-    //当前序列请求的执行顺序为2
-    @SeqRequest(index =2,description="获取验证码图片")
-    @Get("/passport/captcha/captcha-image64?login_site=E&module=login&rand=sjrand&${time.now()}")
-    @Parameters({
-            @Parameter(name="callback"),//自动从FormParamStore中读取callback参数的值
-            @Parameter(name="_")})//自动从FormParamStore中读取_参数的值
-    public boolean captchaImage(String result, FormParamStore paramStore) throws IOException {
-        return true;//返回true表示执行成功，继续执行下一请求
-    }
-}
 ```
 
 ## 前后处理器
@@ -97,6 +68,7 @@ public boolean userinfo(HttpResponse response){
 
 #### 序列请求同时拥有前后处理器
 当同时需要BeforeHandler与AfterHandler时，新增一个方法并注解@BeforeMethod("name")，name指定为SeqRequest的name，如下例：
+
 ```java
 @SeqRequest(index =7,name="userinfo",description="获取用户信息")//name默认为方法名（RequestChain的name默认为类名）
 @Post("/otn/modifyUser/initQueryUserInfoApi")
@@ -113,10 +85,12 @@ public boolean checkUserInfo(Request request, ExecutionContext context){
     return true;//不跳过执行
 }
 ```
+
 上述例子中，当然也可以在@SeqRequest注解的方法下注解@BeforeMethod，然后再新增一个方法注解@AfterMethod("")，并指定SeqRequest的name。  
 一般情况是不需要BeforeHandler，因为Request已经被组装好了，只需要AfterHandler处理请求执行结果，因此不用担心类中每个请求都要用两个方法来表示，导致阅读性变差，接下来会介绍更优雅的方式。
 #### RequestChain中的前后处理器
 BeforeHandler与AfterHandler也可以用在RequestChain中，用来控制RequestChain的执行前后的处理，如下例：
+
 ```java
 @RequestChain(name="ChainName",description = "演示")//name默认为类名ChainBeforeAfterHandlerDemo
 public class ChainBeforeAfterHandlerDemo{
@@ -133,6 +107,7 @@ public class ChainBeforeAfterHandlerDemo{
     }
 }
 ```
+
 当然RequestChain的前后处理器都不是必须的，可以自己按需求来选择，甚至可以不要。
 
 ### 前后处理器方法的可用参数类型
