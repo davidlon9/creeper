@@ -102,6 +102,7 @@ public class MultiRequestQueueExecutor extends BaseRequestExecutor<MultiRequestQ
         private ExecutorService threadPool;
         private final BlockingQueue<Object> queue;
         private ExecutionContext mainContext;
+
         public MultiRequestQueueExecute(MultiRequestQueueEntity multiRequestEntity, MultiExecutionResult<MultiRequestQueueEntity> executionResult,ExecutorService threadPool, BlockingQueue<Object> queue,ExecutionContext mainContext) {
             this.multiRequestEntity = multiRequestEntity;
             this.executionResult = executionResult;
@@ -116,10 +117,11 @@ public class MultiRequestQueueExecutor extends BaseRequestExecutor<MultiRequestQ
             LoopExecutionResult<MultiRequestQueueEntity> result=new LoopExecutionResult<>(multiRequestEntity);
             try {
                 RequestExecutor<MultiRequestQueueEntity> innerExecutor = null;
-                Boolean condition=true;
-                Thread.sleep(multiRequestEntity.getDelay());
+                Boolean condition;
                 do {
                     if(queue.size()==0){
+                        Thread.sleep(multiRequestEntity.getDelay());
+                        logger.info("Queue of "+multiRequestEntity+" is empty now");
                         continue;
                     }
 
@@ -129,7 +131,9 @@ public class MultiRequestQueueExecutor extends BaseRequestExecutor<MultiRequestQ
                         break;
                     }
                     Object poll = queue.poll();
-                    if(poll==null){
+                    if(poll == null){
+                        Thread.sleep(multiRequestEntity.getDelay());
+                        logger.info("Queue of "+multiRequestEntity+" is empty now");
                         continue;
                     }
                     //thread context
@@ -154,7 +158,7 @@ public class MultiRequestQueueExecutor extends BaseRequestExecutor<MultiRequestQ
                        logger.warn("no element in queue ["+ queueElementKey+"]");
                        break;
                    }
-                }while (queue.size()>0);
+                } while (queue.size()>0);
             }catch (RequestAbortedException e){
                 //其他线程执行成功，导致该线程interrupted，同时该线程正在执行Request，就会报RequestAbortedException
                 logger.warn(Thread.currentThread().getName()+" is interrupted and request aborted because of other thread is successed!");
