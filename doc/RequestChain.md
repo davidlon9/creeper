@@ -68,14 +68,17 @@ public class LoginChain {
 - 手动处理HttpClient-Fluent中的Request（直接调用HttpClient原生Api处理Request），例如请求装配还缺少些参数、Cookie等信息
 - 判断当前序列请求或请求链，是否要跳过执行。
 
-使用@BeforeMethod，来将一个方法声明为序列请求或请求链的后处理器[BeforeHandler]，并在其执行前进行处理，可用参数请查看[AfterHandler与BeforeHandler的参数](#AfterHandler与BeforeHandler的参数)
+使用@BeforeMethod，来将一个方法声明为序列请求或请求链的后处理器[BeforeHandler]，并在其执行前进行处理，可用参数请查看[前后处理器方法的可用参数类型
+](#前后处理器方法的可用参数类型
+)
 ### 后处理器[AfterHandler]
 后处理器的3个作用:
 - 初始化 <em>下一序列请求或请求链</em> 需要的上下文参数[ContextParamStore](#ContextParamStore)、请求参数[FormParamStore](#FormParamStore)、Cookie存储[CookieStore]
 - 处理请求执行后的响应结果
 - 处理并指定下一序列请求（使用返回值来指定下一序列请求）
 
-使用@AfterMethod或SeqRequest类型注解，来将一个方法声明为序列请求或请求链的后处理器[AfterHandler]，并在其执行后进行处理，可用参数请查看[AfterHandler与BeforeHandler的参数](#AfterHandler与BeforeHandler的参数)
+使用@AfterMethod或SeqRequest类型注解，来将一个方法声明为序列请求或请求链的后处理器[AfterHandler]，并在其执行后进行处理，可用参数请查看[前后处理器方法的可用参数类型
+](#前后处理器方法的可用参数类型)
 ### 示例
 #### SeqRequest类型注解后处理器
 在一个RequestChain类中，若方法上被注解了@SeqRequest类型的注解，则可以省略掉@AfterMethod注解，并默认视为该方法为一个AfterHandler。
