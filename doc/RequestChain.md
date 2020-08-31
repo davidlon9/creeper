@@ -16,6 +16,39 @@
 除了基础的@RequestChain与@SeqRequest，其他注解都是这两个序列对象的包装，可以自定义创建一个包装执行器，或者单纯通过代码来包装请求或请求链。
 ### 请求链执行流程图
 <img src="https://raw.githubusercontent.com/davidlon9/creeper/master/doc/images/%E8%AF%B7%E6%B1%82%E9%93%BE%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B%E5%9B%BE.png" width="80%">
+### 示例
+```java
+@RequestChain(index =1,name="LoginChain",description="登陆请求链")
+    @Host(value="kyfw.12306.cn",scheme="https")
+    public class LoginChain {
+
+        @SeqRequest(index = 1,description="获取登陆必需Cookie")
+        @Get("/otn/HttpZF/logdevice?algID=ZGB0eNTCXV&hashCode=s-hLl13iA3-UAXc9O4cfNSsDk203zmJffFi5kG43fxE&FMQw=0&q4f3=zh-CN&VySQ=FGEEJev5tTvG6q3axISQE1DJ36r7gqiH&VPIf=1&custID=133&VEek=unknown&dzuS=0&yD16=0&EOQP=4902a61a235fbb59700072139347967d&jp76=52d67b2a5aa5e031084733d5006cc664&hAqN=Win32&platform=WEB&ks0Q=d22ca0b81584fbea62237b14bd04c866&TeRS=824x1536&tOHY=24xx864x1536&Fvje=i1l1o1s1&q5aJ=-8&wNLf=99115dfb07133750ba677d055874de87&0aew=Mozilla/5.0%20(Windows%20NT%2010.0;%20Win64;%20x64)%20AppleWebKit/537.36%20(KHTML,%20like%20Gecko)%20Chrome/80.0.3987.116%20Safari/537.36&E3gR=4230a15ab4eb447d31ce29cfff1c2961")
+        @Parameters({
+                @Parameter(name = "timestamp",value = "${time.now()}"),
+        })
+        public Object deivceCookie(JSONObject result, HttpResponse httpResponse, FormParamStore paramStore, ContextParamStore contextParamStore, CookieStore cookieStore) throws IOException {
+            //请求执行过后的处理
+            CallbackParam callbackParam = new CallbackParam();
+            String callback = callbackParam.getCallback();
+            String ajaxNonce = callbackParam.getAjaxNonce();
+            //由于下一次请求中callback参数与_参数未赋值，因此需要在前一个请求处理方法中添加参数（即当前方法），否则将默认为空值
+            paramStore.addParam("callback",callback);//添加下一请求中需要的callback参数至FormParamStore中
+            paramStore.addParam("_",ajaxNonce);//添加下一请求中需要的_参数至FormParamStore中
+            return true;//返回true表示执行成功，继续执行下一请求
+        }
+
+        //当前序列请求的执行顺序为2
+        @SeqRequest(index =2,description="获取验证码图片")
+        @Get("/passport/captcha/captcha-image64?login_site=E&module=login&rand=sjrand&${time.now()}")
+        @Parameters({
+                @Parameter(name="callback"),//自动从FormParamStore中读取callback参数的值
+                @Parameter(name="_")})//自动从FormParamStore中读取_参数的值
+        public boolean captchaImage(String result, FormParamStore paramStore) throws IOException {
+            return true;//返回true表示执行成功，继续执行下一请求
+        }
+    }
+```
 
 ## 前后处理器
 ### 前处理器[BeforeHandler]
@@ -98,7 +131,7 @@ public class ChainBeforeAfterHandlerDemo{
 ```
 当然RequestChain的前后处理器都不是必须的，可以自己按需求来选择，甚至可以不要。
 
-#### 前后处理器方法的可用参数类型
+### 前后处理器方法的可用参数类型
 如果使用了不支持的参数，则该参数为空
 | 参数类型         | 所属包                               | BeforeHandler是否可用  | AfterHandler是否可用  | 
 | :---------------- | :---------------------------------- | :-------------------: | :--------------------: |
@@ -110,7 +143,7 @@ public class ChainBeforeAfterHandlerDemo{
 | CookieStore       | org.apache.http.client              | √ | √ |  
 | [ExecutionContext](#执行上下文ExecutionContext)  | com.dlong.creeper.execution.context | √ | √ |  
 
-#### 前后处理器方法的可用返回类型
+### 前后处理器方法的可用返回类型
 | 返回值类型   | BeforeHandler返回值对应动作 | AfterHandler返回值对应动作 |
 | :----------- | :------------------------- | -------------------------- |
 | com.dlong.creeper.control.MoveAction | 仅支持ContinueAction，表示在循环执行跳过当前的执行，若使用其他MoveAction实现类则会抛出异常 | 不同的MoveAction实现类，对应不同的执行动作，详情参考[MoveActions](#MoveActions) | 
@@ -118,11 +151,11 @@ public class ChainBeforeAfterHandlerDemo{
 | Object | 仅可使用上面两种类型的值 | 仅可使用上面两种类型的值 |
 | void   | 不跳过当前执行 | 继续执行下一请求 |
 
-### 执行上下文ExecutionContext
+## 执行上下文ExecutionContext
 ExecutionContext用于存储请求链中的所有参数，Cookie，以及SpringEl表达式中的参数，每个ExecutionContext实例中都会包含一个[FormParamStore](#FormParamStore)、[ContextParamStore](#ContextParamStore)、CookieStore、Executor
-### FormParamStore
+## FormParamStore
 FormParamStore用于存储请求链中的所有参数，每个请求链只拥有一个FormParamStore，可以作为前后处理器的参数，可以使用其来添加参数，并作用到整个请求链。
-#### 参数Parameter
+### 参数Parameter
 注解在序列请求下，未指定值时，需要向FormParamStore添加一个相同名称的Param对象，若FormParamStore中也没有，则为空值，如下例中的answer参数:
 ```java
 @SeqRequest(index = 3,description="检测验证码答案")
@@ -164,9 +197,9 @@ public boolean login(String result) throws IOException {
     return true;
 }
 ```
-### ContextParamStore
+## ContextParamStore
 ContextParamStore用于存储SpringEl表达式中的参数，SpringEl表达式一般用在链接，参数上，其他可用注解值请看下表
-#### 支持SpringEl表达式的注解属性
+### 支持SpringEl表达式的注解属性
 | 注解                      | 支持SpringEl的属性        |
 | :------------------------ | :------------------------ |
 | @Path/Get/Post/Put/Delete | url                       |
@@ -177,4 +210,4 @@ ContextParamStore用于存储SpringEl表达式中的参数，SpringEl表达式�
 | @Trigger                  | startTimeExpr/endTimeExpr |
 | @MultiRequestQueue        | stopConditionExpr         |  
 
-### 控制RequestChain的执行
+## 控制RequestChain的执行
