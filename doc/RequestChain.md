@@ -16,10 +16,50 @@
 除了基础的@RequestChain与@SeqRequest，其他注解都是这两个序列对象的包装，可以自定义创建一个包装执行器，或者单纯通过代码来包装请求或请求链。
 ### 请求链执行流程图
 <img src="https://raw.githubusercontent.com/davidlon9/creeper/master/doc/images/%E8%AF%B7%E6%B1%82%E9%93%BE%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B%E5%9B%BE.png" width="80%">
-### 请求链示例
-```java
 
+### 示例
+下例是使用@RequestChain来编写12306登陆中，检测验证码答案与登陆的部分，完整请看[请求链12306登陆](https://github.com/davidlon9/creeper#requestchain%E6%98%A0%E5%B0%84%E5%A4%84%E7%90%86%E7%B1%BB)
+```java
+@RequestChain(index =1,name="LoginChain",description="登陆请求链")
+@Host(value="kyfw.12306.cn",scheme="https")
+public class LoginChain {
+    @SeqRequest(index =1,description="检测验证码答案")
+    @Get("/passport/captcha/captcha-check")
+    @Parameters({
+            @Parameter(name="login_site",value="E"),
+            @Parameter(name="rand",value="sjrand"),
+            @Parameter(name="answer",value="11,22,33")})
+    public MoveAction captchaCheck(String result){
+        //请求执行过后的处理
+        //result参数是当前请求执行后返回的String类型的响应体
+        JSONObject body = JSONObject.parseObject(result);
+        if("4".equals(body.getString("result_code"))){//4是12306验证码答案api的成功码，因此继续执行下一请求
+            return MoveActions.FORWARD();//MoveActions是MoveAction的工厂，MoveActions.FORWARD()返回一个ForwardAction对象，表示继续执行下一请求，等价于返回true
+        }
+        return MoveActions.TERMINATE();//MoveActions.TERMINATE()返回一个TerminateAction对象，表示终止执行
+    }
+
+    @SeqRequest(index = 2,description = "登陆")
+    @Post("/passport/web/login")
+    @Parameters({
+            @Parameter(name="appid",value="otn"),
+            @Parameter(name="username",value="zhangsan"),
+            @Parameter(name="password",value="123456"),
+            @Parameter(name="answer")})//自动从FormParamStore中读取answer参数的值
+    public MoveAction login(String result) throws IOException {
+        //请求执行过后的处理
+        //result参数是当前请求执行后返回的String类型的响应体
+        JSONObject body = JSONObject.parseObject(result);
+        if("0".equals(body.getString("result_code"))){//0是12306登陆api的成功码，因此继续执行下一请求
+            return MoveActions.FORWARD();//返回一个ForwardAction对象，表示继续执行下一请求，等价于返回true
+        }else{
+            //登陆失败重新跳转至captchaImage序列请求
+            return MoveActions.JUMP("captchaImage");//跳转并执行captchaImage序列请求
+        }
+    }
+}
 ```
+请求链一般是由序列请求构成，而序列请求是由请求信息注解构成，请求信息基本是由链接信息注解(Host、Path、Get、Post、Put、Delete)与请求参数类型注解Parameter构成，单独使用这些注解，也可以配置管理请求，请参考[Request映射配置](https://github.com/davidlon9/creeper#request%E6%98%A0%E5%B0%84%E9%85%8D%E7%BD%AE)
 
 ## 前后处理器
 ### 前处理器[BeforeHandler]
@@ -36,7 +76,6 @@
 - 处理并指定下一序列请求（使用返回值来指定下一序列请求）
 
 使用@AfterMethod或SeqRequest类型注解，来将一个方法声明为序列请求或请求链的后处理器[AfterHandler]，并在其执行后进行处理，可用参数请查看[AfterHandler与BeforeHandler的参数](#AfterHandler与BeforeHandler的参数)
-
 ### 示例
 #### SeqRequest类型注解后处理器
 在一个RequestChain类中，若方法上被注解了@SeqRequest类型的注解，则可以省略掉@AfterMethod注解，并默认视为该方法为一个AfterHandler。
