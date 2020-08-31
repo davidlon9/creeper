@@ -297,8 +297,6 @@ ContextExecutor executor = new ChainContextExecutor(LoginChainSimple.class);
 executor.exeucteRootChain();
 ```
 上述代码一运行，就会依次执行请求，并处理请求执行后的结果，直至登陆成功访问用户中心。  
-关于RequestChain映射处理类的详细文档请查看[RequestChain使用文档](https://github.com/davidlon9/creeper/blob/master/doc/RequestChain.md)  
-以下是RequestChain的执行过程图
-
+关于RequestChain映射处理类的详细文档请查看[RequestChain使用文档](https://github.com/davidlon9/creeper/blob/master/doc/RequestChain.md)，以下是RequestChain的执行过程图
 <img src="https://raw.githubusercontent.com/davidlon9/creeper/master/doc/images/%E8%AF%B7%E6%B1%82%E9%93%BE%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B%E5%9B%BE.png" width="80%">
 
