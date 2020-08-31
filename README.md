@@ -1,4 +1,4 @@
-## 简介
+# 简介
 基于HttpClient-Fluent拓展的面向Java注解编程的爬虫框架，将关注点放在Http请求响应的数据解析上，使爬虫开发更迅速、简洁，且拥有更高的维护性。    
 
 使用注解管理Http请求的链接、参数、请求头、Cookie等信息，支持SpringEl解析。  
@@ -8,7 +8,7 @@
 
 也就是说，仅需要一个类，就能够迅速完成一个复杂的爬虫程序。
 
-## 示例
+# 示例
 
 首先熟悉一下HttpClient-Fluent的基本使用方式
 
@@ -28,11 +28,11 @@ HttpResponse httpResponse = response.returnResponse();
 ```
 HttpClient-Fluent已经帮助我们节省了很多代码，但是对于请求创建的链接参数等信息仍然需要编写代码。而且当代码累积过多，就很难管理，上述例子对问题的暴露可能不够明显，可以参考我使用HttpClient-Fluent写的[12306爬虫程序](https://github.com/davidlon9/creeper/blob/master/src/main/java/demo/traiker/main/fluent/LoginByCode.java)，接下来我将用Creeper来重构这个12306爬虫程序。
 
-### Request映射配置
+## Request映射配置
 使用步骤：
 - 第一步 ([构建Request映射配置类](#构建Request映射配置类))：用一个接口来配置HttpClient请求，在接口方法中使用注解来配置请求的链接、参数、请求头。
 - 第二步 ([调用Request配置接口实例](#调用Request配置接口实例))：生成请求配置接口的代理对象，然后使用代理对象调用接口中的方法，返回一个请求或请求执行后的结果，接下来只需要对结果做处理即可。
-#### 构建Request映射配置类
+### 构建Request映射配置类
 针对12306登陆编写一个链接配置类LoginMapping，以下例子中的方法均返回了String，表示该请求执行后的响应体字符串，更多可用返回值请查看[Request配置接口方法的可用返回类型](#Request配置接口方法的可用返回类型)
 ```java
 //接口上注解Host，该接口下所有的请求链接都以该host为域名
@@ -88,7 +88,7 @@ public interface LoginMapping {
 }
 ```
 
-#### 调用Request配置接口实例
+### 调用Request配置接口实例
 生成12306登陆请求配置接口的代理对象，然后调用代理对象获取请求结果并做处理，代码省略了对结果的处理部分，完整代码请查看  
 [12306映射配置登陆处理](https://github.com/davidlon9/creeper/blob/master/src/main/java/demo/traiker/main/fluent/LoginHandle.java)
 ```java
@@ -123,7 +123,7 @@ String uamauthclient = loginMapping.uamauthclient(token);
 String userinfo = loginMapping.userinfo();
 ```
 可以看到上述代码，将请求链接的配置与请求执行后的处理完全分离了，使开发者将重心放在请求结果的处理上。
-#### Request配置接口方法的可用返回类型
+### Request配置接口方法的可用返回类型
 上述示例中均返回了String类型，可以使用以下类型替换Sting类型，下面也列举出了HttpClient-Fluent中对应类型实例的获取方式
 
 | 返回值类名   | 所属包                        |对应HttpClient-Fluent的获取方式                                               | 
@@ -136,13 +136,13 @@ String userinfo = loginMapping.userinfo();
 | InputStream  | java.io                       | Executor.newInstance().execute(Request.Get(URL)).returnContent().asStream() |
 | byte[]       |                               | Executor.newInstance().execute(Request.Get(URL)).returnContent().asBytes()  |
 
-### RequestChain映射处理类
+## RequestChain映射处理类
 与Request映射配置的方式类似，只不过RequestChain对于请求的执行又增加了顺序与处理，使用注解配置请求的同时，可以直接处理对应请求。  
 使用步骤：
 - 第一步（[创建RequestChain映射处理类](#创建RequestChain映射处理类)）：创建一个类，并在类上注解[RequestChain类型注解](#RequestChain类型注解)，将该类视为一个请求链
 - 第二步（[创建RequestChain映射处理类](#创建RequestChain映射处理类)）：在类中创建方法，并在方法上注解[SeqRequest类型注解](#SeqRequest类型注解)，将该方法视为一个在该请求链中的序列请求
 - 第三步（[执行RequestChain](#执行RequestChain)）：生成一个请求链执行器，将前两步中创建好的请求链类传入，然后执行该请求链。该请求链内的所有请求会依次执行，直至最后一个请求执行成功，视为该请求链执行成功。
-#### 创建RequestChain映射处理类
+### 创建RequestChain映射处理类
 针对12306登陆编写一个RequestChain映射处理类，请求的方法格式将与之前Request映射配置类不同。  
 - 请求执行后的结果，将放在参数中，然后直接在方法体中处理结果，可用参数请参考[可用参数](#可用参数)。
 - 而返回值将用来控制请求的执行顺序，具体请参考[控制请求执行顺序](#可用参数)。
@@ -152,29 +152,25 @@ String userinfo = loginMapping.userinfo();
 @RequestChain(description="登陆请求链")
 @Host(value="kyfw.12306.cn",scheme="https")
 public class LoginChainSimple {
-
     //@SeqRequest注解将当前方法视为一个序列请求，方法体视为请求执行后的处理方法
     //当前序列请求的执行顺序为1
     @SeqRequest(index =1,description="获取登陆必需Cookie")
-    @Get(Env.deivceCookieUrl)
+    @Get("/otn/HttpZF/logdevice?algID=ZGB0eNTCXV&hashCode=s-hLl13iA3-UAXc9O4cfNSsDk203zmJffFi5kG43fxE&FMQw=0&q4f3=zh-CN&VySQ=FGEEJev5tTvG6q3axISQE1DJ36r7gqiH&VPIf=1&custID=133&VEek=unknown&dzuS=0&yD16=0&EOQP=4902a61a235fbb59700072139347967d&jp76=52d67b2a5aa5e031084733d5006cc664&hAqN=Win32&platform=WEB&ks0Q=d22ca0b81584fbea62237b14bd04c866&TeRS=824x1536&tOHY=24xx864x1536&Fvje=i1l1o1s1&q5aJ=-8&wNLf=99115dfb07133750ba677d055874de87&0aew=Mozilla/5.0%20(Windows%20NT%2010.0;%20Win64;%20x64)%20AppleWebKit/537.36%20(KHTML,%20like%20Gecko)%20Chrome/80.0.3987.116%20Safari/537.36&E3gR=4230a15ab4eb447d31ce29cfff1c2961")
     @Parameter(name = "timestamp",value = "${time.now()}")
     //使用下面注解，在请求执行过后，若返回的是Json类型的响应结果，将把Json结果中的指定值添加至CookieStore中
     @JsonResultCookies({
-            //把Json结果中key为dfp的值，视为一个名为RAIL_DEVICEID的Cookie，并添加至CookieStore
-            @JsonResultCookie(jsonKey ="dfp",name = "RAIL_DEVICEID",domain = ".12306.cn",cache = true),
-            //把Json结果中key为exp的值，视为一个名为RAIL_EXPIRATION的Cookie，并添加至CookieStore
-            @JsonResultCookie(jsonKey ="exp",name = "RAIL_EXPIRATION",domain = ".12306.cn",cache = true)
-    })
+        //把Json结果中key为dfp的值，视为一个名为RAIL_DEVICEID的Cookie，并添加至CookieStore
+        @JsonResultCookie(jsonKey ="dfp",name = "RAIL_DEVICEID",domain = ".12306.cn",cache = true),
+        //把Json结果中key为exp的值，视为一个名为RAIL_EXPIRATION的Cookie，并添加至CookieStore
+        @JsonResultCookie(jsonKey ="exp",name = "RAIL_EXPIRATION",domain = ".12306.cn",cache = true)})
     //FormParamStore中负责存储当前请求链执行过程中的请求参数，其中的参数会被自动注入到请求中
     public Object deivceCookie(FormParamStore paramStore) {
         //请求执行过后的处理
         //paramStore参数为当前请求链中的FormParamStore
-        CallbackParam callbackParam = new CallbackParam();
-        String callback = callbackParam.getCallback();
-        String ajaxNonce = callbackParam.getAjaxNonce();
+        CallbackParam callbackParam = new CallbackParam();//获取动态参数的类
         //由于下一次请求中callback参数与_参数未赋值，因此需要在前一个请求处理方法中添加参数（即当前方法），否则将默认为空值
-        paramStore.addParam("callback",callback);//添加下一请求中需要的callback参数至FormParamStore中
-        paramStore.addParam("_",ajaxNonce);//添加下一请求中需要的_参数至FormParamStore中
+        paramStore.addParam("callback",callbackParam.getCallback());//添加下一请求中需要的callback参数至FormParamStore中
+        paramStore.addParam("_",callbackParam.getAjaxNonce());//添加下一请求中需要的_参数至FormParamStore中
         return true;//返回true表示执行成功，继续执行下一请求
     }
 
@@ -182,8 +178,8 @@ public class LoginChainSimple {
     @SeqRequest(index =2,description="获取验证码图片")
     @Get("/passport/captcha/captcha-image64?login_site=E&module=login&rand=sjrand&${time.now()}")
     @Parameters({
-            @Parameter(name="callback"),//自动从FormParamStore中读取callback参数的值
-            @Parameter(name="_")})//自动从FormParamStore中读取_参数的值
+        @Parameter(name="callback"),//自动从FormParamStore中读取callback参数的值
+        @Parameter(name="_")})//自动从FormParamStore中读取_参数的值
     public boolean captchaImage(String result, FormParamStore paramStore) throws IOException {
         //请求执行过后的处理
         //result参数是当前请求执行后返回的String类型的响应体
@@ -201,12 +197,10 @@ public class LoginChainSimple {
     //获取验证码图片，输入验证码正确答案，返回输入的答案
     private String getCaptchaImageAnswer(String s) {
         s=s.substring(s.indexOf("(")+1,s.lastIndexOf(")"));
-        JSONObject jsonObject = JSONObject.parseObject(s);
-        String image = jsonObject.getString("image");
+        String image = JSONObject.parseObject(s).getString("image");
         CaptchaImage.createImage(image, "C:\\Users\\74494\\Desktop\\a.png");
         System.out.println("请输入正确图片编号");
-        Scanner scanner = new Scanner(System.in);
-        String imageIdxs = scanner.nextLine();
+        String imageIdxs = new Scanner(System.in).nextLine();
         return CaptchaImage.getAnswer(imageIdxs);
     }
 
@@ -214,17 +208,16 @@ public class LoginChainSimple {
     @SeqRequest(index =3,description="检测验证码答案")
     @Get("/passport/captcha/captcha-check")
     @Parameters({
-            @Parameter(name="login_site",value="E"),
-            @Parameter(name="rand",value="sjrand"),
-            @Parameter(name="answer"),//自动从FormParamStore中读取answer参数的值
-            @Parameter(name="callback"),//自动从FormParamStore中读取callback参数的值
-            @Parameter(name="_")})//自动从FormParamStore中读取_参数的值
+        @Parameter(name="login_site",value="E"),
+        @Parameter(name="rand",value="sjrand"),
+        @Parameter(name="answer"),//自动从FormParamStore中读取answer参数的值
+        @Parameter(name="callback"),//自动从FormParamStore中读取callback参数的值
+        @Parameter(name="_")})//自动从FormParamStore中读取_参数的值
     public MoveAction captchaCheck(String result){
         //请求执行过后的处理
         //result参数是当前请求执行后返回的String类型的响应体
         JSONObject body = JSONObject.parseObject(result);
-        String result_code = body.getString("result_code");
-        if("4".equals(result_code)){//4是12306验证码答案api的成功码，因此继续执行下一请求
+        if("4".equals(body.getString("result_code"))){//4是12306验证码答案api的成功码，因此继续执行下一请求
             return MoveActions.FORWARD();//MoveActions是MoveAction的工厂，MoveActions.FORWARD()返回一个ForwardAction对象，表示继续执行下一请求，等价于返回true
         }
         return MoveActions.BACK(0);//MoveActions.BACK(0)返回一个BackAction对象，表示执行上一请求，间隔0毫秒
@@ -234,16 +227,15 @@ public class LoginChainSimple {
     @SeqRequest(index = 4,description = "登陆")
     @Post("/passport/web/login")
     @Parameters({
-            @Parameter(name="appid",value="otn"),
-            @Parameter(name="username",value="zhangsan"),
-            @Parameter(name="password",value="123456"),
-            @Parameter(name="answer")})//自动从FormParamStore中读取answer参数的值
+        @Parameter(name="appid",value="otn"),
+        @Parameter(name="username",value="zhangsan"),
+        @Parameter(name="password",value="123456"),
+        @Parameter(name="answer")})//自动从FormParamStore中读取answer参数的值
     public MoveAction login(String result) throws IOException {
         //请求执行过后的处理
         //result参数是当前请求执行后返回的String类型的响应体
         JSONObject body = JSONObject.parseObject(result);
-        String result_code = body.getString("result_code");
-        if("0".equals(result_code)){//0是12306登陆api的成功码，因此继续执行下一请求
+        if("0".equals(body.getString("result_code"))){//0是12306登陆api的成功码，因此继续执行下一请求
             return MoveActions.FORWARD();//返回一个ForwardAction对象，表示继续执行下一请求，等价于返回true
         }else{
             //登陆失败重新跳转至captchaImage序列请求
@@ -256,13 +248,11 @@ public class LoginChainSimple {
     @SeqRequest(index =5,description="获取token")
     @Post("/passport/web/auth/uamtk")
     @Parameters({
-            @Parameter(name="callback"),//自动从FormParamStore中读取callback参数的值
-            @Parameter(name="appid",value="otn")
-    })
+        @Parameter(name="callback"),//自动从FormParamStore中读取callback参数的值
+        @Parameter(name="appid",value="otn")})
     @RequestHeaders({
-            @RequestHeader(name="Referer",value="https://kyfw.12306.cn/otn/passport?redirect=/otn/login/userLogin"),
-            @RequestHeader(name="Origin",value="https://kyfw.12306.cn")
-    })
+        @RequestHeader(name="Referer",value="https://kyfw.12306.cn/otn/passport?redirect=/otn/login/userLogin"),
+        @RequestHeader(name="Origin",value="https://kyfw.12306.cn")})
     public boolean uamtk(String result,FormParamStore paramStore){
         //请求执行过后的处理
         //paramStore参数为当前请求链中的FormParamStore
@@ -281,9 +271,8 @@ public class LoginChainSimple {
     @SeqRequest(index =6,description="获取token")
     @Post("/otn/uamauthclient")
     @Parameters({
-            @Parameter(name="tk"),//自动从FormParamStore中读取tk参数的值
-            @Parameter(name="_json_att",value = "")
-    })
+        @Parameter(name="tk"),//自动从FormParamStore中读取tk参数的值
+        @Parameter(name="_json_att",value = "")})
     public boolean uamauthclient(){
         return true;//返回true表示执行成功，继续执行下一请求
     }
@@ -291,13 +280,13 @@ public class LoginChainSimple {
     //当前序列请求的执行顺序为7
     @SeqRequest(index =7,description="获取用户信息")
     @Post("/otn/modifyUser/initQueryUserInfoApi")
-    @Parameters({@Parameter(name="appid",value="otn")})
+    @Parameter(name="appid",value="otn")
     public boolean userinfo(){
         return true;//返回true表示执行成功，由于该序列请求为最后一个请求，因此表示当前请求链执行成功
     }
 }
 ```
-#### 执行RequestChain
+### 执行RequestChain
 创建一个RequestChain执行器，传入上面已经编写好的12306登陆请求链类（LoginChainSimple.class），然后执行该请求链。  
 执行器将会按顺序执行每个请求，然后在每个请求执行后，会调用请求处理方法，即上面例子中的每个被注解了@SeqRequest的方法。  
 每个请求处理方法，除了对当前请求的执行结果处理外，还需要对下一请求中的动态参数进行赋值。  
@@ -307,162 +296,7 @@ ContextExecutor executor = new ChainContextExecutor(LoginChainSimple.class);
 //执行Chain
 executor.exeucteRootChain();
 ```
-上述代码一运行，执行器就会依次请求链接，直至登陆成功访问用户中心。
-关于RequestChain映射处理类的详细文档请查看[RequestChain使用文档](#RequestChain使用文档)
-
-## RequestChain使用文档
-### 请求链
-请求链[RequestChain]是一系列按顺序排序的[序列请求](#序列请求)[SeqRequest]或请求链的集合，支持嵌套请求链。
-### 序列请求
-序列请求[SeqRequest]仅存在于请求链中，序列请求的基本构成要素，除了拥有请求的链接、参数、头等信息外，还多了一个后处理器，用于在请求自动执行过后，负责处理响应信息。当然也可以添加一个前处理，用于在执行前处理，详情请查看[前后处理器](#前后处理器)
-
-### 请求链执行流程图
+上述代码一运行，就会依次执行请求，并处理请求执行后的结果，直至登陆成功访问用户中心。  
+关于RequestChain映射处理类的详细文档请查看[RequestChain使用文档](https://github.com/davidlon9/creeper/blob/master/doc/RequestChain.md)，以下是RequestChain的执行过程图
 <img src="https://raw.githubusercontent.com/davidlon9/creeper/master/doc/images/%E8%AF%B7%E6%B1%82%E9%93%BE%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B%E5%9B%BE.png" width="80%">
-
-### 前后处理器
-使用@AfterMethod与@BeforeMethod，来将一个方法声明为序列请求或请求链的AfterHandler与BeforeHandler，并在执行前后进行处理，可用参数请查看[AfterHandler与BeforeHandler的参数](#AfterHandler与BeforeHandler的参数)
-
-#### 注解了SeqRequest类型的方法
-在一个RequestChain类中，若方法上被注解了@SeqRequest类型的注解，则可以省略掉@AfterMethod注解，并默认视为该方法为一个AfterHandler。
-在请求执行后会调用该方法，返回true会继续执行下一请求，false表示执行失败终止执行。 
-```java
-@SeqRequest(index =7,name="userinfo",description="获取用户信息")
-@Post("/otn/modifyUser/initQueryUserInfoApi")
-@Parameters({@Parameter(name="appid",value="otn")})
-//@AfterMethod 可以省略掉该注解，因为方法注解了@SeqRequest
-public boolean userinfo(HttpResponse response){
-    return true;
-}
-```
-若需要可以修改上面的方法，添加注解@BeforeMethod，可将该方法视为一个BeforeHandler，在请求执行前会调用该方法，返回false会跳过请求的执行，如下例：
-```java
-@SeqRequest(index =7,name="userinfo",description="获取用户信息")
-@Post("/otn/modifyUser/initQueryUserInfoApi")
-@Parameters({@Parameter(name="appid",value="otn")})
-@BeforeMethod
-public boolean userinfo(HttpResponse response){
-    return true;
-}
-```
-注意，此时的AfterHandler将为空
-
-#### 序列请求同时拥有前后处理器
-当同时需要BeforeHandler与AfterHandler时，新增一个方法并注解@BeforeMethod("name")，name指定为SeqRequest的name，如下例：
-```java
-@SeqRequest(index =7,name="userinfo",description="获取用户信息")//name默认为方法名（RequestChain的name默认为类名）
-@Post("/otn/modifyUser/initQueryUserInfoApi")
-@Parameters({@Parameter(name="appid",value="otn")})
-//@AfterMethod 可以省略掉该注解，因为方法注解了@SeqRequest
-public boolean userinfo(HttpResponse response){
-    //处理响应结果，若下一请求没有BeforeHandler，则必需在此时添加下一请求的动态参数。
-    return true;//继续执行下一请求
-}
-
-@BeforeMethod("userinfo")//指定SeqRequest或RequestChain的name
-public boolean checkUserInfo(Request request, ExecutionContext context){
-    //检查添加各种参数
-    return true;//不跳过执行
-}
-```
-上述例子中，当然也可以在@SeqRequest注解的方法下注解@BeforeMethod，然后再新增一个方法注解@AfterMethod("")，并指定SeqRequest的name。
-
-#### RequestChain中的前后处理器
-BeforeHandler与AfterHandler也可以用在RequestChain中，用来控制RequestChain的执行前后的处理，如下例：
-```java
-@RequestChain(name="ChainName",description = "演示")//name默认为类名ChainBeforeAfterHandlerDemo
-public class ChainBeforeAfterHandlerDemo{
-    @BeforeMethod("ChainName")//指定RequestChain的name
-    public boolean chainBeforeHandle(ExecutionContext context){
-        //检查添加各种参数
-        return true;//不跳过执行
-    }
-    
-    @AfterMethod("ChainName")//指定RequestChain的name
-    public boolean chainAfterHandle(ExecutionContext context){
-        //执行结束的处理
-        return true;//继续执行下一请求
-    }
-}
-```
-当然RequestChain的前后处理器都不是必须的，可以自己按需求来选择，甚至可以不要。
-
-#### 前后处理器方法的可用参数类型
-如果使用了不支持的参数，则该参数为空
-| 参数类型         | 所属包                               | BeforeHandler是否可用  | AfterHandler是否可用  | 
-| :---------------- | :---------------------------------- | :-------------------: | :--------------------: |
-| Request           | org.apache.http.client.fluent       | √ | × |
-| HttpResponse      | org.apache.http                     | × | √ |
-| String            | java.lang                           | × | √ |
-| [FormParamStore](#FormParamStore)    | com.dlong.creeper.execution.context | √ | √ | 
-| [ContextParamStore](#ContextParamStore) | com.dlong.creeper.execution.context | √ | √ |
-| CookieStore       | org.apache.http.client              | √ | √ |  
-| [ExecutionContext](#执行上下文ExecutionContext)  | com.dlong.creeper.execution.context | √ | √ |  
-
-#### 前后处理器方法的可用返回类型
-| 返回值类型   | BeforeHandler返回值对应动作 | AfterHandler返回值对应动作 |
-| :----------- | :------------------------- | -------------------------- |
-| com.dlong.creeper.control.MoveAction | 仅支持ContinueAction，表示在循环执行跳过当前的执行，若使用其他MoveAction实现类则会抛出异常 | 不同的MoveAction实现类，对应不同的执行动作，详情参考[MoveActions](#MoveActions) | 
-| Boolean/boolean | true表示可以执行，false表示跳过当前执行| true表示继续执行下一请求等价于ForwardAction，false表示执行失败终结执行等价于TerminateAction |
-| Object | 仅可使用上面两种类型的值 | 仅可使用上面两种类型的值 |
-
-### 执行上下文ExecutionContext
-ExecutionContext用于存储请求链中的所有参数，Cookie，以及SpringEl表达式中的参数，每个ExecutionContext实例中都会包含一个[FormParamStore](#FormParamStore)、[ContextParamStore](#ContextParamStore)、CookieStore、Executor
-### FormParamStore
-FormParamStore用于存储请求链中的所有参数，每个请求链只拥有一个FormParamStore，可以作为前后处理器的参数，可以使用其来添加参数，并作用到整个请求链。
-#### 参数Parameter
-注解在序列请求下，未指定值时，需要向FormParamStore添加一个相同名称的Param对象，若FormParamStore中也没有，则为空值，如下例中的answer参数:
-```java
-@SeqRequest(index = 3,description="检测验证码答案")
-@Get("/passport/captcha/captcha-check")
-public boolean captchaCheck(String result,FormParamStore formParamStore){
-    formParamStore.addParam("answer",result);//添加下一请求中未赋值的参数
-    return true;
-}
-
-@SeqRequest(index = 4,description = "登陆")
-@Post("/passport/web/login")
-@Parameters({
-        @Parameter(name="appid",value="otn"),
-        @Parameter(name="username",value="zhangsan"),
-        @Parameter(name="password",value="123456"),
-        @Parameter(name="answer")})//自动从FormParamStore中读取answer参数的值
-public boolean login(String result) throws IOException {
-    return true;
-}
-```
-当两个参数名不同，但是参数的值一致时，例如有个参数名为answer1，又有个参数为answer2，他们两个的值是相同的，可以使用@Parameter注解的globalKey，如下例:
-@Parameter(name = "test",globalKey = "globalName")
-```java
-@SeqRequest(index = 3,description="检测验证码答案")
-@Get("/passport/captcha/captcha-check")
-public boolean captchaCheck(String result,FormParamStore formParamStore){
-    formParamStore.addParam("answer1",result);//添加下一请求中未赋值的参数
-    return true;
-}
-
-@SeqRequest(index = 4,description = "登陆")
-@Post("/passport/web/login")
-@Parameters({
-        @Parameter(name="appid",value="otn"),
-        @Parameter(name="username",value="zhangsan"),
-        @Parameter(name="password",value="123456"),
-        @Parameter(name="answer2",globalKey = "answer1")})//自动从FormParamStore中读取name为answer1参数的值
-public boolean login(String result) throws IOException {
-    return true;
-}
-```
-### ContextParamStore
-ContextParamStore用于存储SpringEl表达式中的参数，SpringEl表达式一般用在链接，参数上，其他可用注解值请看下表
-#### 支持SpringEl表达式的注解属性
-| 注解                      | 支持SpringEl的属性        |
-| :------------------------ | :------------------------ |
-| @Path/Get/Post/Put/Delete | url                       |
-| @Parameter                | name/value                |
-| @JsonResultCookie         | defaultValue              |
-| @ForIndex                 | start/end                 |
-| @While                    | coniditionExpression      |
-| @Trigger                  | startTimeExpr/endTimeExpr |
-| @MultiRequestQueue        | stopConditionExpr         |  
-
-### 控制RequestChain的执行
 
