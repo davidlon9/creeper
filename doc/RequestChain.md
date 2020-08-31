@@ -18,14 +18,14 @@
 <img src="https://raw.githubusercontent.com/davidlon9/creeper/master/doc/images/%E8%AF%B7%E6%B1%82%E9%93%BE%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B%E5%9B%BE.png" width="80%">
 
 ## 前后处理器
-#### 前处理器[BeforeHandler]
+### 前处理器[BeforeHandler]
 前处理器的3个作用:
 - 初始化 <em>当前序列请求或请求链</em> 需要的上下文参数[ContextParamStore](#ContextParamStore)、请求参数[FormParamStore](#FormParamStore)、Cookie存储[CookieStore]
 - 手动处理HttpClient-Fluent中的Request（直接调用HttpClient原生Api处理Request），例如请求装配还缺少些参数、Cookie等信息
 - 判断当前序列请求或请求链，是否要跳过执行。
 
 使用@BeforeMethod，来将一个方法声明为序列请求或请求链的后处理器[BeforeHandler]，并在其执行前进行处理，可用参数请查看[AfterHandler与BeforeHandler的参数](#AfterHandler与BeforeHandler的参数)
-#### 后处理器[AfterHandler]
+### 后处理器[AfterHandler]
 后处理器的3个作用:
 - 初始化 <em>下一序列请求或请求链</em> 需要的上下文参数[ContextParamStore](#ContextParamStore)、请求参数[FormParamStore](#FormParamStore)、Cookie存储[CookieStore]
 - 处理请求执行后的响应结果
@@ -33,6 +33,7 @@
 
 使用@AfterMethod或SeqRequest类型注解，来将一个方法声明为序列请求或请求链的后处理器[AfterHandler]，并在其执行后进行处理，可用参数请查看[AfterHandler与BeforeHandler的参数](#AfterHandler与BeforeHandler的参数)
 
+### 示例
 #### SeqRequest类型注解后处理器
 在一个RequestChain类中，若方法上被注解了@SeqRequest类型的注解，则可以省略掉@AfterMethod注解，并默认视为该方法为一个AfterHandler。
 在请求执行后会调用该方法，返回true会继续执行下一请求，false表示执行失败终止执行。 
@@ -55,7 +56,7 @@ public boolean userinfo(HttpResponse response){
     return true;
 }
 ```
-注意，此时的AfterHandler将为空
+注意，此时的AfterHandler将为空，意味着不对该请求做处理，执行结束后直接执行下一请求
 
 #### 序列请求同时拥有前后处理器
 当同时需要BeforeHandler与AfterHandler时，新增一个方法并注解@BeforeMethod("name")，name指定为SeqRequest的name，如下例：
@@ -115,6 +116,7 @@ public class ChainBeforeAfterHandlerDemo{
 | com.dlong.creeper.control.MoveAction | 仅支持ContinueAction，表示在循环执行跳过当前的执行，若使用其他MoveAction实现类则会抛出异常 | 不同的MoveAction实现类，对应不同的执行动作，详情参考[MoveActions](#MoveActions) | 
 | Boolean/boolean | true表示可以执行，false表示跳过当前执行| true表示继续执行下一请求等价于ForwardAction，false表示执行失败终结执行等价于TerminateAction |
 | Object | 仅可使用上面两种类型的值 | 仅可使用上面两种类型的值 |
+| void   | 不跳过当前执行 | 继续执行下一请求 |
 
 ### 执行上下文ExecutionContext
 ExecutionContext用于存储请求链中的所有参数，Cookie，以及SpringEl表达式中的参数，每个ExecutionContext实例中都会包含一个[FormParamStore](#FormParamStore)、[ContextParamStore](#ContextParamStore)、CookieStore、Executor
