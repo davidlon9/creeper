@@ -173,7 +173,7 @@ public class ChainBeforeAfterHandlerDemo{
 | void   | 不跳过当前执行 | 继续执行下一请求 |
 
 ## 执行上下文ExecutionContext
-ExecutionContext用于存储请求链中的所有参数，Cookie，以及SpringEl表达式中的参数，每个ExecutionContext实例中都会包含一个[FormParamStore](#FormParamStore)、[ContextParamStore](#ContextParamStore)、CookieStore、Executor
+ExecutionContext中存储了请求链中的所有参数，Cookie，以及SpringEl表达式中的参数，每个ExecutionContext实例中都会包含一个[FormParamStore](#FormParamStore)、[ContextParamStore](#ContextParamStore)、CookieStore、Executor
 ## FormParamStore
 FormParamStore用于存储请求链中的所有参数，每个请求链只拥有一个FormParamStore，可以作为前后处理器的参数，可以使用其来添加参数，并作用到整个请求链。
 ### 参数Parameter
@@ -219,7 +219,7 @@ public boolean login(String result) throws IOException {
 }
 ```
 ## ContextParamStore
-ContextParamStore用于存储SpringEl表达式中的参数，SpringEl表达式一般用在链接，参数上，其他可用注解值请看下表
+ContextParamStore用于存储SpringEl表达式中的对象，SpringEl表达式一般用在链接，参数上，其他可用注解值请看下表
 ### 支持SpringEl表达式的注解属性
 | 注解                      | 支持SpringEl的属性        |
 | :------------------------ | :------------------------ |
@@ -231,4 +231,29 @@ ContextParamStore用于存储SpringEl表达式中的参数，SpringEl表达式�
 | @Trigger                  | startTimeExpr/endTimeExpr |
 | @MultiRequestQueue        | stopConditionExpr         |  
 
-## 控制RequestChain的执行
+## 控制执行顺序
+通过后处理器的返回值，来控制一个请求链中请求的执行顺序，请求的后处理器返回值，决定了将要执行的下一请求。
+### MoveAction
+标准的后处理器返回类型，可以使用MoveActions工厂类来快捷创建实例，或直接用new创建对应MoveAction实例。
+| MoveAction      | 表示的动作                                            | 
+| :-------------- | :---------------------------------------------------- |
+| ForwardAction   | 继续执行下一请求                                      |
+| BackAction      | 回退并执行上一请求                                    |
+| JumpAction      | 跳转至任意请求并执行                                  |
+| RetryAction     | 重新执行当前请求                                      |
+| TerminateAction | 强制结束当前请求链的执行                              |
+| RestartAction   | 重新开始执行当前请求链                                |
+| BreakAction     | 终止当前域下的[循环](#循环执行)                       |
+| ContinueAction  | 跳过当前[循环](#循环执行)的执行，继续下一次循环的执行  |  
+
+### Boolean
+后处理器可以返回Boolean类型的值，true表示继续执行下一请求等价于ForwardAction，false表示执行失败终结执行等价于TerminateAction
+### 空值
+后处理器的返回类型可以为void，也就是说返回值为null。当返回值为null时，表示继续执行下一请求等价于ForwardAction
+
+## 循环执行
+
+## 其他注解
+
+
+
