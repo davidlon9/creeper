@@ -16,10 +16,10 @@
 除了基础的@RequestChain与@SeqRequest，其他注解都是这两个序列对象的包装，可以自定义创建一个包装执行器，或者单纯通过代码来包装请求或请求链。
 ### 请求链执行流程图
 <img src="https://raw.githubusercontent.com/davidlon9/creeper/master/doc/images/%E8%AF%B7%E6%B1%82%E9%93%BE%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B%E5%9B%BE.png" width="80%">
-### 示例
+### 请求链示例
+```java
 
-    
-
+```
 
 ## 前后处理器
 ### 前处理器[BeforeHandler]
