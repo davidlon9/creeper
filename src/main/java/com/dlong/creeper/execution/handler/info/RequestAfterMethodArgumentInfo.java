@@ -1,17 +1,13 @@
 package com.dlong.creeper.execution.handler.info;
 
-import com.alibaba.fastjson.JSONObject;
 import com.dlong.creeper.exception.RuntimeExecuteException;
 import com.dlong.creeper.execution.context.ExecutionContext;
-import com.dlong.creeper.util.ResultUtil;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Method;
-import java.util.Map;
 
 public class RequestAfterMethodArgumentInfo extends HandlerMethodArgumentInfo {
     private static Logger logger=Logger.getLogger(RequestAfterMethodArgumentInfo.class);

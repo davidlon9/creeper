@@ -40,7 +40,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.util.Map;
 import java.util.Set;
 
-//@RequestChain(index = 1)
+@RequestChain(index = 1)
 @Host(value = "www.xgv5.com", scheme = "https")
 @RequestLog(showFilledParams = false, showFilledHeaders = false)
 @FileRecordsIgnore(filePath = "D:\\repository\\traiker\\records\\demo.txt")
@@ -59,6 +59,7 @@ public class PDFdzswChain {
     public ExecutionHandler getMaxPageNum = new ExecutionHandler() {
         @Override
         public Boolean beforeHandle(Request request, ExecutionContext context) throws IOException {
+            request=request.addHeader("n","v");
             return true;
         }
 
@@ -213,7 +214,6 @@ public class PDFdzswChain {
 
             @SeqRequest(index = 3, description = "下载文件")
             @Get(value = "${#downUrl}", urlInheritable = false)
-            @AfterMethod
             public MoveAction downloadSingle(HttpResponse response, ContextParamStore contextParamStore) throws IOException {
                 String filePath = (String) contextParamStore.getValue("filePath");
                 if (filePath != null) {

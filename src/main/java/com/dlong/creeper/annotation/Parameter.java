@@ -12,4 +12,5 @@ public @interface Parameter {
    String name();
    String globalKey() default "";
    String desc() default "";
+   boolean global() default true;
 }

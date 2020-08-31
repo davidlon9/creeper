@@ -5,6 +5,7 @@ import org.apache.http.message.BasicNameValuePair;
 
 public class Param extends BasicNameValuePair{
     private String globalKey;
+    private boolean isGlobal = true;
 
     public Param(String name, String value) {
         super(name, value);
@@ -24,7 +25,10 @@ public class Param extends BasicNameValuePair{
 
     @Override
     public int hashCode() {
-        return 31*this.getName().hashCode()+globalKey!=null?globalKey.hashCode():0;
+        int result = this.getName().hashCode();
+        result = 31 * result + (isGlobal ? 1 : 0);
+        result = 31 * result + (globalKey != null ? globalKey.hashCode() : 0);
+        return result;
     }
 
     public boolean equals(Object object) {
@@ -45,5 +49,13 @@ public class Param extends BasicNameValuePair{
     @Override
     public String toString() {
         return "< "+ super.getName() +" = "+ super.getValue() +" >";
+    }
+
+    public boolean isGlobal() {
+        return isGlobal;
+    }
+
+    public void setGlobal(boolean global) {
+        isGlobal = global;
     }
 }

@@ -133,11 +133,7 @@ public class DefaultRequestBuilder implements HttpRequestBuilder {
             }
 
             //如果paramStore有，则创建新的param对象
-            if(value != null){
-                param = new Param(param.getName(),value);
-            }
-
-            hasParam = appendParam(hasParam,urlBuilder,param);
+            hasParam = appendParam(hasParam,urlBuilder,new Param(param.getName(),value));
         }
         urlBuilder.delete(urlBuilder.length()-1,urlBuilder.length());
         return  urlBuilder.toString();
@@ -157,10 +153,16 @@ public class DefaultRequestBuilder implements HttpRequestBuilder {
         return hasParam;
     }
 
-    private List<Param> getFilledParams(List<Param> params, RequestLogInfo logInfo) {
+    private List<Param> getFilledParams(List<Param> params) {
         List<Param> filledParams=new ArrayList<>(params.size());
         for (Param param : params) {
             String value=param.getValue();
+//            if(!param.isGlobal()){
+//                if(value.equals(FormParamStore.NULL_VALUE)){
+//                    logger.warn("non global param value is null，please add in FormParamStore");
+//                }
+//            }
+
             String globalKey = param.getGlobalKey();
             if(!value.equals(FormParamStore.NULL_VALUE)){
                 filledParams.add(param);
@@ -177,17 +179,13 @@ public class DefaultRequestBuilder implements HttpRequestBuilder {
                 value = paramStore.getValue(param.getName());
             }
 
-            if(value==null||FormParamStore.NULL_VALUE.equals(value)){
+            if(value==null || FormParamStore.NULL_VALUE.equals(value)){
                 logger.warn("null value param "+param+" founded");
                 continue;
             }
 
             //如果paramStore有，则创建新的param对象
-            if(value != null){
-                param = new Param(param.getName(),value);
-            }
-
-            filledParams.add(new Param(param.getName(),param.getValue()));
+            filledParams.add(new Param(param.getName(),value));
 
             if (logInfo.isShowFilledParams()) {
                 logger.info("param "+param+" filled");
@@ -197,42 +195,7 @@ public class DefaultRequestBuilder implements HttpRequestBuilder {
     }
 
     private Request fillParams(Request request, List<Param> params) {
-        List<Param> filledParams=new ArrayList<>(params.size());
-        for (Param param : params) {
-            String value=param.getValue();
-            String globalKey = param.getGlobalKey();
-            if(!value.equals(FormParamStore.NULL_VALUE)){
-                filledParams.add(param);
-                if (logInfo.isShowFilledParams()) {
-                    logger.info("param "+param+" filled");
-                }
-                continue;
-            }
-
-            //先从paramStore中获取value
-            if(globalKey!=null && !"".equals(globalKey)){
-                value = paramStore.getValue(globalKey);
-            }else{
-                value = paramStore.getValue(param.getName());
-            }
-
-            if(value==null||FormParamStore.NULL_VALUE.equals(value)){
-                logger.warn("null value param "+param+" founded");
-                continue;
-            }
-
-            //如果paramStore有，则创建新的param对象
-            if(value != null){
-                param = new Param(param.getName(),value);
-            }
-
-            filledParams.add(new Param(param.getName(),param.getValue()));
-
-            if (logInfo.isShowFilledParams()) {
-                logger.info("param "+param+" filled");
-            }
-        }
-        return request.bodyForm(filledParams,Charset.forName("UTF-8"));
+        return request.bodyForm(getFilledParams(params),Charset.forName("UTF-8"));
     }
 
     public void setLogInfo(RequestLogInfo logInfo) {

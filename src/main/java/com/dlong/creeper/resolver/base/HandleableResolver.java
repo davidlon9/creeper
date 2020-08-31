@@ -140,6 +140,9 @@ public class HandleableResolver extends SequentialResolver{
         Object executionHandler  = null;
         if (target instanceof Method) {
             Method method = (Method) target;
+            if(!(method.isAnnotationPresent(AfterMethod.class) || method.isAnnotationPresent(BeforeMethod.class))){
+                handlerMap.put("after",method);
+            }
             ReflectionUtils.doWithMethods(this.handleClass, m -> {
                 BeforeMethod beforeMethod = AnnotationUtils.getAnnotation(m, BeforeMethod.class);
                 AfterMethod afterMethod = AnnotationUtils.getAnnotation(m, AfterMethod.class);
@@ -165,7 +168,7 @@ public class HandleableResolver extends SequentialResolver{
                         handlerMap.put("execution",m);
                     }
                 }
-            },m -> m.isAnnotationPresent(BeforeMethod.class) || m.isAnnotationPresent(AfterMethod.class) || m.isAnnotationPresent(ExecutionMethod.class));
+            });
             beforeHandler = handlerMap.get("before");
             executionHandler = handlerMap.get("execution");
             afterHandler = handlerMap.get("after");
