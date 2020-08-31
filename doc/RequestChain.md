@@ -232,7 +232,8 @@ ContextParamStore用于存储SpringEl表达式中的对象，SpringEl表达式�
 | @MultiRequestQueue        | stopConditionExpr         |  
 
 ## 控制执行顺序
-通过后处理器的返回值，来控制一个请求链中请求的执行顺序，请求的后处理器返回值，决定了将要执行的下一请求。
+通过后处理器的返回值，来控制一个请求链中请求的执行顺序，请求的后处理器返回值，决定了将要执行的下一请求。  
+前处理器无法控制执行顺序，只能用来控制是否跳过当前请求的执行。
 ### MoveAction
 标准的后处理器返回类型，可以使用MoveActions工厂类来快捷创建实例，或直接用new创建对应MoveAction实例。
 ContinueAction是一个特例，仅可在前处理器作为返回值类型。
