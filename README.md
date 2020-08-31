@@ -1,4 +1,4 @@
-## 简介
+# 简介
 基于HttpClient-Fluent拓展的面向Java注解编程的爬虫框架，将关注点放在Http请求响应的数据解析上，使爬虫开发更迅速、简洁，且拥有更高的维护性。    
 
 使用注解管理Http请求的链接、参数、请求头、Cookie等信息，支持SpringEl解析。  
@@ -8,7 +8,7 @@
 
 也就是说，仅需要一个类，就能够迅速完成一个复杂的爬虫程序。
 
-## 示例
+# 示例
 
 首先熟悉一下HttpClient-Fluent的基本使用方式
 
@@ -28,11 +28,11 @@ HttpResponse httpResponse = response.returnResponse();
 ```
 HttpClient-Fluent已经帮助我们节省了很多代码，但是对于请求创建的链接参数等信息仍然需要编写代码。而且当代码累积过多，就很难管理，上述例子对问题的暴露可能不够明显，可以参考我使用HttpClient-Fluent写的[12306爬虫程序](https://github.com/davidlon9/creeper/blob/master/src/main/java/demo/traiker/main/fluent/LoginByCode.java)，接下来我将用Creeper来重构这个12306爬虫程序。
 
-### Request映射配置
+## Request映射配置
 使用步骤：
 - 第一步 ([构建Request映射配置类](#构建Request映射配置类))：用一个接口来配置HttpClient请求，在接口方法中使用注解来配置请求的链接、参数、请求头。
 - 第二步 ([调用Request配置接口实例](#调用Request配置接口实例))：生成请求配置接口的代理对象，然后使用代理对象调用接口中的方法，返回一个请求或请求执行后的结果，接下来只需要对结果做处理即可。
-#### 构建Request映射配置类
+### 构建Request映射配置类
 针对12306登陆编写一个链接配置类LoginMapping，以下例子中的方法均返回了String，表示该请求执行后的响应体字符串，更多可用返回值请查看[Request配置接口方法的可用返回类型](#Request配置接口方法的可用返回类型)
 ```java
 //接口上注解Host，该接口下所有的请求链接都以该host为域名
@@ -88,7 +88,7 @@ public interface LoginMapping {
 }
 ```
 
-#### 调用Request配置接口实例
+### 调用Request配置接口实例
 生成12306登陆请求配置接口的代理对象，然后调用代理对象获取请求结果并做处理，代码省略了对结果的处理部分，完整代码请查看  
 [12306映射配置登陆处理](https://github.com/davidlon9/creeper/blob/master/src/main/java/demo/traiker/main/fluent/LoginHandle.java)
 ```java
@@ -123,7 +123,7 @@ String uamauthclient = loginMapping.uamauthclient(token);
 String userinfo = loginMapping.userinfo();
 ```
 可以看到上述代码，将请求链接的配置与请求执行后的处理完全分离了，使开发者将重心放在请求结果的处理上。
-#### Request配置接口方法的可用返回类型
+### Request配置接口方法的可用返回类型
 上述示例中均返回了String类型，可以使用以下类型替换Sting类型，下面也列举出了HttpClient-Fluent中对应类型实例的获取方式
 
 | 返回值类名   | 所属包                        |对应HttpClient-Fluent的获取方式                                               | 
@@ -136,13 +136,13 @@ String userinfo = loginMapping.userinfo();
 | InputStream  | java.io                       | Executor.newInstance().execute(Request.Get(URL)).returnContent().asStream() |
 | byte[]       |                               | Executor.newInstance().execute(Request.Get(URL)).returnContent().asBytes()  |
 
-### RequestChain映射处理类
+## RequestChain映射处理类
 与Request映射配置的方式类似，只不过RequestChain对于请求的执行又增加了顺序与处理，使用注解配置请求的同时，可以直接处理对应请求。  
 使用步骤：
 - 第一步（[创建RequestChain映射处理类](#创建RequestChain映射处理类)）：创建一个类，并在类上注解[RequestChain类型注解](#RequestChain类型注解)，将该类视为一个请求链
 - 第二步（[创建RequestChain映射处理类](#创建RequestChain映射处理类)）：在类中创建方法，并在方法上注解[SeqRequest类型注解](#SeqRequest类型注解)，将该方法视为一个在该请求链中的序列请求
 - 第三步（[执行RequestChain](#执行RequestChain)）：生成一个请求链执行器，将前两步中创建好的请求链类传入，然后执行该请求链。该请求链内的所有请求会依次执行，直至最后一个请求执行成功，视为该请求链执行成功。
-#### 创建RequestChain映射处理类
+### 创建RequestChain映射处理类
 针对12306登陆编写一个RequestChain映射处理类，请求的方法格式将与之前Request映射配置类不同。  
 - 请求执行后的结果，将放在参数中，然后直接在方法体中处理结果，可用参数请参考[可用参数](#可用参数)。
 - 而返回值将用来控制请求的执行顺序，具体请参考[控制请求执行顺序](#可用参数)。
@@ -286,7 +286,7 @@ public class LoginChainSimple {
     }
 }
 ```
-#### 执行RequestChain
+### 执行RequestChain
 创建一个RequestChain执行器，传入上面已经编写好的12306登陆请求链类（LoginChainSimple.class），然后执行该请求链。  
 执行器将会按顺序执行每个请求，然后在每个请求执行后，会调用请求处理方法，即上面例子中的每个被注解了@SeqRequest的方法。  
 每个请求处理方法，除了对当前请求的执行结果处理外，还需要对下一请求中的动态参数进行赋值。  
