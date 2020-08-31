@@ -1,16 +1,39 @@
-## RequestChain使用文档
+# RequestChain使用文档
+
+## 基本概念
 ### 请求链
 请求链[RequestChain]是一系列按顺序排序的[序列请求](#序列请求)[SeqRequest]或请求链的集合，支持嵌套请求链。
 ### 序列请求
 序列请求[SeqRequest]仅存在于请求链中，序列请求的基本构成要素，除了拥有请求的链接、参数、头等信息外，还多了一个后处理器，用于在请求自动执行过后，负责处理响应信息。当然也可以添加一个前处理，用于在执行前处理，详情请查看[前后处理器](#前后处理器)
+### 序列对象
+序列对象是可以被按顺序执行的对象，序列对象有请求链[RequestChain]与序列请求[SeqRequest]两大类，@RequestChain与@SeqRequest注解仅是最基础的两个注解，除了这两个注解外还有很多可用的请求链与序列请求注解
+| 请求链[RequestChain]类型注解            | 序列请求[SeqRequest]类型注解          | 
+| :-------------------------------------- | :------------------------------------ |
+| @RequestChain（请求链）                  | @SeqRequest （序列请求）              |  
+| @MultiRequestChain （多线程执行的请求链）| @MultiRequest （多线程执行的请求）    |
+| @MultiUserExecutor （多用户多线程执行）  | @MultiRequestQueue （多线程队列请求） | 
 
+除了基础的@RequestChain与@SeqRequest，其他注解都是这两个序列对象的包装，可以自定义创建一个包装执行器，或者单纯通过代码来包装请求或请求链。
 ### 请求链执行流程图
 <img src="https://raw.githubusercontent.com/davidlon9/creeper/master/doc/images/%E8%AF%B7%E6%B1%82%E9%93%BE%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B%E5%9B%BE.png" width="80%">
 
-### 前后处理器
-使用@AfterMethod与@BeforeMethod，来将一个方法声明为序列请求或请求链的AfterHandler与BeforeHandler，并在执行前后进行处理，可用参数请查看[AfterHandler与BeforeHandler的参数](#AfterHandler与BeforeHandler的参数)
+## 前后处理器
+#### 前处理器[BeforeHandler]
+前处理器的3个作用:
+- 初始化 <em>当前序列请求或请求链</em> 需要的上下文参数[ContextParamStore](#ContextParamStore)、请求参数[FormParamStore](#FormParamStore)、Cookie存储[CookieStore]
+- 手动处理HttpClient-Fluent中的Request（直接调用HttpClient原生Api处理Request），例如请求装配还缺少些参数、Cookie等信息
+- 判断当前序列请求或请求链，是否要跳过执行。
 
-#### 注解了SeqRequest类型的方法
+使用@BeforeMethod，来将一个方法声明为序列请求或请求链的后处理器[BeforeHandler]，并在其执行前进行处理，可用参数请查看[AfterHandler与BeforeHandler的参数](#AfterHandler与BeforeHandler的参数)
+#### 后处理器[AfterHandler]
+后处理器的3个作用:
+- 初始化 <em>下一序列请求或请求链</em> 需要的上下文参数[ContextParamStore](#ContextParamStore)、请求参数[FormParamStore](#FormParamStore)、Cookie存储[CookieStore]
+- 处理请求执行后的响应结果
+- 处理并指定下一序列请求（使用返回值来指定下一序列请求）
+
+使用@AfterMethod或SeqRequest类型注解，来将一个方法声明为序列请求或请求链的后处理器[AfterHandler]，并在其执行后进行处理，可用参数请查看[AfterHandler与BeforeHandler的参数](#AfterHandler与BeforeHandler的参数)
+
+#### SeqRequest类型注解后处理器
 在一个RequestChain类中，若方法上被注解了@SeqRequest类型的注解，则可以省略掉@AfterMethod注解，并默认视为该方法为一个AfterHandler。
 在请求执行后会调用该方法，返回true会继续执行下一请求，false表示执行失败终止执行。 
 ```java
@@ -52,8 +75,8 @@ public boolean checkUserInfo(Request request, ExecutionContext context){
     return true;//不跳过执行
 }
 ```
-上述例子中，当然也可以在@SeqRequest注解的方法下注解@BeforeMethod，然后再新增一个方法注解@AfterMethod("")，并指定SeqRequest的name。
-
+上述例子中，当然也可以在@SeqRequest注解的方法下注解@BeforeMethod，然后再新增一个方法注解@AfterMethod("")，并指定SeqRequest的name。  
+一般情况是不需要BeforeHandler，因为Request已经被组装好了，只需要AfterHandler处理请求执行结果，因此不用担心类中每个请求都要用两个方法来表示，导致阅读性变差，接下来会介绍更优雅的方式。
 #### RequestChain中的前后处理器
 BeforeHandler与AfterHandler也可以用在RequestChain中，用来控制RequestChain的执行前后的处理，如下例：
 ```java
