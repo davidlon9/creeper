@@ -220,6 +220,7 @@ public boolean login(String result) throws IOException {
 ```
 ## ContextParamStore
 ContextParamStore用于存储SpringEl表达式中的对象，SpringEl表达式一般用在链接，参数上，其他可用注解值请看下表
+除了用在SpringEl上，ContextParamStore存储的对象，也可直接用在一些注解中，例如@ForEach注解。
 ### 支持SpringEl表达式的注解属性
 | 注解                      | 支持SpringEl的属性        |
 | :------------------------ | :------------------------ |
@@ -227,7 +228,7 @@ ContextParamStore用于存储SpringEl表达式中的对象，SpringEl表达式�
 | @Parameter                | name/value                |
 | @JsonResultCookie         | defaultValue              |
 | @ForIndex                 | start/end                 |
-| @While                    | coniditionExpression      |
+| @While                    | conditionExpr             |
 | @Trigger                  | startTimeExpr/endTimeExpr |
 | @MultiRequestQueue        | stopConditionExpr         |  
 
@@ -236,7 +237,6 @@ ContextParamStore用于存储SpringEl表达式中的对象，SpringEl表达式�
 前处理器无法控制执行顺序，只能用来控制是否跳过当前请求的执行。
 ### MoveAction
 标准的后处理器返回类型，可以使用MoveActions工厂类来快捷创建实例，或直接用new创建对应MoveAction实例。
-ContinueAction是一个特例，仅可在前处理器作为返回值类型。
 
 | MoveAction      | 表示的动作                                            | 
 | :-------------- | :---------------------------------------------------- |
@@ -249,13 +249,120 @@ ContinueAction是一个特例，仅可在前处理器作为返回值类型。
 | BreakAction     | 终止当前域下的[循环](#循环执行)                       |
 | ContinueAction  | 跳过当前[循环](#循环执行)的执行，继续下一次循环的执行  |  
 
+ContinueAction在前处理器中返回时，表示跳过当前循环执行，继续执行下一次循环。  
+ContinueAction在后处理器中返回时，也表示继续执行下一循环，只不过当前循环已经执行了。  
+循环的详细解释请看[循环执行](#循环执行)
+
 ### Boolean
 后处理器可以返回Boolean类型的值，true表示继续执行下一请求等价于ForwardAction，false表示执行失败终结执行等价于TerminateAction
 ### 空值
 后处理器的返回类型可以为void，也就是说返回值为null。当返回值为null时，表示继续执行下一请求等价于ForwardAction
 
 ## 循环执行
+Loop注解不仅可以注解在序列请求上，也可以注解在请求链上，也就是说可以注解在任意序列对象上，将序列对象的执行包装一层循环
+### 可用的Loop注解
+| 注解                     | 解释                                                                                          |  
+| :----------------------- | :-------------------------------------------------------------------------------------------- |
+| [@While](#While)         | 传入一个SpringEl的boolean表达式，循环执行直至条件不匹配                                        |
+| [@ForEach](#ForEach)     | 传入一个ContextParamStore中的集合对象的key，遍历该集合                                         |
+| [@ForIndex](#ForIndex)   | 传入一个起始数字，一个结束数字，循环类似for(int i = start;i <= end; i++)，可使用SpringEl表达式  |
+| [@Scheduler](#Scheduler) | 传入一个Trigger注解，将按照Trigger中的属性值来定期执行                                         |
+### 跳出循环
+- 返回BreakAction终止循环
+- 返回任意其他可以移动的MoveAction来终止循环，包括:ForwardAction、BackAction、JumpAction、TerminateAction、RestartAction
+- 返回false终止循环
+### 继续循环
+- 返回ContinueAction继续循环，在前处理器中返回时，会跳过当前循环的执行
+- 后处理器中返回RetryAction继续循环，会重新执行当前的循环，循环变量不会发生改变，例如在ForEach中，将再次遍历同一个对象。
+- 后处理器中返回true继续循环
 
+### 示例
+#### While
+模拟不断请求12306余票页面
+```java
+@While(conditionExpr = "${#loopNum < 10}")//循环直至loopNum>=10
+@SeqRequest(index =1,name="leftTicket",description="查询余票")
+@Get("/otn/leftTicket/query")
+@Parameters({
+        @Parameter(name="leftTicketDTO.train_date",desc = "日期"),//dc
+        @Parameter(name="leftTicketDTO.from_station",desc = "出发站"),//武汉,WHN
+        @Parameter(name="leftTicketDTO.to_station",desc = "到达站"),//杭州,WHN
+        @Parameter(name="purpose_codes",value = "ADULT")})
+public MoveAction leftTicket(String result, ContextParamStore contextParamStore){
+    Integer loopNum = (Integer) contextParamStore.getValue("loopNum");
+    loopNum+=1;
+    contextParamStore.addParam("loopNum",loopNum);//覆盖掉loopNum参数
+    if(loopNum==5){//模拟抢到票
+        return new ForwardAction();//跳出循环并执行下一请求
+    }
+    return new ContinueAction(1000);//继续循环
+}
+```
+
+#### ForEach
+某PDF网站的详情页遍历处理，完整代码请看[PDF电子书爬虫](#)
+```java
+@BeforeMethod("handlePDFBookDetial")
+public boolean beforeHandlePDFBookDetial(ContextParamStore contextParamStore){
+    Collection<String> urls = new HashSet<>();
+    urls.add("http://detail1");
+    urls.add("http://detail2");
+    contextParamStore.addParam("pagePDFDetailUrls",urls);
+    return true;
+}
+
+//itemsContextKey是ContextParamStore中的Collection接口的任意对象的key
+//itemName是当前遍历对象在ContextParamStore中的key
+@ForEach(itemsContextKey = "pagePDFDetailUrls", itemName = "detailUrl")
+@SeqRequest(index = 1, description = "处理详情页面")
+@Get(value = "${#detailUrl}", urlInheritable = false)
+//${#detailUrl}在每次循环中将会解析出不同的url并执行，第一次是http://detail1，第二次是http://detail2
+public MoveAction handlePDFBookDetial(String result, ContextParamStore contextParamStore) throws IOException {
+    Object detailUrl = contextParamStore.getValue("detailUrl");//获取当前遍历的对象
+    Document rootPage = Jsoup.parse(result);
+    DZSWService.handlePDFDetail(rootPage, contextParamStore);//处理详情页面
+    return new ContinueAction(100);
+}
+```
+
+#### ForIndex
+传入一个起始数字start，一个结束数字end，循环类似for(int i = start;i <= end; i++)，执行前会把i的值放在ContextParamStore中，indexName为i值的key，下例中index的值就是当前循环中i的值
+```java
+@RequestChain
+@Host(value = "www.xgv5.com", scheme = "https")
+public class PageHandleChain {
+    @ForIndex(start = "1", end = "10",indexName = "index")//默认indexName为index，可以省略掉indexName = "index"
+    @SeqRequest(index = 1, description = "处理列表页面")
+    @Get("/category-30${#index==1?'':'_'+#index}.html")
+    //index=1时的url[http://www.xgv5.com/category-30]
+    //index=2时的url[http://www.xgv5.com/category-30_2]
+    //index=3时的url[http://www.xgv5.com/category-30_3]
+    //...
+    public MoveAction handlePDFListBook(String result, ContextParamStore contextParamStore) {
+        Document rootPage = Jsoup.parse(result);
+        DZSWService.handlePDFListBook(rootPage, contextParamStore);
+        return MoveActions.FORWARD();
+    }
+}
+```
+#### Scheduler
+下例中的12306登陆请求链将重复执行10次，每次间隔1秒，延迟5秒后开始，直至时间到endTime时结束执行
+```java
+@Scheduler(
+    trigger = @Trigger(
+        startTimeExpr = "${time.now()}",//开始时间
+        endTimeExpr = "${endTime}",//结束时间
+        timeInterval = 1000,//每次执行间隔
+        repeatCount = 10,//执行次数
+        delay = 5000//延迟5秒执行
+    )
+)
+@Host(value="kyfw.12306.cn",scheme="https")
+@RequestChain(name="LoginChain",description="登陆请求链")
+public class LoginChain {
+    //省略序列请求
+}
+```
 ## 其他注解
 
 
