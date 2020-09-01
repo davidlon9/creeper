@@ -364,6 +364,36 @@ public class LoginChain {
 }
 ```
 ## 其他注解
+### @JsonResultCookie
+当序列请求注解了@JsonResultCookie，在执行过后，会自动获取Json类型的响应数据中的某个json键对应的json值，然后将此值生成一个Cookie添加到CookieStore中，如下例
+```java
+@SeqRequest
+@Get("/otn/HttpZF/logdevice?algID=ZGB0eNTCXV&hashCode=s-hLl13iA3-UAXc9O4cfNSsDk203zmJffFi5kG43fxE&FMQw=0&q4f3=zh-CN&VySQ=FGEEJev5tTvG6q3axISQE1DJ36r7gqiH&VPIf=1&custID=133&VEek=unknown&dzuS=0&yD16=0&EOQP=4902a61a235fbb59700072139347967d&jp76=52d67b2a5aa5e031084733d5006cc664&hAqN=Win32&platform=WEB&ks0Q=d22ca0b81584fbea62237b14bd04c866&TeRS=824x1536&tOHY=24xx864x1536&Fvje=i1l1o1s1&q5aJ=-8&wNLf=99115dfb07133750ba677d055874de87&0aew=Mozilla/5.0%20(Windows%20NT%2010.0;%20Win64;%20x64)%20AppleWebKit/537.36%20(KHTML,%20like%20Gecko)%20Chrome/80.0.3987.116%20Safari/537.36&E3gR=4230a15ab4eb447d31ce29cfff1c2961")
+@Parameter(name = "timestamp",value = "${time.now()}")
+    //把Json结果中key为dfp的值，视为一个名为RAIL_DEVICEID的Cookie，并添加至CookieStore
+    @JsonResultCookie(jsonKey ="dfp",name = "RAIL_DEVICEID",domain = ".12306.cn",cache = true),
+    //把Json结果中key为exp的值，视为一个名为RAIL_EXPIRATION的Cookie，并添加至CookieStore
+    @JsonResultCookie(jsonKey ="exp",name = "RAIL_EXPIRATION",domain = ".12306.cn",cache = true)})
+public Object deivceCookie(FormParamStore paramStore) {
+    return true;//返回true表示执行成功，继续执行下一请求
+}
 
+```
+### @FileRecordsIgnore
+当一个在循环中的序列请求注解了@FileRecordsIgnore，  
+在序列请求的循环执行前，将读取存储在指定文件中历史链接，若当前链接是历史链接，则跳过当前执行。  
+在序列请求的循环执行后，将把请求的链接存储在指定文件中。  
+下例循环执行中，每个被执行过的请求链接，都将存储在demo.txt中，若程序终止，下次运行该程序时，将跳过已经执行过的请求。
+```java
+@ForEach(itemsContextKey = "pagePDFDetailUrls", itemName = "detailUrl")
+@SeqRequest(index = 2, description = "处理详情页面")
+@Get(value = "${#detailUrl}", urlInheritable = false)
+@FileRecordsIgnore(filePath = "D:\\repository\\traiker\\records\\demo.txt")
+public MoveAction handlePDFBookDetial(String result, ContextParamStore contextParamStore) throws IOException {
+    Document rootPage = Jsoup.parse(result);
+    DZSWService.handlePDFDetail(rootPage, contextParamStore);
+    return new ContinueAction(100);
+}
+```
 
 
