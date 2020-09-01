@@ -8,11 +8,8 @@
 
 也就是说，仅需要一个类，就能够迅速完成一个复杂的爬虫程序。
 
-# 文档与示例文件
-[请求链使用文档](https://github.com/davidlon9/creeper/blob/master/doc/RequestChain.md)  
-[请求链12306登陆](https://github.com/davidlon9/creeper/blob/master/src/main/java/demo/traiker/main/creeper/LoginChain.java)  
-[映射配置12306登陆](https://github.com/davidlon9/creeper/blob/master/src/main/java/demo/traiker/main/fluent/LoginMapping.java)  
-[映射配置12306登陆的处理](https://github.com/davidlon9/creeper/blob/master/src/main/java/demo/traiker/main/fluent/LoginHandle.java)  
+# 文档
+[RequestChain使用文档](https://github.com/davidlon9/creeper/blob/master/doc/RequestChain.md)  
 
 # 示例
 
