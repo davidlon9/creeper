@@ -153,15 +153,15 @@ public class ChainBeforeAfterHandlerDemo{
 当然RequestChain的前后处理器都不是必须的，可以自己按需求来选择，甚至可以不要。
 
 ### 前后处理器方法的可用参数类型
-如果使用了不支持的参数，则该参数为空
-| 参数类型         | 所属包                               | BeforeHandler是否可用  | AfterHandler是否可用  | 
-| :---------------- | :---------------------------------- | :-------------------: | :--------------------: |
-| Request           | org.apache.http.client.fluent       | √ | × |
-| HttpResponse      | org.apache.http                     | × | √ |
-| String            | java.lang                           | × | √ |
-| [FormParamStore](#FormParamStore)    | com.dlong.creeper.execution.context | √ | √ | 
-| [ContextParamStore](#ContextParamStore) | com.dlong.creeper.execution.context | √ | √ |
-| CookieStore       | org.apache.http.client              | √ | √ |  
+如果使用了不支持的参数，则该参数为空，String类型的参数在后处理器中是响应体的字符串值。
+| 参数类型                                         | 所属包                              | BeforeHandler是否可用  | AfterHandler是否可用  | 
+| :----------------------------------------------- | :---------------------------------- | :-------------------: | :--------------------: |
+| Request                                          | org.apache.http.client.fluent       | √ | × |
+| HttpResponse                                     | org.apache.http                     | × | √ |
+| String                                           | java.lang                           | × | √ |
+| [FormParamStore](#FormParamStore)                | com.dlong.creeper.execution.context | √ | √ | 
+| [ContextParamStore](#ContextParamStore)          | com.dlong.creeper.execution.context | √ | √ |
+| CookieStore                                      | org.apache.http.client              | √ | √ |  
 | [ExecutionContext](#执行上下文ExecutionContext)  | com.dlong.creeper.execution.context | √ | √ |  
 
 ### 前后处理器方法的可用返回类型
