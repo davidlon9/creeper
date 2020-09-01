@@ -64,7 +64,7 @@ public class LoginChain {
 ## 前后处理器
 ### 前处理器[BeforeHandler]
 前处理器的3个作用:
-- 初始化 <em>当前序列请求或请求链</em> 需要的上下文参数[ContextParamStore](#ContextParamStore)、请求参数[FormParamStore](#FormParamStore)、Cookie存储[CookieStore]
+- 初始化<em>  当前序列请求或请求链  </em>需要的上下文参数[ContextParamStore](#ContextParamStore)、请求参数[FormParamStore](#FormParamStore)、Cookie存储[CookieStore]
 - 手动处理HttpClient-Fluent中的Request（直接调用HttpClient原生Api处理Request），例如请求装配还缺少些参数、Cookie等信息
 - 判断当前序列请求或请求链，是否要跳过执行。
 
@@ -73,7 +73,7 @@ public class LoginChain {
 )
 ### 后处理器[AfterHandler]
 后处理器的3个作用:
-- 初始化 <em>下一序列请求或请求链</em> 需要的上下文参数[ContextParamStore](#ContextParamStore)、请求参数[FormParamStore](#FormParamStore)、Cookie存储[CookieStore]
+- 初始化<em>  下一序列请求或请求链  </em>需要的上下文参数[ContextParamStore](#ContextParamStore)、请求参数[FormParamStore](#FormParamStore)、Cookie存储[CookieStore]
 - 处理请求执行后的响应结果
 - 处理并指定下一序列请求（使用返回值来指定下一序列请求）
 
