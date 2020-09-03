@@ -1,13 +1,13 @@
 package demo.traiker.main.fluent;
 
 import com.alibaba.fastjson.JSONObject;
-import com.dlong.creeper.resolver.FluentRequestMappingMananger;
+import com.dlong.creeper.resolver.FluentRequestMananger;
 import demo.traiker.resovler.CallbackParam;
 
 public class LoginHandleSimple {
     public static void main(String[] args) {
         //创建一个请求管理器，在该管理器下获取一个LoginMapping代理对象
-        LoginMapping loginMapping = new FluentRequestMappingMananger().getClassProxy(LoginMapping.class);
+        LoginMapping loginMapping = new FluentRequestMananger().getClassProxy(LoginMapping.class);
         //第一步 deviceCookie中提取两个必备cookie
         String deivceCookie = loginMapping.deviceCookie();
         //此处处理代码省略

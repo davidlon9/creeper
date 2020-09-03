@@ -2,7 +2,7 @@ package com.dlong.creeper.resolver;
 
 import com.dlong.creeper.exception.RuntimeResolveException;
 import com.dlong.creeper.exception.UnsupportedFluentReturnTypeException;
-import com.dlong.creeper.execution.context.ContextParamStore;
+import com.dlong.creeper.execution.context.ExecutionContext;
 import com.dlong.creeper.execution.context.FormParamStore;
 import com.dlong.creeper.execution.request.DefaultRequestBuilder;
 import com.dlong.creeper.execution.request.HttpRequestBuilder;
@@ -13,7 +13,9 @@ import org.apache.http.client.fluent.Content;
 import org.apache.http.client.fluent.Executor;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.client.fluent.Response;
+import org.apache.log4j.Logger;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.InvocationHandler;
@@ -25,31 +27,27 @@ import java.util.List;
 import java.util.Map;
 
 public class FluentRequestInvocationHandler implements InvocationHandler{
-    private ContextParamStore context;
+    private Logger logger = Logger.getLogger(FluentRequestInvocationHandler.class);
+
+    private ExecutionContext context;
     private HttpRequestBuilder requestBuilder;
     private Map<AnnotatedElement, RequestInfo> requestInfoMap;
-    private Executor executor;
 
     private static final List<Class<?>> AFTER_EXECUTE_RETURN_TYPES = Arrays.asList(HttpResponse.class, Content.class, String.class, InputStream.class, Response.class);
     private static final Class<com.dlong.creeper.annotation.Parameter> PARAMETER_ANNO_CLASS = com.dlong.creeper.annotation.Parameter.class;
 
-    public FluentRequestInvocationHandler(Class<?> mappingClass, ContextParamStore context, Executor executor) {
-        this.requestInfoMap = new DefaultRequestInfoResolver().resolve(mappingClass);
-        this.requestBuilder = new DefaultRequestBuilder(context, new FormParamStore());
+    public FluentRequestInvocationHandler(Class<?> mappingClass, ExecutionContext context) {
         if(context != null){
             this.context = context;
+        }else{
+            this.context = new ExecutionContext();
         }
-        if(executor != null){
-            this.executor = executor;
-        }
+        this.requestInfoMap = new DefaultRequestInfoResolver().resolve(mappingClass);
+        this.requestBuilder = new DefaultRequestBuilder(context.getContextStore(), new FormParamStore());
     }
 
-    public FluentRequestInvocationHandler(Class<?> rootClass, ContextParamStore context) {
-        this(rootClass,context,Executor.newInstance());
-    }
-
-    public FluentRequestInvocationHandler(Class<?> rootClass) {
-        this(rootClass,new ContextParamStore(),Executor.newInstance());
+    public FluentRequestInvocationHandler(Class<?> mappingClass) {
+        this(mappingClass,null);
     }
 
     @Override
@@ -59,7 +57,7 @@ public class FluentRequestInvocationHandler implements InvocationHandler{
         setNullParamsAsEmpty(requestInfo);
 
         //解析method被注解Parameter的参数，参数值将作为Http参数
-        addArgsParams(requestInfo,method,args);
+        addArgsParamsToStore(method,args);
 
         Class<?> returnType = method.getReturnType();
         Request request = this.requestBuilder.buildRequest(requestInfo);
@@ -67,7 +65,7 @@ public class FluentRequestInvocationHandler implements InvocationHandler{
         if(returnType.equals(Request.class)){
             result = request;
         }else if(AFTER_EXECUTE_RETURN_TYPES.contains(returnType)){
-            Response response = executor.execute(request);
+            Response response = executeRequest(request);
             if(returnType.equals(String.class)){
                 result = response.returnContent().asString();
             }else if(returnType.equals(HttpResponse.class)){
@@ -80,11 +78,17 @@ public class FluentRequestInvocationHandler implements InvocationHandler{
                 result = response;
             }
         }else if(returnType.getSimpleName().equals("byte[]")){
-            result = executor.execute(request).returnContent().asBytes();
+            result = executeRequest(request).returnContent().asBytes();
         }else{
             throw new UnsupportedFluentReturnTypeException("please use these types as return type. [org.apache.http.client.fluent.Request.class, org.apache.http.HttpResponse.class, String.class, InputStream.class, Response.class]");
         }
         return result;
+    }
+
+    private Response executeRequest(Request request) throws IOException {
+        Response response = context.getExecutor().execute(request);
+        logger.info("request is executed in method!\n");
+        return response;
     }
 
     private void setNullParamsAsEmpty(RequestInfo requestInfo) {
@@ -100,11 +104,7 @@ public class FluentRequestInvocationHandler implements InvocationHandler{
         requestInfo.setParams(res);
     }
 
-    private void addArgsParams(RequestInfo requestInfo, Method method, Object[] args) {
-        List<Param> params = requestInfo.getParams();
-        if(params == null){
-            params = new ArrayList<>();
-        }
+    private void addArgsParamsToStore(Method method, Object[] args) {
         Parameter[] parameters = method.getParameters();
         for (int i = 0; i < parameters.length; i++) {
             Parameter parameter = parameters[i];
@@ -124,19 +124,10 @@ public class FluentRequestInvocationHandler implements InvocationHandler{
                         argVal = "";
                     }
                 }
-                String argStr = argVal.toString();
-                params.add(new Param(paramName,argStr));
+                context.getParamStore().addParam(paramName,argVal.toString());
             }else{
                 throw new RuntimeResolveException("parameter "+parameter.getName()+" of method "+method.getName()+" does't annotated with @Parameter");
             }
         }
-    }
-
-    public ContextParamStore getContext() {
-        return context;
-    }
-
-    public Executor getExecutor() {
-        return executor;
     }
 }
