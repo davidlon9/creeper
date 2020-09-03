@@ -1,4 +1,52 @@
 # RequestChain使用文档
+## 目录
+  * [基本概念](#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5)
+    * [请求链](#%E8%AF%B7%E6%B1%82%E9%93%BE)
+    * [序列请求](#%E5%BA%8F%E5%88%97%E8%AF%B7%E6%B1%82)
+    * [序列对象](#%E5%BA%8F%E5%88%97%E5%AF%B9%E8%B1%A1)
+    * [请求链执行流程图](#%E8%AF%B7%E6%B1%82%E9%93%BE%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B%E5%9B%BE)
+  * [声明请求链与请求](#%E5%A3%B0%E6%98%8E%E8%AF%B7%E6%B1%82%E9%93%BE%E4%B8%8E%E8%AF%B7%E6%B1%82)
+    * [请求链](#%E8%AF%B7%E6%B1%82%E9%93%BE-1)
+    * [序列请求](#%E5%BA%8F%E5%88%97%E8%AF%B7%E6%B1%82-1)
+    * [引用请求与请求链](#%E5%BC%95%E7%94%A8%E8%AF%B7%E6%B1%82%E4%B8%8E%E8%AF%B7%E6%B1%82%E9%93%BE)
+    * [Path类型注解](#path%E7%B1%BB%E5%9E%8B%E6%B3%A8%E8%A7%A3)
+  * [前后处理器](#%E5%89%8D%E5%90%8E%E5%A4%84%E7%90%86%E5%99%A8)
+    * [前处理器[BeforeHandler]](#%E5%89%8D%E5%A4%84%E7%90%86%E5%99%A8beforehandler)
+    * [后处理器[AfterHandler]](#%E5%90%8E%E5%A4%84%E7%90%86%E5%99%A8afterhandler)
+    * [示例](#%E7%A4%BA%E4%BE%8B)
+      * [方法模式示例](#%E6%96%B9%E6%B3%95%E6%A8%A1%E5%BC%8F%E7%A4%BA%E4%BE%8B)
+        * [SeqRequest类型注解后处理器](#seqrequest%E7%B1%BB%E5%9E%8B%E6%B3%A8%E8%A7%A3%E5%90%8E%E5%A4%84%E7%90%86%E5%99%A8)
+        * [序列请求同时拥有前后处理器](#%E5%BA%8F%E5%88%97%E8%AF%B7%E6%B1%82%E5%90%8C%E6%97%B6%E6%8B%A5%E6%9C%89%E5%89%8D%E5%90%8E%E5%A4%84%E7%90%86%E5%99%A8)
+        * [RequestChain中的前后处理器](#requestchain%E4%B8%AD%E7%9A%84%E5%89%8D%E5%90%8E%E5%A4%84%E7%90%86%E5%99%A8)
+        * [前后处理器方法的可用参数类型](#%E5%89%8D%E5%90%8E%E5%A4%84%E7%90%86%E5%99%A8%E6%96%B9%E6%B3%95%E7%9A%84%E5%8F%AF%E7%94%A8%E5%8F%82%E6%95%B0%E7%B1%BB%E5%9E%8B)
+        * [前后处理器方法的可用返回类型](#%E5%89%8D%E5%90%8E%E5%A4%84%E7%90%86%E5%99%A8%E6%96%B9%E6%B3%95%E7%9A%84%E5%8F%AF%E7%94%A8%E8%BF%94%E5%9B%9E%E7%B1%BB%E5%9E%8B)
+      * [接口模式示例](#%E6%8E%A5%E5%8F%A3%E6%A8%A1%E5%BC%8F%E7%A4%BA%E4%BE%8B)
+        * [ExecutionHandler接口](#executionhandler%E6%8E%A5%E5%8F%A3)
+        * [AfterHandler接口](#afterhandler%E6%8E%A5%E5%8F%A3)
+        * [BeforeHandler接口](#beforehandler%E6%8E%A5%E5%8F%A3)
+        * [RequestChain的处理器接口](#requestchain%E7%9A%84%E5%A4%84%E7%90%86%E5%99%A8%E6%8E%A5%E5%8F%A3)
+  * [ExecutionContext执行上下文](#executioncontext%E6%89%A7%E8%A1%8C%E4%B8%8A%E4%B8%8B%E6%96%87)
+    * [FormParamStore](#formparamstore)
+      * [参数Parameter](#%E5%8F%82%E6%95%B0parameter)
+    * [ContextParamStore](#contextparamstore)
+      * [支持SpringEl表达式的注解属性](#%E6%94%AF%E6%8C%81springel%E8%A1%A8%E8%BE%BE%E5%BC%8F%E7%9A%84%E6%B3%A8%E8%A7%A3%E5%B1%9E%E6%80%A7)
+  * [控制执行顺序](#%E6%8E%A7%E5%88%B6%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F)
+    * [MoveAction](#moveaction)
+    * [Boolean](#boolean)
+    * [空值](#%E7%A9%BA%E5%80%BC)
+  * [循环执行](#%E5%BE%AA%E7%8E%AF%E6%89%A7%E8%A1%8C)
+    * [可用的Loop注解](#%E5%8F%AF%E7%94%A8%E7%9A%84loop%E6%B3%A8%E8%A7%A3)
+    * [跳出循环](#%E8%B7%B3%E5%87%BA%E5%BE%AA%E7%8E%AF)
+    * [继续循环](#%E7%BB%A7%E7%BB%AD%E5%BE%AA%E7%8E%AF)
+    * [示例](#%E7%A4%BA%E4%BE%8B-1)
+      * [While](#while)
+      * [ForEach](#foreach)
+      * [ForIndex](#forindex)
+      * [Scheduler](#scheduler)
+  * [其他注解](#%E5%85%B6%E4%BB%96%E6%B3%A8%E8%A7%A3)
+    * [@JsonResultCookie](#jsonresultcookie)
+    * [@FileRecordsIgnore](#filerecordsignore)
+
 ## 基本概念
 
 ### 请求链
@@ -542,5 +590,4 @@ public MoveAction handlePDFBookDetial(String result, ContextParamStore contextPa
     return new ContinueAction(100);
 }
 ```
-
 

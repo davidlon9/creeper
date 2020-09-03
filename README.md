@@ -8,11 +8,16 @@
 
 也就是说，仅需要一个类，就能够迅速完成一个复杂的爬虫程序。
 
-[Request映射配置示例](#Request映射配置)  
-[RequestChain映射处理类示例](#RequestChain映射处理类)  
 [RequestChain使用文档](https://github.com/davidlon9/creeper/blob/master/doc/RequestChain.md)  
 
 # 示例
+* [Request映射配置](#request%E6%98%A0%E5%B0%84%E9%85%8D%E7%BD%AE)
+  * [构建Request映射配置类](#%E6%9E%84%E5%BB%BArequest%E6%98%A0%E5%B0%84%E9%85%8D%E7%BD%AE%E7%B1%BB)
+  * [调用Request配置接口实例](#%E8%B0%83%E7%94%A8request%E9%85%8D%E7%BD%AE%E6%8E%A5%E5%8F%A3%E5%AE%9E%E4%BE%8B)
+  * [Request配置接口方法的可用返回类型](#request%E9%85%8D%E7%BD%AE%E6%8E%A5%E5%8F%A3%E6%96%B9%E6%B3%95%E7%9A%84%E5%8F%AF%E7%94%A8%E8%BF%94%E5%9B%9E%E7%B1%BB%E5%9E%8B)
+* [RequestChain映射处理类](#requestchain%E6%98%A0%E5%B0%84%E5%A4%84%E7%90%86%E7%B1%BB)
+  * [创建RequestChain映射处理类](#%E5%88%9B%E5%BB%BArequestchain%E6%98%A0%E5%B0%84%E5%A4%84%E7%90%86%E7%B1%BB)
+  * [执行RequestChain](#%E6%89%A7%E8%A1%8Crequestchain)
 
 首先熟悉一下HttpClient-Fluent的基本使用方式
 
@@ -97,7 +102,7 @@ public interface LoginMapping {
 [12306映射配置登陆处理](https://github.com/davidlon9/creeper/blob/master/src/main/java/demo/traiker/main/fluent/LoginHandle.java)
 ```java
 //创建一个请求管理器，在该管理器下获取一个LoginMapping代理对象
-LoginMapping loginMapping = new FluentRequestMappingMananger().getClassProxy(LoginMapping.class);
+LoginMapping loginMapping = new FluentRequestMananger().getClassProxy(LoginMapping.class);
 //第一步 deviceCookie中提取两个必备cookie
 String deviceCookie = loginMapping.deviceCookie();
 //此处处理代码省略
@@ -143,9 +148,11 @@ String userinfo = loginMapping.userinfo();
 ## RequestChain映射处理类
 与Request映射配置的方式类似，只不过RequestChain对于请求的执行又增加了顺序与处理，使用注解配置请求的同时，可以直接处理对应请求。  
 使用步骤：
-- 第一步（[创建RequestChain映射处理类](#创建RequestChain映射处理类)）：创建一个类，并在类上注解[RequestChain类型注解](#RequestChain类型注解)，将该类视为一个请求链
-- 第二步（[创建RequestChain映射处理类](#创建RequestChain映射处理类)）：在类中创建方法，并在方法上注解[SeqRequest类型注解](#SeqRequest类型注解)，将该方法视为一个在该请求链中的序列请求
-- 第三步（[执行RequestChain](#执行RequestChain)）：生成一个请求链执行器，将前两步中创建好的请求链类传入，然后执行该请求链。该请求链内的所有请求会依次执行，直至最后一个请求执行成功，视为该请求链执行成功。
+- 第一步：创建一个类，并在类上注解[RequestChain类型注解](#https://github.com/davidlon9/creeper/blob/master/doc/RequestChain.md#%E5%BA%8F%E5%88%97%E5%AF%B9%E8%B1%A1)，
+将该类视为一个请求链
+- 第二步：在类中创建方法，并在方法上注解[SeqRequest类型注解](#https://github.com/davidlon9/creeper/blob/master/doc/RequestChain.md#%E5%BA%8F%E5%88%97%E5%AF%B9%E8%B1%A1)，
+将该方法视为一个在该请求链中的序列请求
+- 第三步：生成一个请求链执行器，将前两步中创建好的请求链类传入，然后执行该请求链。该请求链内的所有请求会依次执行，直至最后一个请求执行成功，视为该请求链执行成功。
 ### 创建RequestChain映射处理类
 针对12306登陆编写一个RequestChain映射处理类，请求的方法格式将与之前Request映射配置类不同。  
 - 请求执行后的结果，将放在参数中，然后直接在方法体中处理结果，可用参数请参考[可用参数](#可用参数)。
