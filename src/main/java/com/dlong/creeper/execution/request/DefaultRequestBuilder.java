@@ -98,7 +98,7 @@ public class DefaultRequestBuilder implements HttpRequestBuilder {
         request.setHeaders(headers);
         request.setHeader(new BasicHeader("User-Agents","Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.26 Safari/537.36 Core/1.63.6788.400 QQBrowser/10.3.2864.400"));
 
-        logger.info("finish build request "+ WrapUtil.enAngleBrackets(request.toString(),true) +"\n");
+        logger.info("finish build request "+ WrapUtil.enAngleBrackets(request.toString(),true));
         return request;
     }
 

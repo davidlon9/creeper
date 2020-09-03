@@ -18,7 +18,7 @@ public class WhileLooperResolver extends BaseLooperResolver<WhileLooper>{
     public WhileLooper resolve() throws AnnotationNotFoundException {
         WhileLooper whileLooper = super.resolve(new WhileLooper());
         Map<String, Object> attributes = AnnotationUtils.getAnnotationAttributes(getAnnotation());
-        Object coniditionExpression = attributes.get("coniditionExpression");
+        Object coniditionExpression = attributes.get("conditionExpr");
         whileLooper.setConiditionExpression(coniditionExpression.toString());
         return whileLooper;
     }
