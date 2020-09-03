@@ -24,78 +24,89 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
 
-public class ChainsMappingResolver {
-    private Class<?> rootClass;
-
-    private Map<String,RequestChainEntity> allRequestChainNameMap = new HashMap<>();
-
-    private Map<AnnotatedElement, RequestInfo> rootMethodInfoMap;
+public class ChainsMappingResolver implements ChainResolver{
+    private Logger logger=Logger.getLogger(ChainsMappingResolver.class);
 
     private boolean fixIndex = true;
 
-    private Logger logger=Logger.getLogger(ChainsMappingResolver.class);
-
-    public ChainsMappingResolver(Class<?> rootClass) {
-        this(rootClass,true);
+    public ChainsMappingResolver() {
     }
 
-    public ChainsMappingResolver(Class<?> rootClass,boolean fixIndex) {
-        this.rootClass = rootClass;
+    public ChainsMappingResolver(boolean fixIndex) {
         this.fixIndex = fixIndex;
-        this.rootMethodInfoMap = new DefaultRequestInfoResolver().resolve(rootClass);
     }
 
-    public RequestChainEntity resolve() {
+    public RequestChainEntity resolve(Class chainClass) {
         RequestChainEntity requestChainEntity = null;
         try {
-            requestChainEntity = resolveChainSequentials(rootClass);
+            Map<AnnotatedElement, RequestInfo>  chainRequestInfoMap = new DefaultRequestInfoResolver().resolve(chainClass);
+            requestChainEntity = resolveChainSequentials(chainClass,chainRequestInfoMap);
             setChainRecorderToRequest(requestChainEntity);
             SequentialResolver.assignSequenceIds(requestChainEntity);
             logger.info("resolve Chain "+ LogNames.chain(requestChainEntity)+" successfully!\n");
 
         } catch (ResolveException e) {
             e.printStackTrace();
-            System.out.println("resolve Chain "+ LogNames.chain(requestChainEntity)+" failed!");
+            System.out.println("resolve Chain "+ LogNames.chain(chainClass)+" failed!");
         }
         return requestChainEntity;
     }
 
-    private RequestChainEntity resolveChainSequentials(Class clz) throws ResolveException {
+    private RequestChainEntity resolveChainSequentials(Class clz,Map<AnnotatedElement, RequestInfo>  chainRequestInfoMap) throws ResolveException {
         logger.info("Start resolving Chain class "+ LogNames.chain(clz));
-        ChainResolver chainResolver = ResolverFactory.getChainResolver(clz);
+        ChainAnnoResolver chainAnnoResolver = ResolverFactory.getChainResolver(clz);
 
-        if(chainResolver == null){
+        if(chainAnnoResolver == null){
             throw new ResolveException("chain class "+ LogNames.chain(clz)+" must annotate with RequestChain type annotation");
         }
+        Set<String> chainNameSets = new HashSet<>();
 
-        RequestChainEntity requestChain = chainResolver.resolveChain();
+        RequestChainEntity requestChain = chainAnnoResolver.resolveChain();
+        chainNameSets.add(requestChain.getName());
 
-        List<SequentialEntity> chainSequentialList =new ArrayList<>();
+        List<SequentialEntity> chainSequentialList = new ArrayList<>();
         requestChain.setSequentialList(chainSequentialList);
 
         //TODO request字段的parentChain未设置
         //解析chain中的所有Request请求
-        List<RequestEntity> requests = resolveRequestsForChain(requestChain);
+        List<RequestEntity> requests = resolveRequestsForChain(requestChain,chainRequestInfoMap);
         chainSequentialList.addAll(requests);
+
         //解析chain中的所有SubClass类型的请求Chain
-        List<RequestChainEntity> subClassChains = resolveSubClassForChain(requestChain);
-        chainSequentialList.addAll(subClassChains);
+        List<RequestChainEntity> subClassChains = resolveSubClassForChain(requestChain,chainRequestInfoMap);
         for (RequestChainEntity subClassChain : subClassChains) {
+            checkUniNameChain(chainNameSets, subClassChain);
             logger.info("add sub class Chain "+ LogNames.chain(subClassChain)+" to "+ LogNames.chain(requestChain));
         }
+        chainSequentialList.addAll(subClassChains);
+
         //解析chain中的所有fieldRef类型的Seq
-        List<SequentialEntity> fieldRefSeqs = resolveFieldRefsForChain(requestChain);
+        List<SequentialEntity> fieldRefSeqs = resolveFieldRefsForChain(requestChain,chainRequestInfoMap);
+        for (SequentialEntity refSeq : fieldRefSeqs) {
+            if(refSeq instanceof RequestChainEntity){
+                RequestChainEntity refChain = (RequestChainEntity) refSeq;
+                checkUniNameChain(chainNameSets, refChain);
+                logger.info("add ref Chain "+ LogNames.chain(refChain)+" to "+ LogNames.chain(requestChain));
+            }else if(refSeq instanceof RequestEntity){
+                logger.info("add ref Request "+ LogNames.request((RequestEntity) refSeq)+" to "+ LogNames.chain(requestChain));
+            }else{
+                throw new ResolveException("sequential entity not support");
+            }
+        }
         chainSequentialList.addAll(fieldRefSeqs);
 
         //SequentialList按index排序
         fixAndSortSequentialIndex(chainSequentialList);
 
-        if(allRequestChainNameMap.containsKey(requestChain.getName())){
-            throw new ResolveException("found name duplicated RequestChain "+ LogNames.chain(requestChain));
-        }
-        allRequestChainNameMap.put(requestChain.getName(), requestChain);
         logger.info("Finish resolve Chain class "+ LogNames.chain(clz));
         return requestChain;
+    }
+
+    private void checkUniNameChain(Set<String> chainNameSets, RequestChainEntity subClassChain) throws ResolveException {
+        if(chainNameSets.contains(subClassChain.getName())){
+            throw new ResolveException("found name duplicated RequestChain "+ LogNames.chain(subClassChain));
+        }
+        chainNameSets.add(subClassChain.getName());
     }
 
     private void fixAndSortSequentialIndex(List<SequentialEntity> chainSequentialList) throws ResolveException {
@@ -111,7 +122,7 @@ public class ChainsMappingResolver {
             }
             idxs.add(index);
             if(offset>0){
-                if(fixIndex){
+                if(this.fixIndex){
                     sequentialEntity.setIndex(index);
                     logger.info("Sequential "+sequentialEntity.getName()+" index "+sequentialEntity.getIndex()+" duplicated with "+prev.getName()+", greater than "+index+" index sequentials and "+sequentialEntity.getName()+" indexes will be add 1 offset");
                 }else{
@@ -122,12 +133,12 @@ public class ChainsMappingResolver {
         }
     }
 
-    private List<RequestChainEntity> resolveSubClassForChain(RequestChainEntity requestChain) throws ResolveException {
+    private List<RequestChainEntity> resolveSubClassForChain(RequestChainEntity requestChain, Map<AnnotatedElement, RequestInfo> chainRequestInfoMap) throws ResolveException {
         List<RequestChainEntity> chainSequentialList = new ArrayList<>();
         Class[] childClasses = requestChain.getChainClass().getDeclaredClasses();
         if(childClasses.length>0){
             for (Class child : childClasses) {
-                RequestChainEntity childRequestChain = resolveChainSequentials(child);
+                RequestChainEntity childRequestChain = resolveChainSequentials(child,chainRequestInfoMap);
                 if(childRequestChain !=null){
                     childRequestChain.setParent(requestChain);
                     chainSequentialList.add(childRequestChain);
@@ -137,7 +148,7 @@ public class ChainsMappingResolver {
         return chainSequentialList;
     }
 
-    private List<SequentialEntity> resolveFieldRefsForChain(RequestChainEntity requestChain) throws ResolveException {
+    private List<SequentialEntity> resolveFieldRefsForChain(RequestChainEntity requestChain,Map<AnnotatedElement, RequestInfo> chainRequestInfoMap) throws ResolveException {
         List<SequentialEntity> sequentialList = new ArrayList<>();
         Class clz = requestChain.getChainClass();
         Field[] fields = clz.getDeclaredFields();
@@ -148,20 +159,20 @@ public class ChainsMappingResolver {
                 if(field.isAnnotationPresent(ChainReference.class)){
                     sequentialList.add(resolveChainRefField(field, requestChain));
                 }else if(field.isAnnotationPresent(RequestReference.class)){
-                    sequentialList.add(resolveRequestRefField(field,requestChain));
+                    sequentialList.add(resolveRequestRefField(field,requestChain,chainRequestInfoMap));
                 }
             }
         }
         return sequentialList;
     }
 
-    private RequestEntity resolveRequestRefField(Field field,RequestChainEntity refParent) throws ResolveException {
+    private RequestEntity resolveRequestRefField(Field field,RequestChainEntity refParent,Map<AnnotatedElement, RequestInfo> chainRequestInfoMap) throws ResolveException {
         Class<?> type = field.getType();
         if(!type.equals(Method.class)) throw new ResolveException("RequestReference field "+field.getName()+" must annotate on entityTarget type");
         RequestReference requestReference = field.getAnnotation(RequestReference.class);
         Class chainClass = requestReference.chainClass();
         if(!ResolveUtil.isChainClass(chainClass)) throw new ResolveException("RequestReference field chainClass  "+chainClass+" must annotate with RequestChain type annotation");
-        String requestMethodName = requestReference.requestMethod();
+        String requestMethodName = requestReference.requestName();
         if ("".equals(requestMethodName)) requestMethodName = field.getName();
         Method chainMethod = null;
         Method[] declaredMethods = chainClass.getDeclaredMethods();
@@ -173,8 +184,8 @@ public class ChainsMappingResolver {
         if(chainMethod == null) throw new ResolveException("no such request entityTarget in chainClass "+chainClass);
         Map<AnnotatedElement, RequestInfo> methodInfoMap;
         //如果Request的Chain类是子类，且最外层父类是当前RootClass则使用RootClass解析的RequestInfoMap
-        if(ClassUtil.getOutterClass(chainClass).equals(rootClass)){
-            methodInfoMap = rootMethodInfoMap;
+        if(ClassUtil.getOutterClass(chainClass).equals(refParent.getChainClass())){
+            methodInfoMap = chainRequestInfoMap;
         }else{
             //否则使用Request的ChainClass
             methodInfoMap = new DefaultRequestInfoResolver().resolve(chainClass);
@@ -182,15 +193,15 @@ public class ChainsMappingResolver {
         RequestInfo requestInfo = methodInfoMap.get(chainMethod);
         Assert.notNull(requestInfo);
 
-        RequestEntity requestEntity = resolveRequest(refParent,chainMethod);
+        RequestEntity requestEntity = resolveRequest(refParent,chainMethod,chainRequestInfoMap);
 
         requestEntity.setIndex(requestReference.index());
         String description = requestReference.description();
         if("".equals(description)) requestEntity.setDescription(description);
         setLogInfo(requestEntity);
 
-        ChainResolver chainResolver = ResolverFactory.getChainResolver(chainClass);
-        RequestChainEntity parent = chainResolver.resolveChain();
+        ChainAnnoResolver chainAnnoResolver = ResolverFactory.getChainResolver(chainClass);
+        RequestChainEntity parent = chainAnnoResolver.resolveChain();
         requestEntity.setParent(parent);
         parent.setSequentialList(Collections.singletonList(requestEntity));
 
@@ -201,7 +212,7 @@ public class ChainsMappingResolver {
     private RequestChainEntity resolveChainRefField(Field field, RequestChainEntity parentChain) throws ResolveException {
         Class<?> type = field.getType();
         if (!ResolveUtil.isChainClass(type)) throw new ResolveException("reference chain "+type+" must annotate with RequestChain type annotation");
-        RequestChainEntity childRequestChain = new ChainsMappingResolver(type).resolve();
+        RequestChainEntity childRequestChain = new ChainsMappingResolver().resolve(type);
         ChainReference chainReference = field.getAnnotation(ChainReference.class);
         childRequestChain.setIndex(chainReference.index());
         String name = chainReference.name();
@@ -228,16 +239,16 @@ public class ChainsMappingResolver {
         }
     }
 
-    private List<RequestEntity> resolveRequests(RequestChainEntity chainEntity) {
+    private List<RequestEntity> resolveRequests(RequestChainEntity chainEntity, Map<AnnotatedElement, RequestInfo> chainRequestInfoMap) {
         Class chainClass = chainEntity.getChainClass();
         //解析method类型的RequestEntity
         ReflectionUtils.doWithMethods(chainClass, method -> {
-            resolveRequest(chainEntity, method);
+            resolveRequest(chainEntity, method, chainRequestInfoMap);
         }, ResolveUtil::isRequestMethod);
 
         //解析field类型的RequestEntity
         ReflectionUtils.doWithFields(chainClass, field -> {
-            resolveRequest(chainEntity, field);
+            resolveRequest(chainEntity, field, chainRequestInfoMap);
         }, ResolveUtil::isRequestField);
 
         Map<String, RequestEntity> requestNameMap = chainEntity.getRequestNameMap();
@@ -251,9 +262,9 @@ public class ChainsMappingResolver {
         return requests;
     }
 
-    private RequestEntity resolveRequest(RequestChainEntity chainEntity, AnnotatedElement target) {
+    private RequestEntity resolveRequest(RequestChainEntity chainEntity, AnnotatedElement target, Map<AnnotatedElement, RequestInfo> chainRequestInfoMap) {
         Class chainClass = chainEntity.getChainClass();
-        RequestInfo requestInfo = rootMethodInfoMap.get(target);
+        RequestInfo requestInfo = chainRequestInfoMap.get(target);
         Assert.notNull(requestInfo);
         RequestResolver requestResolver = ResolverFactory.getRequestResolver(chainClass, target);
         if(requestResolver==null){
@@ -271,10 +282,10 @@ public class ChainsMappingResolver {
         return requestEntity;
     }
 
-    private List<RequestEntity> resolveRequestsForChain(RequestChainEntity requestChain) {
+    private List<RequestEntity> resolveRequestsForChain(RequestChainEntity requestChain, Map<AnnotatedElement, RequestInfo> chainRequestInfoMap) {
         Class clz = requestChain.getChainClass();
         //解析请求
-        List<RequestEntity> requests = resolveRequests(requestChain);
+        List<RequestEntity> requests = resolveRequests(requestChain,chainRequestInfoMap);
 
         if(requests.size()==0){
             logger.warn("does't find any SeqRequest for "+clz);
@@ -284,10 +295,6 @@ public class ChainsMappingResolver {
             request.setParent(requestChain);
         }
         return requests;
-    }
-
-    public Class<?> getRootClass() {
-        return rootClass;
     }
 
     private void setLogInfo(RequestEntity request) {
