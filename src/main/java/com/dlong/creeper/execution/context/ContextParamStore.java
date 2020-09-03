@@ -13,21 +13,14 @@ public class ContextParamStore implements ParamStore<String,Object>,Cloneable{
     private ContextRootObject rootObject;
     private ContextExpressionParser  expressionParser;
 
-    public ContextParamStore(ContextRootObject rootObject) {
-      initEvaluationContext(rootObject);
-    }
-
-    private void initEvaluationContext(ContextRootObject rootObject){
-        if (rootObject == null) {
-            rootObject=new ContextRootObject(this);
-        }
-        this.rootObject=rootObject;
+    private void initEvaluationContext(){
+        this.rootObject = new ContextRootObject(this);
         this.evaluationContext = new StandardEvaluationContext(rootObject);
         this.expressionParser = new ContextExpressionParser(new SpelExpressionParser(),evaluationContext);
     }
 
     public ContextParamStore() {
-        this(null);
+        initEvaluationContext();
     }
 
     public Object getValue(String name){
@@ -79,7 +72,7 @@ public class ContextParamStore implements ParamStore<String,Object>,Cloneable{
             map.putAll(context);
         }
         localParams.set(map);
-        initEvaluationContext(null);
+        initEvaluationContext();
         return map;
     }
 
@@ -92,4 +85,5 @@ public class ContextParamStore implements ParamStore<String,Object>,Cloneable{
         ContextParamStore clone = (ContextParamStore) super.clone();
         return clone;
     }
+
 }
