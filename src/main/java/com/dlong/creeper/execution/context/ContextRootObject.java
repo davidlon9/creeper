@@ -9,12 +9,9 @@ public class ContextRootObject {
 
     private final Map<String,Object> context;
 
-    private final ContextParamStore contextParamStore;
-
     public ContextRootObject(ContextParamStore context) {
         this.time=new TimeUtil();
         this.context=context.getParamMap();
-        this.contextParamStore=context;
         init();
     }
 
