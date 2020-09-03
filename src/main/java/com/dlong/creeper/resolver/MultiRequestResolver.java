@@ -4,11 +4,11 @@ import com.dlong.creeper.annotation.seq.multi.MultiRequest;
 import com.dlong.creeper.exception.AnnotationNotFoundException;
 import com.dlong.creeper.model.seq.RequestInfo;
 import com.dlong.creeper.model.seq.multi.MultiRequestEntity;
-import com.dlong.creeper.resolver.base.BaseRequestResolver;
+import com.dlong.creeper.resolver.base.BaseRequestAnnoResolver;
 
 import java.lang.reflect.AnnotatedElement;
 
-public class MultiRequestResolver extends BaseRequestResolver implements RequestResolver{
+public class MultiRequestResolver extends BaseRequestAnnoResolver implements RequestResolver{
     public MultiRequestResolver(Class<?> handleClass,AnnotatedElement handler) {
         super(handleClass,handler,MultiRequest.class);
     }

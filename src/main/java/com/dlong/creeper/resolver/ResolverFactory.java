@@ -48,7 +48,7 @@ public class ResolverFactory {
         recoderAnnoResolverClassMap.put(DatabaseRecordsIgnore.class, DatabaseRecordsIgnoreResolver.class);
     }
 
-    public static ChainResolver getChainResolver(Class<?> handleClass){
+    public static ChainAnnoResolver getChainResolver(Class<?> handleClass){
         Set<Class<? extends Annotation>> annoClzs = chainAnnoResolverClassMap.keySet();
         for (Class<? extends Annotation> annoClz : annoClzs) {
             if(handleClass.isAnnotationPresent(annoClz)){
@@ -58,12 +58,12 @@ public class ResolverFactory {
         throw new RuntimeResolveException("class "+handleClass.getSimpleName()+" doesn't annotate with RequestChain Annotation");
     }
 
-    public static ChainResolver getChainResolver(Class<? extends Annotation> annoClass,Class handleClass){
+    public static ChainAnnoResolver getChainResolver(Class<? extends Annotation> annoClass, Class handleClass){
         try {
             Class<?> resolverClass = chainAnnoResolverClassMap.get(annoClass);
             Constructor constructor = resolverClass.getDeclaredConstructor(Class.class);
             constructor.setAccessible(true);
-            return (ChainResolver) constructor.newInstance(handleClass);
+            return (ChainAnnoResolver) constructor.newInstance(handleClass);
         } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
             e.printStackTrace();
         }

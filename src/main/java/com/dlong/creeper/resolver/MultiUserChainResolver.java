@@ -5,12 +5,12 @@ import com.dlong.creeper.annotation.seq.multi.LoginUser;
 import com.dlong.creeper.exception.AnnotationNotFoundException;
 import com.dlong.creeper.model.seq.multi.MultiUserChainEntity;
 import com.dlong.creeper.model.seq.multi.LoginUserInfo;
-import com.dlong.creeper.resolver.base.BaseChainResolver;
+import com.dlong.creeper.resolver.base.BaseChainAnnoResolver;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MultiUserChainResolver extends BaseChainResolver implements ChainResolver{
+public class MultiUserChainResolver extends BaseChainAnnoResolver implements ChainAnnoResolver {
     public MultiUserChainResolver(Class<?> handleClass) {
         super(handleClass, MultiUserChain.class);
     }

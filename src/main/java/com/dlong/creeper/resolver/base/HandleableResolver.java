@@ -9,7 +9,6 @@ import com.dlong.creeper.execution.handler.entity.*;
 import com.dlong.creeper.model.seq.HandleableEntity;
 import org.apache.log4j.Logger;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.annotation.Annotation;
@@ -47,7 +46,7 @@ public class HandleableResolver extends SequentialResolver{
     }
 
     private Object getHandlerInstance(Field field){
-        Object instance = BaseChainResolver.newChainClassInstance(handleClass);
+        Object instance = BaseChainAnnoResolver.newChainClassInstance(handleClass);
         field.setAccessible(true);
         Object handler = null;
         try {
@@ -55,10 +54,13 @@ public class HandleableResolver extends SequentialResolver{
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
-        Assert.isInstanceOf(SequentialHandler.class,handler);
         return handler;
     }
 
+    /**
+     * 设置Handler到实现了Handler接口的Chain类
+     * @param handleableEntity
+     */
     private void setHandlersForChainByClass(HandleableEntity handleableEntity){
         try {
             if(ChainExecutionHandler.class.isAssignableFrom(this.handleClass)){
@@ -105,22 +107,30 @@ public class HandleableResolver extends SequentialResolver{
             AfterMethod afterMethod = AnnotationUtils.getAnnotation(f, AfterMethod.class);
             ExecutionMethod executionMethod = AnnotationUtils.getAnnotation(f, ExecutionMethod.class);
             Object handlerInstance = getHandlerInstance(f);
-            if(executionMethod != null){
-                if(handleableEntity.getName().equals(executionMethod.value()) && handlerInstance instanceof ChainExecutionHandler){
-                    handlerMap.put("execution", handlerInstance);
+            if(handlerInstance instanceof ChainExecutionHandler
+                    || (executionMethod != null && handleableEntity.getName().equals(executionMethod.value()))){
+                if(handlerMap.get("execution")!=null){
+                    throw new RuntimeResolveException("chain execution handler duplicated");
                 }
+                handlerMap.put("execution", handlerInstance);
+                return;
             }
-            if(beforeMethod != null){
-                if(handleableEntity.getName().equals(beforeMethod.value()) && handlerInstance instanceof ChainBeforeHandler){
-                    handlerMap.put("before", handlerInstance);
+            if(handlerInstance instanceof ChainBeforeHandler
+                    || (beforeMethod != null && handleableEntity.getName().equals(beforeMethod.value()))){
+                if(handlerMap.get("before")!=null){
+                    throw new RuntimeResolveException("chain execution handler duplicated");
                 }
+                handlerMap.put("before", handlerInstance);
+                return;
             }
-            if(afterMethod != null){
-                if(handleableEntity.getName().equals(afterMethod.value()) && handlerInstance instanceof ChainAfterHandler){
-                    handlerMap.put("after", handlerInstance);
+            if(handlerInstance instanceof ChainAfterHandler
+                    || (afterMethod != null && handleableEntity.getName().equals(afterMethod.value()))){
+                if(handlerMap.get("before")!=null){
+                    throw new RuntimeResolveException("chain execution handler duplicated");
                 }
+                handlerMap.put("before", handlerInstance);
             }
-        },f -> f.isAnnotationPresent(BeforeMethod.class) || f.isAnnotationPresent(AfterMethod.class) || f.isAnnotationPresent(ExecutionMethod.class));
+        });
 
         Object beforeHandler = handlerMap.get("before");
         Object afterHandler = handlerMap.get("after");

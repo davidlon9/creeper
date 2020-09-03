@@ -8,10 +8,10 @@ import org.apache.log4j.Logger;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 
-public class BaseChainResolver extends LoopableSeqResolver{
-    private static Logger logger=Logger.getLogger(BaseChainResolver.class);
+public class BaseChainAnnoResolver extends LoopableSeqResolver{
+    private static Logger logger=Logger.getLogger(BaseChainAnnoResolver.class);
 
-    public BaseChainResolver(Class<?> handleClass,Class<? extends Annotation> chainAnnoClass) {
+    public BaseChainAnnoResolver(Class<?> handleClass, Class<? extends Annotation> chainAnnoClass) {
         super(handleClass,handleClass,chainAnnoClass);
     }
 

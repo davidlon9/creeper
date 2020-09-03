@@ -18,10 +18,10 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BaseRequestResolver extends LoopableSeqResolver{
-    private Logger logger = Logger.getLogger(BaseRequestResolver.class);
+public class BaseRequestAnnoResolver extends LoopableSeqResolver{
+    private Logger logger = Logger.getLogger(BaseRequestAnnoResolver.class);
 
-    public BaseRequestResolver(Class<?> handleClass, AnnotatedElement handler, Class<? extends Annotation> requestAnnoClass) {
+    public BaseRequestAnnoResolver(Class<?> handleClass, AnnotatedElement handler, Class<? extends Annotation> requestAnnoClass) {
         super(handleClass,handler,requestAnnoClass);
     }
 

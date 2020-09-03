@@ -3,9 +3,9 @@ package com.dlong.creeper.resolver;
 import com.dlong.creeper.annotation.seq.multi.MultiRequestChain;
 import com.dlong.creeper.exception.AnnotationNotFoundException;
 import com.dlong.creeper.model.seq.multi.MultiRequestChainEntity;
-import com.dlong.creeper.resolver.base.BaseChainResolver;
+import com.dlong.creeper.resolver.base.BaseChainAnnoResolver;
 
-public class MultiRequestChainResolver extends BaseChainResolver implements ChainResolver{
+public class MultiRequestChainResolver extends BaseChainAnnoResolver implements ChainAnnoResolver {
     public MultiRequestChainResolver(Class<?> handleClass) {
         super(handleClass, MultiRequestChain.class);
     }
