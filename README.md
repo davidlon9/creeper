@@ -8,11 +8,16 @@
 
 也就是说，仅需要一个类，就能够迅速完成一个复杂的爬虫程序。
 
-[Request映射配置示例](#Request映射配置)  
-[RequestChain映射处理类示例](#RequestChain映射处理类)  
 [RequestChain使用文档](https://github.com/davidlon9/creeper/blob/master/doc/RequestChain.md)  
 
 # 示例
+* [Request映射配置](#request%E6%98%A0%E5%B0%84%E9%85%8D%E7%BD%AE)
+  * [构建Request映射配置类](#%E6%9E%84%E5%BB%BArequest%E6%98%A0%E5%B0%84%E9%85%8D%E7%BD%AE%E7%B1%BB)
+  * [调用Request配置接口实例](#%E8%B0%83%E7%94%A8request%E9%85%8D%E7%BD%AE%E6%8E%A5%E5%8F%A3%E5%AE%9E%E4%BE%8B)
+  * [Request配置接口方法的可用返回类型](#request%E9%85%8D%E7%BD%AE%E6%8E%A5%E5%8F%A3%E6%96%B9%E6%B3%95%E7%9A%84%E5%8F%AF%E7%94%A8%E8%BF%94%E5%9B%9E%E7%B1%BB%E5%9E%8B)
+* [RequestChain映射处理类](#requestchain%E6%98%A0%E5%B0%84%E5%A4%84%E7%90%86%E7%B1%BB)
+  * [创建RequestChain映射处理类](#%E5%88%9B%E5%BB%BArequestchain%E6%98%A0%E5%B0%84%E5%A4%84%E7%90%86%E7%B1%BB)
+  * [执行RequestChain](#%E6%89%A7%E8%A1%8Crequestchain)
 
 首先熟悉一下HttpClient-Fluent的基本使用方式
 
