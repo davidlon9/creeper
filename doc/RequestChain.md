@@ -123,6 +123,15 @@ public class OrderChain {
 @Path、@Get、@Post、@Put、@Delete都属于Path类型的注解，@Path注解需要指定一个路径与一个Http方法（默认是Get）
 除了@Path注解，其他注解相当于注解的同时就指定了Http方法Get、Post、Put、Delete，同时也需要指定一个路径或链接
 
+### 请求链的执行
+使用ChainContextExecutor来执行请求链，需要传入一个请求链类
+```java
+//传入请求链类，构造方法内会根据请求链类创建一个ChainContext实例
+ContextExecutor executor = new ChainContextExecutor(LoginChain.class);
+//执行Chain
+executor.exeucteRootChain();
+```
+
 ## 前后处理器
 ### 前处理器[BeforeHandler]
 前处理器的3个作用:
@@ -367,8 +376,12 @@ public class LoginChain{
 }
 ```
 
-## ExecutionContext执行上下文
-ExecutionContext中存储了请求链中的所有参数，Cookie，以及SpringEl表达式中的参数，每个ExecutionContext实例中都会包含一个[FormParamStore](#FormParamStore)、[ContextParamStore](#ContextParamStore)、CookieStore、Executor
+## 执行上下文
+执行上下文ExecutionContext中存储了请求链中的所有参数，Cookie，以及SpringEl表达式中的参数，每个ExecutionContext实例中都会包含一个[FormParamStore](#FormParamStore)、[ContextParamStore](#ContextParamStore)、CookieStore、Executor
+
+### 请求链上下文
+请求链上下文ChainContext继承自ExecutionContext，是执行请求链的必需参数。拥有一个请求链的实体对象，比ExecutionContext多了一些对于请求链的操作。
+
 ### FormParamStore
 FormParamStore用于存储请求链中的所有参数，每个请求链只拥有一个FormParamStore，可以作为前后处理器的参数，可以使用其来添加参数，并作用到整个请求链。
 #### 参数Parameter
@@ -415,7 +428,22 @@ public boolean login(String result) throws IOException {
 ```
 ### ContextParamStore
 ContextParamStore用于存储SpringEl表达式中的对象，SpringEl表达式一般用在链接，参数上，其他可用注解值请看下表
-除了用在SpringEl上，ContextParamStore存储的对象，也可直接用在一些注解中，例如[@ForEach](#ForEach)注解。
+除了用在SpringEl上，ContextParamStore存储的对象，也可直接用在一些注解中，例如[@ForEach](#ForEach)注解。  
+在Creeper中SpringEl表达式必需被${}包裹住，例如${time.now()}。  
+
+#### SpringEl解析上下文
+SpringEl解析也需要一个EvaluationContext上下文，用于解析字符串中的对象。  
+EvaluationContext需要传入一个对象，系统默认传入ContextRootObject。  
+ContextRootObject包含两个字段，TimeUtil中包含一些获取时间的工具类，context字段就是ContextParamStore的Map形式，
+```java
+private final TimeUtil time;
+private final Map<String,Object> context;
+```
+在SpringEl表达式中可以直接调用TimeUtil中的方法，或者获取context中的值。如下  
+${time.now()}  
+${context.value1}  
+
+ContextParamStore的构造器可以传入一个ContextRootObject，因此可以通过继承ContextRootOject，来自定义拓展SpringEl的解析上下文。
 #### 支持SpringEl表达式的注解属性
 | 注解                      | 支持SpringEl的属性        |
 | :------------------------ | :------------------------ |
