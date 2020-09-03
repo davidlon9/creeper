@@ -428,7 +428,7 @@ public boolean login(String result) throws IOException {
 ```
 ### ContextParamStore
 ContextParamStore用于存储SpringEl表达式中的对象，SpringEl表达式一般用在链接，参数上，其他可用注解值请看下表
-除了用在SpringEl上，ContextParamStore存储的对象，也可直接用在一些注解中，例如[@ForEach](#ForEach)注解。
+除了用在SpringEl上，ContextParamStore存储的对象，也可直接用在一些注解中，例如[@ForEach](#ForEach)注解。  
 在Creeper中SpringEl表达式必需被${}包裹住，例如${time.now()}。  
 
 #### SpringEl解析上下文
