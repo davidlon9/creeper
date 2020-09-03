@@ -17,49 +17,56 @@
 ### 请求链执行流程图
 <img src="https://raw.githubusercontent.com/davidlon9/creeper/master/doc/images/%E8%AF%B7%E6%B1%82%E9%93%BE%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B%E5%9B%BE.png" width="80%">
 
-### 示例
-下例是使用@RequestChain来编写12306登陆中，检测验证码答案与登陆的部分，完整请看[请求链12306登陆](https://github.com/davidlon9/creeper#requestchain%E6%98%A0%E5%B0%84%E5%A4%84%E7%90%86%E7%B1%BB)
-```java
-@RequestChain(index =1,name="LoginChain",description="登陆请求链")
-@Host(value="kyfw.12306.cn",scheme="https")
-public class LoginChain {
-    @SeqRequest(index =1,description="检测验证码答案")
-    @Get("/passport/captcha/captcha-check")
-    @Parameters({
-            @Parameter(name="login_site",value="E"),
-            @Parameter(name="rand",value="sjrand"),
-            @Parameter(name="answer",value="11,22,33")})
-    public MoveAction captchaCheck(String result){
-        //请求执行过后的处理
-        //result参数是当前请求执行后返回的String类型的响应体
-        JSONObject body = JSONObject.parseObject(result);
-        if("4".equals(body.getString("result_code"))){//4是12306验证码答案api的成功码，因此继续执行下一请求
-            return MoveActions.FORWARD();//MoveActions是MoveAction的工厂，MoveActions.FORWARD()返回一个ForwardAction对象，表示继续执行下一请求，等价于返回true
-        }
-        return MoveActions.TERMINATE();//MoveActions.TERMINATE()返回一个TerminateAction对象，表示终止执行
-    }
+## 声明请求链与请求
+请求链一般是由序列请求构成，而序列请求基本是由[路径类注解](#Path类型注解)(Host、Path、Get、Post、Put、Delete)与请求参数类型注解Parameter构成，单独使用这些注解，也可以配置管理请求，请参考[Request映射配置](https://github.com/davidlon9/creeper#request%E6%98%A0%E5%B0%84%E9%85%8D%E7%BD%AE)
 
-    @SeqRequest(index = 2,description = "登陆")
-    @Post("/passport/web/login")
-    @Parameters({
-            @Parameter(name="appid",value="otn"),
-            @Parameter(name="username",value="zhangsan"),
-            @Parameter(name="password",value="123456"),
-            @Parameter(name="answer")})//自动从FormParamStore中读取answer参数的值
-    public MoveAction login(String result) throws IOException {
-        //请求执行过后的处理
-        //result参数是当前请求执行后返回的String类型的响应体
-        JSONObject body = JSONObject.parseObject(result);
-        if("0".equals(body.getString("result_code"))){//0是12306登陆api的成功码，因此继续执行下一请求
-            return MoveActions.FORWARD();//返回一个ForwardAction对象，表示继续执行下一请求，等价于返回true
-        }else{
-            //登陆失败重新跳转至captchaImage序列请求
-            return MoveActions.JUMP("captchaImage");//跳转并执行captchaImage序列请求
-        }
-    }
+### 请求链
+通常需要两个注解，@Host、@RequestChain。
+@Host注解会使该类下的所有序列请求，都默认以其为服务器域名前缀
+当然@Host也是非必要的，如果不使用@Host在请求链上，则必需在序列请求上注解@Host，或者链接自带服务器域名
+```java
+@Host(value="kyfw.12306.cn",scheme="https")
+@RequestChain(name="LoginChain",description="登陆请求链")
+public class LoginChain{
 }
 ```
-请求链一般是由序列请求构成，而序列请求是由请求信息注解构成，请求信息基本是由链接信息注解(Host、Path、Get、Post、Put、Delete)与请求参数类型注解Parameter构成，单独使用这些注解，也可以配置管理请求，请参考[Request映射配置](https://github.com/davidlon9/creeper#request%E6%98%A0%E5%B0%84%E9%85%8D%E7%BD%AE)
+也可以在RequestChain上注解@Path，来制造一个基础路径，使类下的所有序列请求，都以其为前缀
+```java
+//基础路径"kyfw.12306.cn/path"
+@Host(value="kyfw.12306.cn",scheme="https")
+@Path("/path")
+@RequestChain(name="LoginChain",description="登陆请求链")
+public class LoginChain{
+}
+```
+### 序列请求
+通常注解@SeqRequest在方法上，来声明一个序列请求，将方法视为该序列请求的后处理器。也可以注解在处理器接口上，请看[接口模式示例](#接口模式示例)
+除了@SeqRequest注解外，还需要声明该请求的方法与路径，因此需要[Path类型注解](#Path类型注解)，同时使用@Parameter指定该请求的参数
+```java
+@SeqRequest(index = 7, name = "userinfo", description = "获取用户信息")
+@Post("/otn/modifyUser/initQueryUserInfoApi")
+@Parameter(name = "appid", value = "otn")
+public boolean userinfo(HttpResponse response) {
+    return true;
+}
+```
+如果没有声明Path类型注解，则以请求链的基础链接作为该请求的链接
+### 引用请求与请求链
+在请求链类中可以引用其他创建好的请求链类或请求，引用方式如下
+```java
+@Host(value = "kyfw.12306.cn", scheme = "https")
+@RequestChain(description = "订单请求链")
+public class OrderChain {
+    @ChainReference(index = 1)
+    LoginChain login12306;//12306登陆请求链
+
+    @RequestReference(index = 2,chainClass = LoginChain.class, requestName = "deviceCookie")
+    Method deviceCookie;//12306登陆请求链中获取必要Cookie的请求
+}
+```
+### Path类型注解
+@Path、@Get、@Post、@Put、@Delete都属于Path类型的注解，@Path注解需要指定一个路径与一个Http方法（默认是Get）
+除了@Path注解，其他注解相当于注解的同时就指定了Http方法Get、Post、Put、Delete，同时也需要指定一个路径或链接
 
 ## 前后处理器
 ### 前处理器[BeforeHandler]
@@ -79,8 +86,14 @@ public class LoginChain {
 
 使用@AfterMethod或SeqRequest类型注解，来将一个方法声明为序列请求或请求链的后处理器[AfterHandler]，并在其执行后进行处理，可用参数请查看[前后处理器方法的可用参数类型
 ](#前后处理器方法的可用参数类型)
+
 ### 示例
-#### SeqRequest类型注解后处理器
+有两种模式来声明序列请求、绑定前后处理器  
+[方法模式](#方法模式)  
+[接口模式](#接口模式)  
+
+#### 方法模式示例
+##### SeqRequest类型注解后处理器
 在一个RequestChain类中，若方法上被注解了@SeqRequest类型的注解，则可以省略掉@AfterMethod注解，并默认视为该方法为一个AfterHandler。
 在请求执行后会调用该方法，返回true会继续执行下一请求，false表示执行失败终止执行。 
 
@@ -108,7 +121,7 @@ public boolean userinfo(HttpResponse response){
 
 注意，此时的AfterHandler将为空，意味着不对该请求做处理，执行结束后直接执行下一请求
 
-#### 序列请求同时拥有前后处理器
+##### 序列请求同时拥有前后处理器
 当同时需要BeforeHandler与AfterHandler时，新增一个方法并注解@BeforeMethod("name")，name指定为SeqRequest的name，如下例：
 
 ```java
@@ -130,7 +143,7 @@ public boolean checkUserInfo(Request request, ExecutionContext context){
 
 上述例子中，当然也可以在@SeqRequest注解的方法下注解@BeforeMethod，然后再新增一个方法注解@AfterMethod("")，并指定SeqRequest的name。  
 一般情况是不需要BeforeHandler，因为Request已经被组装好了，只需要AfterHandler处理请求执行结果，因此不用担心类中每个请求都要用两个方法来表示，导致阅读性变差，接下来会介绍更优雅的方式。
-#### RequestChain中的前后处理器
+##### RequestChain中的前后处理器
 BeforeHandler与AfterHandler也可以用在RequestChain中，用来控制RequestChain的执行前后的处理，如下例：
 
 ```java
@@ -152,7 +165,7 @@ public class ChainBeforeAfterHandlerDemo{
 
 当然RequestChain的前后处理器都不是必须的，可以自己按需求来选择，甚至可以不要。
 
-### 前后处理器方法的可用参数类型
+##### 前后处理器方法的可用参数类型
 如果使用了不支持的参数，则该参数为空，String类型的参数在后处理器中是响应体的字符串值。
 | 参数类型                                         | 所属包                              | BeforeHandler是否可用  | AfterHandler是否可用  | 
 | :----------------------------------------------- | :---------------------------------- | :-------------------: | :--------------------: |
@@ -164,13 +177,146 @@ public class ChainBeforeAfterHandlerDemo{
 | CookieStore                                      | org.apache.http.client              | √ | √ |  
 | [ExecutionContext](#执行上下文ExecutionContext)  | com.dlong.creeper.execution.context | √ | √ |  
 
-### 前后处理器方法的可用返回类型
+##### 前后处理器方法的可用返回类型
 | 返回值类型   | BeforeHandler返回值对应动作 | AfterHandler返回值对应动作 |
 | :----------- | :------------------------- | -------------------------- |
 | com.dlong.creeper.control.MoveAction | 仅支持ContinueAction，表示在循环执行跳过当前的执行，若使用其他MoveAction实现类则会抛出异常 | 不同的MoveAction实现类，对应不同的执行动作，详情参考[MoveActions](#MoveActions) | 
 | Boolean/boolean | true表示可以执行，false表示跳过当前执行| true表示继续执行下一请求等价于ForwardAction，false表示执行失败终结执行等价于TerminateAction |
 | Object | 仅可使用上面两种类型的值 | 仅可使用上面两种类型的值 |
 | void   | 不跳过当前执行 | 继续执行下一请求 |
+
+#### 接口模式示例
+将SeqRequest类型注解使用在Handler接口上，也可以将该Handler绑定在序列请求上，并视为一个序列请求。
+与声明在方法上不同，声明在接口实现上，只能使用固定的参数。
+##### ExecutionHandler接口
+使用前后处理器接口ExecutionHandler声明序列请求，ExecutionHandler接口中包含前处理方法与后处理方法，使用方式如下
+```java
+@SeqRequest(index = 7, name = "userinfo", description = "获取用户信息")//name默认为方法名（RequestChain的name默认为类名）
+@Post("/otn/modifyUser/initQueryUserInfoApi")
+@Parameter(name = "appid", value = "otn")
+ExecutionHandler executionHandler=new ExecutionHandler() {
+    @Override
+    public Object afterHandle(HttpResponse response, ExecutionContext context) throws IOException {
+        return true;
+    }
+    @Override
+    public Object beforeHandle(Request request, ExecutionContext context) throws IOException {
+        return true;
+    }
+};
+```
+
+##### AfterHandler接口
+使用后处理器接口AfterHandler声明序列请求，如果用这种方式绑定后处理器到序列请求，将无法再使用BeforeHandler实例绑定到该序列请求，但是可以将@BeforeMethod注解使用在方法上，来绑定前处理器到序列请求
+```java
+@SeqRequest(index = 7, name = "userinfo", description = "获取用户信息")//name默认为方法名（RequestChain的name默认为类名）
+@Post("/otn/modifyUser/initQueryUserInfoApi")
+@Parameter(name = "appid", value = "otn")
+AfterHandler userinfo4 = new AfterHandler() {
+    @Override
+    public Object afterHandle(HttpResponse response, ExecutionContext context) throws IOException {
+        return true;
+    }
+};
+
+@BeforeMethod("userinfo")//指定SeqRequest的name
+public boolean checkUserinfo(Request request, ExecutionContext context) {
+    //检查添加各种参数
+    return true;//不跳过执行
+}
+```
+若想同时创建前后处理器的接口实例，推荐使用使用ExecutionHandler
+
+##### BeforeHandler接口
+使用前处理器接口BeforeHandler声明序列请求，如果用这种方式绑定前处理器到序列请求，将无法再使用AfterHandler实例绑定到该序列请求，但是可以将@AfterMethod注解使用在方法上，来绑定后处理器到序列请求
+```java
+@SeqRequest(index = 7, name = "userinfo", description = "获取用户信息")//name默认为方法名（RequestChain的name默认为类名）
+@Post("/otn/modifyUser/initQueryUserInfoApi")
+@Parameter(name = "appid", value = "otn")
+BeforeHandler checkUserinfo = new BeforeHandler() {
+    @Override
+    public Object beforeHandle(Request request, ExecutionContext context) throws IOException {
+        return true;
+    }
+};
+若想同时创建前后处理器的接口实例，推荐使用使用ExecutionHandler
+
+@AfterMethod("userinfo")//指定SeqRequest的name
+public boolean userinfo4(Request request, ExecutionContext context) {
+    //检查添加各种参数
+    return true;//不跳过执行
+}
+```
+若想同时创建前后处理器的接口实例，推荐使用使用ExecutionHandler
+
+##### RequestChain的处理器接口
+直接让RequestChain类继承ChainExecutionHandler抽象类
+@Host(value="kyfw.12306.cn",scheme="https")
+@RequestChain(name="LoginChain",description="登陆请求链")
+public class LoginChain extends ChainExecutionHandler {
+    @Override
+    public Object afterHandle(ExecutionContext context) throws IOException {
+        return true;
+    }
+
+    @Override
+    public Object beforeHandle(ExecutionContext context) throws IOException {
+        return true;
+    }
+}
+ChainExecutionHandler抽象类，实现了ChainBeforeHandler与ChainAfterHandler接口，可以根据需要为RequestChain实现前后处理器接口，如下例
+```java
+@Host(value="kyfw.12306.cn",scheme="https")
+@RequestChain(name="LoginChain",description="登陆请求链")
+public class LoginChain implements ChainBeforeHandler,ChainAfterHandler {
+    @Override
+    public Object afterHandle(ExecutionContext context) throws IOException {
+        return true;
+    }
+
+    @Override
+    public Object beforeHandle(ExecutionContext context) throws IOException {
+        return true;
+    }
+}
+```
+或者在RequestChain内部创建一个ChainExecutionHandler实例，来为RequestChain绑定一个前后处理器，如下例
+```java
+@Host(value="kyfw.12306.cn",scheme="https")
+@RequestChain(name="LoginChain",description="登陆请求链")
+public class LoginChain {
+    ChainExecutionHandler chainHandler=new ChainExecutionHandler() {
+        @Override
+        public Object beforeHandle(ExecutionContext context) throws IOException {
+            return true;
+        }
+
+        @Override
+        public Object afterHandle(ExecutionContext context) throws IOException {
+            return true;
+        }
+    };
+}
+```
+同样也可以单独根据需要创建ChainBeforeHandler与ChainAfterHandler的实例，来为RequestChain绑定前后处理器
+```java
+@Host(value="kyfw.12306.cn",scheme="https")
+@RequestChain(name="LoginChain",description="登陆请求链")
+public class LoginChain{
+    ChainBeforeHandler beforeHandle = new ChainBeforeHandler() {
+        @Override
+        public Object beforeHandle(ExecutionContext context) throws IOException {
+            return true;
+        }
+    };
+    ChainAfterHandler afterHandle = new ChainAfterHandler() {
+        @Override
+        public Object afterHandle(ExecutionContext context) throws IOException {
+            return true;
+        }
+    };
+}
+```
 
 ## 执行上下文ExecutionContext
 ExecutionContext中存储了请求链中的所有参数，Cookie，以及SpringEl表达式中的参数，每个ExecutionContext实例中都会包含一个[FormParamStore](#FormParamStore)、[ContextParamStore](#ContextParamStore)、CookieStore、Executor
