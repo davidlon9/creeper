@@ -148,9 +148,11 @@ String userinfo = loginMapping.userinfo();
 ## RequestChain映射处理类
 与Request映射配置的方式类似，只不过RequestChain对于请求的执行又增加了顺序与处理，使用注解配置请求的同时，可以直接处理对应请求。  
 使用步骤：
-- 第一步（[创建RequestChain映射处理类](#创建RequestChain映射处理类)）：创建一个类，并在类上注解[RequestChain类型注解](#RequestChain类型注解)，将该类视为一个请求链
-- 第二步（[创建RequestChain映射处理类](#创建RequestChain映射处理类)）：在类中创建方法，并在方法上注解[SeqRequest类型注解](#SeqRequest类型注解)，将该方法视为一个在该请求链中的序列请求
-- 第三步（[执行RequestChain](#执行RequestChain)）：生成一个请求链执行器，将前两步中创建好的请求链类传入，然后执行该请求链。该请求链内的所有请求会依次执行，直至最后一个请求执行成功，视为该请求链执行成功。
+- 第一步：创建一个类，并在类上注解[RequestChain类型注解](#https://github.com/davidlon9/creeper/blob/master/doc/RequestChain.md#%E5%BA%8F%E5%88%97%E5%AF%B9%E8%B1%A1)，
+将该类视为一个请求链
+- 第二步：在类中创建方法，并在方法上注解[SeqRequest类型注解](#https://github.com/davidlon9/creeper/blob/master/doc/RequestChain.md#%E5%BA%8F%E5%88%97%E5%AF%B9%E8%B1%A1)，
+将该方法视为一个在该请求链中的序列请求
+- 第三步：生成一个请求链执行器，将前两步中创建好的请求链类传入，然后执行该请求链。该请求链内的所有请求会依次执行，直至最后一个请求执行成功，视为该请求链执行成功。
 ### 创建RequestChain映射处理类
 针对12306登陆编写一个RequestChain映射处理类，请求的方法格式将与之前Request映射配置类不同。  
 - 请求执行后的结果，将放在参数中，然后直接在方法体中处理结果，可用参数请参考[可用参数](#可用参数)。
