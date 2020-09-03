@@ -1,4 +1,52 @@
 # RequestChain使用文档
+* 目录
+  * [基本概念](#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5)
+    * [请求链](#%E8%AF%B7%E6%B1%82%E9%93%BE)
+    * [序列请求](#%E5%BA%8F%E5%88%97%E8%AF%B7%E6%B1%82)
+    * [序列对象](#%E5%BA%8F%E5%88%97%E5%AF%B9%E8%B1%A1)
+    * [请求链执行流程图](#%E8%AF%B7%E6%B1%82%E9%93%BE%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B%E5%9B%BE)
+  * [声明请求链与请求](#%E5%A3%B0%E6%98%8E%E8%AF%B7%E6%B1%82%E9%93%BE%E4%B8%8E%E8%AF%B7%E6%B1%82)
+    * [请求链](#%E8%AF%B7%E6%B1%82%E9%93%BE-1)
+    * [序列请求](#%E5%BA%8F%E5%88%97%E8%AF%B7%E6%B1%82-1)
+    * [引用请求与请求链](#%E5%BC%95%E7%94%A8%E8%AF%B7%E6%B1%82%E4%B8%8E%E8%AF%B7%E6%B1%82%E9%93%BE)
+    * [Path类型注解](#path%E7%B1%BB%E5%9E%8B%E6%B3%A8%E8%A7%A3)
+  * [前后处理器](#%E5%89%8D%E5%90%8E%E5%A4%84%E7%90%86%E5%99%A8)
+    * [前处理器[BeforeHandler]](#%E5%89%8D%E5%A4%84%E7%90%86%E5%99%A8beforehandler)
+    * [后处理器[AfterHandler]](#%E5%90%8E%E5%A4%84%E7%90%86%E5%99%A8afterhandler)
+    * [示例](#%E7%A4%BA%E4%BE%8B)
+      * [方法模式示例](#%E6%96%B9%E6%B3%95%E6%A8%A1%E5%BC%8F%E7%A4%BA%E4%BE%8B)
+        * [SeqRequest类型注解后处理器](#seqrequest%E7%B1%BB%E5%9E%8B%E6%B3%A8%E8%A7%A3%E5%90%8E%E5%A4%84%E7%90%86%E5%99%A8)
+        * [序列请求同时拥有前后处理器](#%E5%BA%8F%E5%88%97%E8%AF%B7%E6%B1%82%E5%90%8C%E6%97%B6%E6%8B%A5%E6%9C%89%E5%89%8D%E5%90%8E%E5%A4%84%E7%90%86%E5%99%A8)
+        * [RequestChain中的前后处理器](#requestchain%E4%B8%AD%E7%9A%84%E5%89%8D%E5%90%8E%E5%A4%84%E7%90%86%E5%99%A8)
+        * [前后处理器方法的可用参数类型](#%E5%89%8D%E5%90%8E%E5%A4%84%E7%90%86%E5%99%A8%E6%96%B9%E6%B3%95%E7%9A%84%E5%8F%AF%E7%94%A8%E5%8F%82%E6%95%B0%E7%B1%BB%E5%9E%8B)
+        * [前后处理器方法的可用返回类型](#%E5%89%8D%E5%90%8E%E5%A4%84%E7%90%86%E5%99%A8%E6%96%B9%E6%B3%95%E7%9A%84%E5%8F%AF%E7%94%A8%E8%BF%94%E5%9B%9E%E7%B1%BB%E5%9E%8B)
+      * [接口模式示例](#%E6%8E%A5%E5%8F%A3%E6%A8%A1%E5%BC%8F%E7%A4%BA%E4%BE%8B)
+        * [ExecutionHandler接口](#executionhandler%E6%8E%A5%E5%8F%A3)
+        * [AfterHandler接口](#afterhandler%E6%8E%A5%E5%8F%A3)
+        * [BeforeHandler接口](#beforehandler%E6%8E%A5%E5%8F%A3)
+        * [RequestChain的处理器接口](#requestchain%E7%9A%84%E5%A4%84%E7%90%86%E5%99%A8%E6%8E%A5%E5%8F%A3)
+  * [ExecutionContext执行上下文](#executioncontext%E6%89%A7%E8%A1%8C%E4%B8%8A%E4%B8%8B%E6%96%87)
+    * [FormParamStore](#formparamstore)
+      * [参数Parameter](#%E5%8F%82%E6%95%B0parameter)
+    * [ContextParamStore](#contextparamstore)
+      * [支持SpringEl表达式的注解属性](#%E6%94%AF%E6%8C%81springel%E8%A1%A8%E8%BE%BE%E5%BC%8F%E7%9A%84%E6%B3%A8%E8%A7%A3%E5%B1%9E%E6%80%A7)
+  * [控制执行顺序](#%E6%8E%A7%E5%88%B6%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F)
+    * [MoveAction](#moveaction)
+    * [Boolean](#boolean)
+    * [空值](#%E7%A9%BA%E5%80%BC)
+  * [循环执行](#%E5%BE%AA%E7%8E%AF%E6%89%A7%E8%A1%8C)
+    * [可用的Loop注解](#%E5%8F%AF%E7%94%A8%E7%9A%84loop%E6%B3%A8%E8%A7%A3)
+    * [跳出循环](#%E8%B7%B3%E5%87%BA%E5%BE%AA%E7%8E%AF)
+    * [继续循环](#%E7%BB%A7%E7%BB%AD%E5%BE%AA%E7%8E%AF)
+    * [示例](#%E7%A4%BA%E4%BE%8B-1)
+      * [While](#while)
+      * [ForEach](#foreach)
+      * [ForIndex](#forindex)
+      * [Scheduler](#scheduler)
+  * [其他注解](#%E5%85%B6%E4%BB%96%E6%B3%A8%E8%A7%A3)
+    * [@JsonResultCookie](#jsonresultcookie)
+    * [@FileRecordsIgnore](#filerecordsignore)
+
 ## 基本概念
 
 ### 请求链
@@ -410,137 +458,4 @@ Loop注解不仅可以注解在序列请求上，也可以注解在请求链上�
 ### 可用的Loop注解
 | 注解                     | 解释                                                                                          |  
 | :----------------------- | :-------------------------------------------------------------------------------------------- |
-| [@While](#While)         | 传入一个SpringEl的boolean表达式，循环执行直至条件不匹配                                        |
-| [@ForEach](#ForEach)     | 传入一个ContextParamStore中的集合对象的key，遍历该集合                                         |
-| [@ForIndex](#ForIndex)   | 传入一个起始数字，一个结束数字，循环类似for(int i = start;i <= end; i++)，可使用SpringEl表达式  |
-| [@Scheduler](#Scheduler) | 传入一个Trigger注解，将按照Trigger中的属性值来定期执行                                         |
-### 跳出循环
-- 返回BreakAction终止循环
-- 返回任意其他可以移动的MoveAction来终止循环，包括:ForwardAction、BackAction、JumpAction、TerminateAction、RestartAction
-- 返回false终止循环
-### 继续循环
-- 返回ContinueAction继续循环，在前处理器中返回时，会跳过当前循环的执行
-- 后处理器中返回RetryAction继续循环，会重新执行当前的循环，循环变量不会发生改变，例如在ForEach中，将再次遍历同一个对象。
-- 后处理器中返回true继续循环
-
-### 示例
-#### While
-模拟不断请求12306余票页面
-```java
-@While(conditionExpr = "${#loopNum < 10}")//循环直至loopNum>=10
-@SeqRequest(index =1,name="leftTicket",description="查询余票")
-@Get("/otn/leftTicket/query")
-@Parameters({
-        @Parameter(name="leftTicketDTO.train_date",desc = "日期"),//dc
-        @Parameter(name="leftTicketDTO.from_station",desc = "出发站"),//武汉,WHN
-        @Parameter(name="leftTicketDTO.to_station",desc = "到达站"),//杭州,WHN
-        @Parameter(name="purpose_codes",value = "ADULT")})
-public MoveAction leftTicket(String result, ContextParamStore contextParamStore){
-    Integer loopNum = (Integer) contextParamStore.getValue("loopNum");
-    loopNum+=1;
-    contextParamStore.addParam("loopNum",loopNum);//覆盖掉loopNum参数
-    if(loopNum==5){//模拟抢到票
-        return new ForwardAction();//跳出循环并执行下一请求
-    }
-    return new ContinueAction(1000);//继续循环
-}
-```
-
-#### ForEach
-某PDF网站的详情页遍历处理，完整代码请看[PDF电子书爬虫](#)
-```java
-@BeforeMethod("handlePDFBookDetial")
-public boolean beforeHandlePDFBookDetial(ContextParamStore contextParamStore){
-    Collection<String> urls = new HashSet<>();
-    urls.add("http://detail1");
-    urls.add("http://detail2");
-    contextParamStore.addParam("pagePDFDetailUrls",urls);
-    return true;
-}
-
-//itemsContextKey是ContextParamStore中的Collection接口的任意对象的key
-//itemName是当前遍历对象在ContextParamStore中的key
-@ForEach(itemsContextKey = "pagePDFDetailUrls", itemName = "detailUrl")
-@SeqRequest(index = 1, description = "处理详情页面")
-@Get(value = "${#detailUrl}", urlInheritable = false)
-//${#detailUrl}在每次循环中将会解析出不同的url并执行，第一次是http://detail1，第二次是http://detail2
-public MoveAction handlePDFBookDetial(String result, ContextParamStore contextParamStore) throws IOException {
-    Object detailUrl = contextParamStore.getValue("detailUrl");//获取当前遍历的对象
-    Document rootPage = Jsoup.parse(result);
-    DZSWService.handlePDFDetail(rootPage, contextParamStore);//处理详情页面
-    return new ContinueAction(100);
-}
-```
-
-#### ForIndex
-传入一个起始数字start，一个结束数字end，循环类似for(int i = start;i <= end; i++)，执行前会把i的值放在ContextParamStore中，indexName为i值的key，下例中index的值就是当前循环中i的值
-```java
-@RequestChain
-@Host(value = "www.xgv5.com", scheme = "https")
-public class PageHandleChain {
-    @ForIndex(start = "1", end = "10",indexName = "index")//默认indexName为index，可以省略掉indexName = "index"
-    @SeqRequest(index = 1, description = "处理列表页面")
-    @Get("/category-30${#index==1?'':'_'+#index}.html")
-    //index=1时的url[http://www.xgv5.com/category-30]
-    //index=2时的url[http://www.xgv5.com/category-30_2]
-    //index=3时的url[http://www.xgv5.com/category-30_3]
-    //...
-    public MoveAction handlePDFListBook(String result, ContextParamStore contextParamStore) {
-        Document rootPage = Jsoup.parse(result);
-        DZSWService.handlePDFListBook(rootPage, contextParamStore);
-        return MoveActions.FORWARD();
-    }
-}
-```
-#### Scheduler
-下例中的12306登陆请求链将重复执行10次，每次间隔1秒，延迟5秒后开始，直至时间到endTime时结束执行
-```java
-@Scheduler(
-    trigger = @Trigger(
-        startTimeExpr = "${time.now()}",//开始时间
-        endTimeExpr = "${endTime}",//结束时间
-        timeInterval = 1000,//每次执行间隔
-        repeatCount = 10,//执行次数
-        delay = 5000//延迟5秒执行
-    )
-)
-@Host(value="kyfw.12306.cn",scheme="https")
-@RequestChain(name="LoginChain",description="登陆请求链")
-public class LoginChain {
-    //省略序列请求
-}
-```
-## 其他注解
-### @JsonResultCookie
-当序列请求注解了@JsonResultCookie，在执行过后，会自动获取Json类型的响应数据中的某个json键对应的json值，然后将此值生成一个Cookie添加到CookieStore中，如下例
-```java
-@SeqRequest
-@Get("/otn/HttpZF/logdevice?algID=ZGB0eNTCXV&hashCode=s-hLl13iA3-UAXc9O4cfNSsDk203zmJffFi5kG43fxE&FMQw=0&q4f3=zh-CN&VySQ=FGEEJev5tTvG6q3axISQE1DJ36r7gqiH&VPIf=1&custID=133&VEek=unknown&dzuS=0&yD16=0&EOQP=4902a61a235fbb59700072139347967d&jp76=52d67b2a5aa5e031084733d5006cc664&hAqN=Win32&platform=WEB&ks0Q=d22ca0b81584fbea62237b14bd04c866&TeRS=824x1536&tOHY=24xx864x1536&Fvje=i1l1o1s1&q5aJ=-8&wNLf=99115dfb07133750ba677d055874de87&0aew=Mozilla/5.0%20(Windows%20NT%2010.0;%20Win64;%20x64)%20AppleWebKit/537.36%20(KHTML,%20like%20Gecko)%20Chrome/80.0.3987.116%20Safari/537.36&E3gR=4230a15ab4eb447d31ce29cfff1c2961")
-@Parameter(name = "timestamp",value = "${time.now()}")
-    //把Json结果中key为dfp的值，视为一个名为RAIL_DEVICEID的Cookie，并添加至CookieStore
-    @JsonResultCookie(jsonKey ="dfp",name = "RAIL_DEVICEID",domain = ".12306.cn",cache = true),
-    //把Json结果中key为exp的值，视为一个名为RAIL_EXPIRATION的Cookie，并添加至CookieStore
-    @JsonResultCookie(jsonKey ="exp",name = "RAIL_EXPIRATION",domain = ".12306.cn",cache = true)})
-public Object deivceCookie(FormParamStore paramStore) {
-    return true;//返回true表示执行成功，继续执行下一请求
-}
-
-```
-### @FileRecordsIgnore
-当一个在循环中的序列请求注解了@FileRecordsIgnore，  
-在序列请求的循环执行前，将读取存储在指定文件中历史链接，若当前链接是历史链接，则跳过当前执行。  
-在序列请求的循环执行后，将把请求的链接存储在指定文件中。  
-下例循环执行中，每个被执行过的请求链接，都将存储在demo.txt中，若程序终止，下次运行该程序时，将跳过已经执行过的请求。
-```java
-@ForEach(itemsContextKey = "pagePDFDetailUrls", itemName = "detailUrl")
-@SeqRequest(index = 2, description = "处理详情页面")
-@Get(value = "${#detailUrl}", urlInheritable = false)
-@FileRecordsIgnore(filePath = "D:\\repository\\traiker\\records\\demo.txt")
-public MoveAction handlePDFBookDetial(String result, ContextParamStore contextParamStore) throws IOException {
-    Document rootPage = Jsoup.parse(result);
-    DZSWService.handlePDFDetail(rootPage, contextParamStore);
-    return new ContinueAction(100);
-}
-```
-
-
+| [@While](#While)         | 传入一个SpringEl的
