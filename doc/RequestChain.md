@@ -319,11 +319,11 @@ public class LoginChain{
 }
 ```
 
-## 执行上下文ExecutionContext
+## ExecutionContext执行上下文
 ExecutionContext中存储了请求链中的所有参数，Cookie，以及SpringEl表达式中的参数，每个ExecutionContext实例中都会包含一个[FormParamStore](#FormParamStore)、[ContextParamStore](#ContextParamStore)、CookieStore、Executor
-## FormParamStore
+### FormParamStore
 FormParamStore用于存储请求链中的所有参数，每个请求链只拥有一个FormParamStore，可以作为前后处理器的参数，可以使用其来添加参数，并作用到整个请求链。
-### 参数Parameter
+#### 参数Parameter
 注解在序列请求下，未指定值时，需要向FormParamStore添加一个相同名称的Param对象，若FormParamStore中也没有，则为空值，如下例中的answer参数:
 ```java
 @SeqRequest(index = 3,description="检测验证码答案")
@@ -365,10 +365,10 @@ public boolean login(String result) throws IOException {
     return true;
 }
 ```
-## ContextParamStore
+### ContextParamStore
 ContextParamStore用于存储SpringEl表达式中的对象，SpringEl表达式一般用在链接，参数上，其他可用注解值请看下表
 除了用在SpringEl上，ContextParamStore存储的对象，也可直接用在一些注解中，例如[@ForEach](#ForEach)注解。
-### 支持SpringEl表达式的注解属性
+#### 支持SpringEl表达式的注解属性
 | 注解                      | 支持SpringEl的属性        |
 | :------------------------ | :------------------------ |
 | @Path/Get/Post/Put/Delete | url                       |
