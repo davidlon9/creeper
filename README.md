@@ -102,7 +102,7 @@ public interface LoginMapping {
 [12306映射配置登陆处理](https://github.com/davidlon9/creeper/blob/master/src/main/java/demo/traiker/main/fluent/LoginHandle.java)
 ```java
 //创建一个请求管理器，在该管理器下获取一个LoginMapping代理对象
-LoginMapping loginMapping = new FluentRequestMappingMananger().getClassProxy(LoginMapping.class);
+LoginMapping loginMapping = new FluentRequestMananger().getClassProxy(LoginMapping.class);
 //第一步 deviceCookie中提取两个必备cookie
 String deviceCookie = loginMapping.deviceCookie();
 //此处处理代码省略
