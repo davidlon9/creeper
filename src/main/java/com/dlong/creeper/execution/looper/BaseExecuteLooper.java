@@ -5,7 +5,7 @@ import com.dlong.creeper.control.BreakAction;
 import com.dlong.creeper.exception.ExecutionException;
 import com.dlong.creeper.exception.RuntimeExecuteException;
 import com.dlong.creeper.execution.base.*;
-import com.dlong.creeper.execution.context.ExecutionContext;
+import com.dlong.creeper.execution.context.ChainContext;
 import com.dlong.creeper.execution.handler.RecorderLoopExecutionResultHandler;
 import com.dlong.creeper.execution.registry.base.LoopExecutionResultHandlerRegistry;
 import com.dlong.creeper.model.result.ExecutionResult;
@@ -56,7 +56,7 @@ public abstract class BaseExecuteLooper<T extends LoopableEntity> implements Exe
         checkLooper(looper);
 
         LoopExecutionResult<T> result = new LoopExecutionResult<>(loopableEntity);
-        ExecutionContext context = getContext();
+        ChainContext context = getContext();
         this.loopExecutionResultHandlerRegistry.invokeBeforeExecutionHandler(result, context);
 
         if (result.isSkipExecute()) {
@@ -139,9 +139,9 @@ public abstract class BaseExecuteLooper<T extends LoopableEntity> implements Exe
         Assert.isInstanceOf(looperClass, looper, "is not a suitable Looper for ExecuteLooper please try " + looperClass.getSimpleName());
     }
 
-    public ExecutionContext getContext() {
-        Assert.isInstanceOf(ContextSeqExecutor.class, executor);
-        ContextSeqExecutor contextExecutor = (ContextSeqExecutor) this.executor;
+    public ChainContext getContext() {
+        Assert.isInstanceOf(BaseChainContextExecutor.class, executor);
+        BaseChainContextExecutor contextExecutor = (BaseChainContextExecutor) this.executor;
         return contextExecutor.getContext();
     }
 

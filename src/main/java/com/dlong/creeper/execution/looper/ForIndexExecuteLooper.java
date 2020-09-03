@@ -1,9 +1,10 @@
 package com.dlong.creeper.execution.looper;
 
+import com.dlong.creeper.control.RetryAction;
 import com.dlong.creeper.exception.ExecutionException;
 import com.dlong.creeper.execution.base.LoopableExecutor;
+import com.dlong.creeper.execution.context.ChainContext;
 import com.dlong.creeper.execution.context.ContextParamStore;
-import com.dlong.creeper.execution.context.ExecutionContext;
 import com.dlong.creeper.execution.resolver.AutoNextSeqResultResolver;
 import com.dlong.creeper.model.result.ExecutionResult;
 import com.dlong.creeper.model.result.LoopExecutionResult;
@@ -25,7 +26,7 @@ public class ForIndexExecuteLooper<T extends LoopableEntity> extends BaseExecute
     @Override
     @SuppressWarnings(value = "unchecked")
     public LoopExecutionResult<T> doLoop(T loopableEntity) throws ExecutionException, IOException {
-        ExecutionContext context = getContext();
+        ChainContext context = getContext();
         ContextParamStore contextStore = getContext().getContextStore();
 
         Looper looper = loopableEntity.getLooper();
@@ -60,10 +61,14 @@ public class ForIndexExecuteLooper<T extends LoopableEntity> extends BaseExecute
                 loopResult.setNextSeq(innerResult.getNextSeq());
                 break;
             }
+
+            if(innerResult.getActionResult() instanceof RetryAction){
+                logger.info("* Loop "+i+" of "+end+" of "+loopableEntity+" will be retry");
+                i--;
+            }
         }
         loopResult.setLoopOver(true);
         new AutoNextSeqResultResolver().afterExecuteResovle(loopResult,getContext());
         return loopResult;
     }
-
 }

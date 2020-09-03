@@ -1,7 +1,7 @@
 package com.dlong.creeper.execution.handler;
 
 import com.dlong.creeper.exception.ExecutionException;
-import com.dlong.creeper.execution.context.ExecutionContext;
+import com.dlong.creeper.execution.context.ChainContext;
 import com.dlong.creeper.execution.handler.entity.AfterHandler;
 import com.dlong.creeper.execution.handler.entity.BeforeHandler;
 import com.dlong.creeper.execution.handler.entity.ExecutionHandler;
@@ -44,20 +44,20 @@ public class RequestHandlerMethodExecutionResultHandler implements RequestExecut
     }
 
     @Override
-    public void beforeExecute(ExecutionResult<? extends RequestEntity> executionResult,ExecutionContext context) throws ExecutionException {
+    public void beforeExecute(ExecutionResult<? extends RequestEntity> executionResult,ChainContext context) throws ExecutionException {
         //调用BeforeHandler
         invokeBeforeHandler(executionResult,context);
         beforeResolve(executionResult, context);
     }
 
     @Override
-    public void afterExecute(ExecutionResult<? extends RequestEntity> executionResult,ExecutionContext context) throws ExecutionException {
+    public void afterExecute(ExecutionResult<? extends RequestEntity> executionResult,ChainContext context) throws ExecutionException {
         //调用AfterHandler
         invokeAfterHandler(executionResult,context);
         afterResolve(executionResult, context);
     }
 
-    private void beforeResolve(ExecutionResult<? extends RequestEntity> executionResult, ExecutionContext context) throws ExecutionException {
+    private void beforeResolve(ExecutionResult<? extends RequestEntity> executionResult, ChainContext context) throws ExecutionException {
         Looper looper = executionResult.getOrginalSeq().getLooper();
         if(looper != null){
             loopResultResolver.beforeExecuteResolve(executionResult,context);
@@ -66,7 +66,7 @@ public class RequestHandlerMethodExecutionResultHandler implements RequestExecut
         }
     }
 
-    private void afterResolve(ExecutionResult<? extends RequestEntity> executionResult, ExecutionContext context) throws ExecutionException {
+    private void afterResolve(ExecutionResult<? extends RequestEntity> executionResult, ChainContext context) throws ExecutionException {
         Looper looper = executionResult.getOrginalSeq().getLooper();
         if(looper != null){
             loopResultResolver.afterExecuteResovle(executionResult,context);
@@ -75,7 +75,7 @@ public class RequestHandlerMethodExecutionResultHandler implements RequestExecut
         }
     }
 
-    private void invokeBeforeHandler(ExecutionResult<? extends RequestEntity> executionResult,ExecutionContext context) throws ExecutionException {
+    private void invokeBeforeHandler(ExecutionResult<? extends RequestEntity> executionResult,ChainContext context) throws ExecutionException {
         RequestEntity requestEntity = executionResult.getOrginalSeq();
         Object handlerResult = null;
         try {
@@ -102,7 +102,7 @@ public class RequestHandlerMethodExecutionResultHandler implements RequestExecut
         }
     }
 
-    private void invokeAfterHandler(ExecutionResult<? extends RequestEntity> executionResult, ExecutionContext context) throws ExecutionException {
+    private void invokeAfterHandler(ExecutionResult<? extends RequestEntity> executionResult, ChainContext context) throws ExecutionException {
         RequestEntity requestEntity = executionResult.getOrginalSeq();
         try {
             Object handlerResult = null;
@@ -130,7 +130,7 @@ public class RequestHandlerMethodExecutionResultHandler implements RequestExecut
         }
     }
 
-    private HandlerMethodWrapper buildBeforeHandlerMethodWrapper(RequestEntity requestEntity,ExecutionContext context){
+    private HandlerMethodWrapper buildBeforeHandlerMethodWrapper(RequestEntity requestEntity,ChainContext context){
         HandlerMethodWrapper handlerMethodWrapper = new HandlerMethodWrapper();
         Method method = (Method) requestEntity.getBeforeHandler();
         handlerMethodWrapper.setMethod(method);
@@ -142,7 +142,7 @@ public class RequestHandlerMethodExecutionResultHandler implements RequestExecut
         return handlerMethodWrapper;
     }
 
-    private HandlerMethodWrapper buildAfterHandlerMethodWrapper(ExecutionResult<? extends RequestEntity> executionResult,ExecutionContext context){
+    private HandlerMethodWrapper buildAfterHandlerMethodWrapper(ExecutionResult<? extends RequestEntity> executionResult,ChainContext context){
         HandlerMethodWrapper handlerMethodWrapper = new HandlerMethodWrapper();
         RequestEntity requestEntity = executionResult.getOrginalSeq();
         Method method = (Method) requestEntity.getAfterHandler();

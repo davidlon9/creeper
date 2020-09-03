@@ -1,6 +1,6 @@
 package com.dlong.creeper.execution.resolver;
 
-import com.dlong.creeper.execution.context.ExecutionContext;
+import com.dlong.creeper.execution.context.ChainContext;
 import com.dlong.creeper.execution.resolver.method.HandlerMethodResultResolver;
 import com.dlong.creeper.model.result.ExecutionResult;
 import com.dlong.creeper.model.seq.SequentialEntity;
@@ -24,7 +24,7 @@ public abstract class BaseExecutionResultResolver implements ExecutionResultReso
         return resolverClass;
     }
 
-    protected void handleNoNext(ExecutionResult executionResult, ExecutionContext context){
+    protected void handleNoNext(ExecutionResult executionResult, ChainContext context){
         if(executionResult.getNextSeq() == null){
             SequentialEntity orginalSeq = executionResult.getOrginalSeq();
             if(context.getSequntialFinder().isLast(orginalSeq)){

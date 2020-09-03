@@ -15,14 +15,14 @@ public class ExecutionMethodArgumentInfo extends HandlerMethodArgumentInfo {
         supportedTypeList.add(Executor.class);
     }
 
+    public ExecutionMethodArgumentInfo(ExecutionContext context) {
+        super(context);
+    }
+
     @Override
     public void initContextArgInstanceMap(ExecutionContext context) {
         super.initContextArgInstanceMap(context);
         getContextArgTypeInstanceMap().put(Executor.class,context.getExecutor());
-    }
-
-    public ExecutionMethodArgumentInfo(ExecutionContext context) {
-        super(context);
     }
 
     public Object[] fetchExecutionMethodArgs(Method method,Request request) {

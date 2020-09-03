@@ -4,13 +4,14 @@ import com.dlong.creeper.exception.ExecutionException;
 import com.dlong.creeper.execution.base.ChainExecutor;
 import com.dlong.creeper.execution.base.ContextExecutor;
 import com.dlong.creeper.execution.base.RequestExecutor;
-import com.dlong.creeper.execution.context.ExecutionContext;
+import com.dlong.creeper.execution.context.ChainContext;
 import com.dlong.creeper.model.result.ChainExecutionResult;
 import com.dlong.creeper.model.result.ChainResult;
 import com.dlong.creeper.model.result.HttpResult;
 import com.dlong.creeper.model.seq.RequestChainEntity;
 import com.dlong.creeper.model.seq.RequestEntity;
 import com.dlong.creeper.model.seq.SequentialEntity;
+import com.dlong.creeper.resolver.ChainsMappingResolver;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
 import org.springframework.util.Assert;
@@ -18,26 +19,24 @@ import org.springframework.util.Assert;
 import java.io.IOException;
 
 public class ChainContextExecutor implements ContextExecutor {
-    private ExecutionContext executionContext;
+    private ChainContext chainContext;
 
-    public ChainContextExecutor(ExecutionContext context) {
-        Assert.isInstanceOf(ExecutionContext.class,context);
-        this.executionContext = context;
+    public ChainContextExecutor(ChainContext context) {
+        this.chainContext = context;
     }
 
     public ChainContextExecutor(Class entityClass) {
-        ExecutionContext context = ExecutionContextFactory.createContext(entityClass);
-        Assert.isInstanceOf(ExecutionContext.class,context);
-        this.executionContext = context;
+        RequestChainEntity chainEntity = new ChainsMappingResolver().resolve(entityClass);
+        this.chainContext = new ChainContext(chainEntity);
     }
 
     @Override
     public HttpResult exeucteRequest(String name, boolean withHandle) {
-        SequentialEntity seq = executionContext.getSequntialFinder().findSeqByName(name);
+        SequentialEntity seq = chainContext.getSequntialFinder().findSeqByName(name);
         HttpResult result=new HttpResult();
         if (seq instanceof RequestEntity) {
             RequestEntity requestEntity = (RequestEntity) seq;
-            RequestExecutor<RequestEntity> requestExecutor = ExecutorFactory.createRequestExecutor(requestEntity.getClass(), executionContext);
+            RequestExecutor<RequestEntity> requestExecutor = ExecutorFactory.createRequestExecutor(requestEntity.getClass(), chainContext);
             try {
                 HttpResponse httpResponse;
                 if(withHandle){
@@ -62,11 +61,11 @@ public class ChainContextExecutor implements ContextExecutor {
 
     @Override
     public ChainResult exeucteChain(String name) {
-        SequentialEntity seq = executionContext.getSequntialFinder().findSeqByName(name);
+        SequentialEntity seq = chainContext.getSequntialFinder().findSeqByName(name);
         ChainResult result=new ChainResult();
         if (seq instanceof RequestChainEntity) {
             RequestChainEntity chainEntity = (RequestChainEntity) seq;
-            ChainExecutor chainExecutor = ExecutorFactory.createChainExecutor(chainEntity.getClass(), executionContext);
+            ChainExecutor chainExecutor = ExecutorFactory.createChainExecutor(chainEntity.getClass(), chainContext);
             try {
                 ChainExecutionResult executionResult = chainExecutor.execute(chainEntity);
             } catch (IOException | ExecutionException e) {
@@ -78,15 +77,15 @@ public class ChainContextExecutor implements ContextExecutor {
 
     @Override
     public ChainResult exeucteRootChain() {
-        ChainExecutor executor = ExecutorFactory.createChainExecutor(executionContext.getRootChain().getClass(),executionContext);
+        ChainExecutor executor = ExecutorFactory.createChainExecutor(chainContext.getRootChain().getClass(), chainContext);
         ChainExecutionResult result = executor.execute();
         System.out.println();
         return null;
     }
 
     @Override
-    public ExecutionContext getExecutionContext() {
-        return executionContext;
+    public ChainContext getChainContext() {
+        return chainContext;
     }
 
 

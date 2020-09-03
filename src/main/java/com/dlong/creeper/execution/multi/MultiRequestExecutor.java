@@ -3,7 +3,7 @@ package com.dlong.creeper.execution.multi;
 import com.dlong.creeper.exception.ExecutionException;
 import com.dlong.creeper.execution.base.BaseRequestExecutor;
 import com.dlong.creeper.execution.base.RequestExecutor;
-import com.dlong.creeper.execution.context.ExecutionContext;
+import com.dlong.creeper.execution.context.ChainContext;
 import com.dlong.creeper.execution.resolver.MultiExecutionResultResolver;
 import com.dlong.creeper.model.result.ExecutionResult;
 import com.dlong.creeper.model.result.MultiExecutionResult;
@@ -22,7 +22,7 @@ public class MultiRequestExecutor extends BaseRequestExecutor<MultiRequestEntity
 
     private MultiExecutionResultResolver multiResultResolver;
 
-    public MultiRequestExecutor(ExecutionContext context) {
+    public MultiRequestExecutor(ChainContext context) {
         super(context,true);
         this.multiResultResolver=new MultiExecutionResultResolver();
 //        super.setResultResolver(new MultiExecutionResultResolver());

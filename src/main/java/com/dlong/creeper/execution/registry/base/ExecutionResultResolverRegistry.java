@@ -1,7 +1,7 @@
 package com.dlong.creeper.execution.registry.base;
 
 import com.dlong.creeper.exception.ExecutionException;
-import com.dlong.creeper.execution.context.ExecutionContext;
+import com.dlong.creeper.execution.context.ChainContext;
 import com.dlong.creeper.execution.resolver.ExecutionResultResolver;
 import com.dlong.creeper.model.result.ExecutionResult;
 
@@ -16,13 +16,13 @@ public class ExecutionResultResolverRegistry{
     }
 
 
-    public void beforeExecuteResolve(ExecutionResult executionResult,ExecutionContext context) throws ExecutionException {
+    public void beforeExecuteResolve(ExecutionResult executionResult,ChainContext context) throws ExecutionException {
         for (ExecutionResultResolver handlerMethodResultResolver : executionResultResolvers) {
             handlerMethodResultResolver.beforeExecuteResolve(executionResult,context);
         }
     }
 
-    public void afterExecuteResolve(ExecutionResult executionResult,ExecutionContext context) throws ExecutionException {
+    public void afterExecuteResolve(ExecutionResult executionResult,ChainContext context) throws ExecutionException {
         for (ExecutionResultResolver handlerMethodResultResolver : executionResultResolvers) {
             handlerMethodResultResolver.afterExecuteResovle(executionResult,context);
         }

@@ -3,7 +3,7 @@ package com.dlong.creeper.execution.resolver.method;
 import com.dlong.creeper.control.BreakAction;
 import com.dlong.creeper.control.RetryAction;
 import com.dlong.creeper.exception.ExecutionException;
-import com.dlong.creeper.execution.context.ExecutionContext;
+import com.dlong.creeper.execution.context.ChainContext;
 import com.dlong.creeper.model.result.ExecutionResult;
 import org.apache.log4j.Logger;
 
@@ -11,7 +11,7 @@ public class SimpleLoopAfterResultResolver implements HandlerMethodResultResolve
     protected Logger logger=Logger.getLogger(SimpleLoopAfterResultResolver.class);
 
     @Override
-    public ExecutionResult resolveResult(ExecutionResult executionResult, ExecutionContext context, Object methodResult) throws ExecutionException {
+    public ExecutionResult resolveResult(ExecutionResult executionResult, ChainContext context, Object methodResult) throws ExecutionException {
         if(methodResult == null){
             logger.info("Looper处理方法，返回null未达预期结果，继续执行");
             new MoveStrategyAfterResultResolver().resolveResult(executionResult,context, new RetryAction(500));

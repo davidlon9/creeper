@@ -1,9 +1,6 @@
 package com.dlong.creeper.execution.handler.info;
 
-import com.dlong.creeper.execution.context.ContextParamStore;
-import com.dlong.creeper.execution.context.ExecutionContext;
-import com.dlong.creeper.execution.context.FormParamStore;
-import com.dlong.creeper.execution.context.ParamStore;
+import com.dlong.creeper.execution.context.*;
 import org.apache.http.client.CookieStore;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.log4j.Logger;
@@ -85,7 +82,7 @@ public class HandlerMethodArgumentInfo {
 //        for (int i = 0; i < parameterTypes.length; i++) {
 //            if (parameterTypes[i].equals(Request.class)) {
 //                args[i]=request;
-//            }else if(parameterTypes[i].equals(ExecutionContext.class)){
+//            }else if(parameterTypes[i].equals(ChainContext.class)){
 //                args[i]=super.getContext();
 //            }else if(parameterTypes[i].equals(FormParamStore.class)){
 //                args[i]=super.getContext().getParamStore();
@@ -105,7 +102,7 @@ public class HandlerMethodArgumentInfo {
 //                args[i]=null;
 //            }
 //            if(args[i]==null){
-//                logger.warn(parameterTypes[i]+" can't as parameter,,this param jsonKey will be null. please try these parameter types:Request, ExecutionContext, ParamStore, CookieStore");
+//                logger.warn(parameterTypes[i]+" can't as parameter,,this param jsonKey will be null. please try these parameter types:Request, ChainContext, ParamStore, CookieStore");
 //            }
 //        }
 //        return args;
@@ -123,7 +120,7 @@ public class HandlerMethodArgumentInfo {
 //        for (int i = 0; i < parameterTypes.length; i++) {
 //            if (parameterTypes[i].equals(HttpResponse.class)) {
 //                args[i]=response;
-//            }else if(parameterTypes[i].equals(ExecutionContext.class)){
+//            }else if(parameterTypes[i].equals(ChainContext.class)){
 //                args[i]=super.getContext();
 //            }else if(parameterTypes[i].equals(FormParamStore.class)){
 //                args[i]=super.getContext().getParamStore();
@@ -147,7 +144,7 @@ public class HandlerMethodArgumentInfo {
 //                args[i]=null;
 //            }
 //            if(args[i]==null){
-//                logger.warn(parameterTypes[i]+" can't as parameter, please try these parameter types:HttpResponse, ExecutionContext, ParamStore, CookieStore, JSONObject");
+//                logger.warn(parameterTypes[i]+" can't as parameter, please try these parameter types:HttpResponse, ChainContext, ParamStore, CookieStore, JSONObject");
 //            }
 //        }
 //        return args;

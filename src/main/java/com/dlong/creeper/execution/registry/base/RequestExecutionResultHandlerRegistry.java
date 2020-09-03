@@ -1,7 +1,7 @@
 package com.dlong.creeper.execution.registry.base;
 
 import com.dlong.creeper.exception.ExecutionException;
-import com.dlong.creeper.execution.context.ExecutionContext;
+import com.dlong.creeper.execution.context.ChainContext;
 import com.dlong.creeper.execution.handler.RequestExecutionResultHandler;
 import com.dlong.creeper.model.result.ExecutionResult;
 import com.dlong.creeper.model.seq.RequestEntity;
@@ -19,13 +19,13 @@ public class RequestExecutionResultHandlerRegistry {
      * 1.CookieResultHandler
      * 2.RequestHandlerMethodExecutionResultHandler
      */
-    public void invokeBeforeExecutionHandler(ExecutionResult<? extends RequestEntity> executionResult, ExecutionContext context) throws ExecutionException {
+    public void invokeBeforeExecutionHandler(ExecutionResult<? extends RequestEntity> executionResult, ChainContext context) throws ExecutionException {
         for (RequestExecutionResultHandler requestExecutionResultHandler : requestExecutionResultHandlers) {
             requestExecutionResultHandler.beforeExecute(executionResult,context);
         }
     }
 
-    public void invokeBeforeExecutionHandler(ExecutionResult<? extends RequestEntity> executionResult, ExecutionContext context , List<Class<? extends RequestExecutionResultHandler>> excludes) throws ExecutionException {
+    public void invokeBeforeExecutionHandler(ExecutionResult<? extends RequestEntity> executionResult, ChainContext context , List<Class<? extends RequestExecutionResultHandler>> excludes) throws ExecutionException {
         for (RequestExecutionResultHandler requestExecutionResultHandler : requestExecutionResultHandlers) {
             if(!excludes.contains(requestExecutionResultHandler.getClass())){
                 requestExecutionResultHandler.beforeExecute(executionResult,context);
@@ -40,13 +40,13 @@ public class RequestExecutionResultHandlerRegistry {
      * 默认调用以下handler
      * 1.RequestHandlerMethodExecutionResultHandler
      */
-    public void invokeAfterExecutionHandler(ExecutionResult<? extends RequestEntity> executionResult, ExecutionContext context) throws ExecutionException {
+    public void invokeAfterExecutionHandler(ExecutionResult<? extends RequestEntity> executionResult, ChainContext context) throws ExecutionException {
         for (RequestExecutionResultHandler requestExecutionResultHandler : requestExecutionResultHandlers) {
             requestExecutionResultHandler.afterExecute(executionResult,context);
         }
     }
 
-    public void invokeAfterExecutionHandler(ExecutionResult<? extends RequestEntity> executionResult, ExecutionContext context , List<Class<? extends RequestExecutionResultHandler>> excludes) throws ExecutionException {
+    public void invokeAfterExecutionHandler(ExecutionResult<? extends RequestEntity> executionResult, ChainContext context , List<Class<? extends RequestExecutionResultHandler>> excludes) throws ExecutionException {
         for (RequestExecutionResultHandler requestExecutionResultHandler : requestExecutionResultHandlers) {
             if(!excludes.contains(requestExecutionResultHandler.getClass())){
                 requestExecutionResultHandler.afterExecute(executionResult,context);

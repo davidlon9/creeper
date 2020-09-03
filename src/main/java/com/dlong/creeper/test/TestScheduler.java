@@ -22,7 +22,7 @@ import com.dlong.creeper.control.ContinueAction;
 import com.dlong.creeper.control.MoveAction;
 import com.dlong.creeper.execution.RequestChainExecutor;
 import com.dlong.creeper.execution.context.ContextParamStore;
-import com.dlong.creeper.execution.context.ExecutionContext;
+import com.dlong.creeper.execution.context.ChainContext;
 import com.dlong.creeper.execution.context.FormParamStore;
 import com.dlong.creeper.model.result.ExecutionResult;
 import com.dlong.creeper.model.seq.RequestChainEntity;
@@ -41,6 +41,7 @@ import java.util.Random;
 @RequestChain(index =1,name="MainChain")
 public class TestScheduler {
     private static int winCount=0;
+
     @While(executionMode = ExecutionMode.PARALLEL)
     @MultiRequestChain(index =1,name="OrderChain",description="订单请求链",threadSize=2)
     public class OrderChain {
@@ -140,7 +141,7 @@ public class TestScheduler {
 
     public static void main(String[] args) {
 
-        RequestChainEntity requestChainEntity = new ChainsMappingResolver(TestScheduler.class).resolve();
+        RequestChainEntity requestChainEntity = new ChainsMappingResolver().resolve(TestScheduler.class);
 //        RequestChainEntity loginChain = requestChainMap.get("LoginChain");
 //        startParam.add(new Param("timestamp",new Date().getTime()));
 //        BaseChainExecutor loginExecutor = new BaseChainExecutor(loginChain, startParam);
@@ -156,9 +157,9 @@ public class TestScheduler {
 //        startParam.add(new Param("leftTicketDTO.train_date",date));
 //        startParam.add(new Param("leftTicketDTO.from_station",fromCode));
 //        startParam.add(new Param("leftTicketDTO.to_station",toCode));
-//        MultiChainExecutor chainExecutor = new MultiChainExecutor(new ExecutionContext(multiChainEntity));
+//        MultiChainExecutor chainExecutor = new MultiChainExecutor(new ChainContext(multiChainEntity));
 //        ExecutionResult<MultiRequestChainEntity> execute = chainExecutor.execute(multiChainEntity);
-        RequestChainExecutor executor = new RequestChainExecutor(new ExecutionContext(requestChainEntity));
+        RequestChainExecutor executor = new RequestChainExecutor(new ChainContext(requestChainEntity));
         ExecutionResult<RequestChainEntity> excute = executor.execute();
         System.out.println();
 //

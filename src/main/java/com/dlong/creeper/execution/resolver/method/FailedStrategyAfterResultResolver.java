@@ -2,7 +2,7 @@ package com.dlong.creeper.execution.resolver.method;
 
 import com.dlong.creeper.annotation.control.FailedStrategy;
 import com.dlong.creeper.exception.ExecutionException;
-import com.dlong.creeper.execution.context.ExecutionContext;
+import com.dlong.creeper.execution.context.ChainContext;
 import com.dlong.creeper.model.result.ExecutionResult;
 import com.dlong.creeper.model.seq.RequestEntity;
 import com.dlong.creeper.model.seq.SequentialEntity;
@@ -12,7 +12,7 @@ public class FailedStrategyAfterResultResolver implements HandlerMethodResultRes
     private static Logger logger = Logger.getLogger(FailedStrategyAfterResultResolver.class);
 
     @Override
-    public ExecutionResult resolveResult(ExecutionResult executionResult, ExecutionContext context, Object methodResult) throws ExecutionException {
+    public ExecutionResult resolveResult(ExecutionResult executionResult, ChainContext context, Object methodResult) throws ExecutionException {
         SequentialEntity seq = executionResult.getOrginalSeq();
         SequentialEntity next=null;
         if(seq instanceof RequestEntity){

@@ -1,7 +1,6 @@
 package demo;
 
 import com.alibaba.fastjson.JSONObject;
-import com.dlong.creeper.HttpUtil;
 import com.dlong.creeper.annotation.*;
 import com.dlong.creeper.annotation.handler.AfterMethod;
 import com.dlong.creeper.annotation.handler.BeforeMethod;
@@ -17,6 +16,7 @@ import com.dlong.creeper.execution.context.FormParamStore;
 import java.io.IOException;
 
 public class DocDemos {
+    //LoginChain Demo
     @RequestChain(index =1,name="LoginChain",description="登陆请求链")
     @Host(value="kyfw.12306.cn",scheme="https")
     public class LoginChain {
@@ -70,7 +70,6 @@ public class DocDemos {
         }
     }
 
-    //当前序列请求的执行顺序为3
     @SeqRequest(index = 3,description="检测验证码答案")
     @Get("/passport/captcha/captcha-check")
     public boolean captchaCheck(String result,FormParamStore formParamStore){

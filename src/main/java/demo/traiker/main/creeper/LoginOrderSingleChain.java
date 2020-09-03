@@ -7,8 +7,8 @@ import com.dlong.creeper.annotation.seq.RequestChain;
 import com.dlong.creeper.annotation.seq.SeqRequest;
 import com.dlong.creeper.control.*;
 import com.dlong.creeper.execution.RequestChainExecutor;
+import com.dlong.creeper.execution.context.ChainContext;
 import com.dlong.creeper.execution.context.ContextParamStore;
-import com.dlong.creeper.execution.context.ExecutionContext;
 import com.dlong.creeper.execution.context.FormParamStore;
 import com.dlong.creeper.model.*;
 import com.dlong.creeper.model.result.ExecutionResult;
@@ -140,7 +140,7 @@ public class LoginOrderSingleChain {
     @RequestChain(index =2,name="OrderChain",description="订单请求链")
     public class Order{
         //        dc: "单程",
-        @While(coniditionExpression = "${#loopNum < 10}",executionMode = ExecutionMode.SEQUENTIAL)
+        @While(conditionExpr = "${#loopNum < 10}")
         @SeqRequest(index =1,name="leftTicket",description="查询余票")
         @Get("/otn/leftTicket/query")
         @Parameters({
@@ -164,7 +164,7 @@ public class LoginOrderSingleChain {
 //            if(leftTicketByType!=null){
 //                System.out.println(leftTicketByType);
 //            }
-            return new RetryAction(1000);
+            return new ContinueAction(1000);
         }
         //        wc: "往返",
 //        fc: "返程",
@@ -324,7 +324,7 @@ public class LoginOrderSingleChain {
     public static void main(String[] args) {
         Map<String, String> stationCodeMap = StationDesc.stationCodeMap;
         List<Param> startParam=new ArrayList<>();
-        RequestChainEntity requestChainEntity = new ChainsMappingResolver(LoginOrderSingleChain.class).resolve();
+        RequestChainEntity requestChainEntity = new ChainsMappingResolver().resolve(LoginOrderSingleChain.class);
 //        RequestChainEntity loginChain = requestChainMap.get("LoginChain");
 //        startParam.add(new Param("timestamp",new Date().getTime()));
 //        BaseChainExecutor loginExecutor = new BaseChainExecutor(loginChain, startParam);
@@ -338,17 +338,18 @@ public class LoginOrderSingleChain {
         startParam.add(new Param("leftTicketDTO.train_date",date));
         startParam.add(new Param("leftTicketDTO.from_station",fromCode));
         startParam.add(new Param("leftTicketDTO.to_station",toCode));
-        ExecutionContext executionContext = new ExecutionContext(requestChainEntity, startParam);
-        ContextParamStore contextStore = executionContext.getContextStore();
+        ChainContext chainContext = new ChainContext(requestChainEntity);
+        chainContext.getParamStore().addParams(startParam);
+        ContextParamStore contextStore = chainContext.getContextStore();
         contextStore.addParam("start",1);
         contextStore.addParam("end",10);
         contextStore.addParam("loopNum",0);
 
-        RequestChainExecutor requestChainExecutor = new RequestChainExecutor(executionContext);
+        RequestChainExecutor requestChainExecutor = new RequestChainExecutor(chainContext);
         ExecutionResult<RequestChainEntity> execute = requestChainExecutor.execute();
         System.out.println();
 //        RequestChainExecutor orderExecutor = new RequestChainExecutor(requestChainEntity, startParam);
-//        ExecutionContext executionContext = orderExecutor.getExecutionContext();
+//        ChainContext chainContext = orderExecutor.getChainContext();
 //
 //        orderExecutor.setSeqLimit(1);
 //        orderExecutor.executeRequest();

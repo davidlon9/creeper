@@ -4,8 +4,8 @@ import com.dlong.creeper.exception.ExecutionException;
 import com.dlong.creeper.exception.RuntimeExecuteException;
 import com.dlong.creeper.execution.base.BaseRequestExecutor;
 import com.dlong.creeper.execution.base.RequestExecutor;
+import com.dlong.creeper.execution.context.ChainContext;
 import com.dlong.creeper.execution.context.ContextParamStore;
-import com.dlong.creeper.execution.context.ExecutionContext;
 import com.dlong.creeper.execution.looper.BaseExecuteLooper;
 import com.dlong.creeper.execution.resolver.AutoNextSeqResultResolver;
 import com.dlong.creeper.execution.resolver.MultiExecutionResultResolver;
@@ -27,7 +27,7 @@ public class MultiRequestQueueExecutor extends BaseRequestExecutor<MultiRequestQ
 
     private MultiExecutionResultResolver multiResultResolver;
 
-    public MultiRequestQueueExecutor(ExecutionContext context) {
+    public MultiRequestQueueExecutor(ChainContext context) {
         super(context,true);
         this.multiResultResolver=new MultiExecutionResultResolver();
     }
@@ -39,7 +39,7 @@ public class MultiRequestQueueExecutor extends BaseRequestExecutor<MultiRequestQ
 
         String queueContextKey = multiQueueEntity.getQueueContextKey();
         //main线程的context
-        ExecutionContext mainContext = getContext();
+        ChainContext mainContext = getContext();
         ContextParamStore contextStore = mainContext.getContextStore();
 
         BlockingQueue<Object> queue = getQueue(queueContextKey, contextStore);
@@ -101,9 +101,9 @@ public class MultiRequestQueueExecutor extends BaseRequestExecutor<MultiRequestQ
         //加入主线程的Latch
         private ExecutorService threadPool;
         private final BlockingQueue<Object> queue;
-        private ExecutionContext mainContext;
+        private ChainContext mainContext;
 
-        public MultiRequestQueueExecute(MultiRequestQueueEntity multiRequestEntity, MultiExecutionResult<MultiRequestQueueEntity> executionResult,ExecutorService threadPool, BlockingQueue<Object> queue,ExecutionContext mainContext) {
+        public MultiRequestQueueExecute(MultiRequestQueueEntity multiRequestEntity, MultiExecutionResult<MultiRequestQueueEntity> executionResult,ExecutorService threadPool, BlockingQueue<Object> queue,ChainContext mainContext) {
             this.multiRequestEntity = multiRequestEntity;
             this.executionResult = executionResult;
             this.threadPool = threadPool;
@@ -137,7 +137,7 @@ public class MultiRequestQueueExecutor extends BaseRequestExecutor<MultiRequestQ
                         continue;
                     }
                     //thread context
-                    ExecutionContext context = getContext();
+                    ChainContext context = getContext();
                     ContextParamStore contextStore = context.getContextStore();
                     String queueElementKey = multiRequestEntity.getQueueElementKey();
                     contextStore.addParam(queueElementKey,poll);

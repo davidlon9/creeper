@@ -2,28 +2,28 @@ package com.dlong.creeper.execution.base;
 
 import com.dlong.creeper.exception.ExecutionException;
 import com.dlong.creeper.execution.ExecutorFactory;
-import com.dlong.creeper.execution.context.ExecutionContext;
+import com.dlong.creeper.execution.context.ChainContext;
 import com.dlong.creeper.model.result.ExecutionResult;
 import com.dlong.creeper.model.seq.control.Looper;
 import com.dlong.creeper.model.seq.LoopableEntity;
 
 import java.io.IOException;
 
-public abstract class AbstractLoopableExecutor<T extends LoopableEntity> extends ContextSeqExecutor implements LoopableExecutor<T>,Cloneable{
+public abstract class AbstractLoopableExecutor<T extends LoopableEntity> extends BaseChainContextExecutor implements LoopableExecutor<T>,Cloneable{
 
-    public AbstractLoopableExecutor(ExecutionContext context) {
+    public AbstractLoopableExecutor(ChainContext context) {
         super(context);
     }
 
-    public AbstractLoopableExecutor(ExecutionContext context, boolean isMultiThread) {
+    public AbstractLoopableExecutor(ChainContext context, boolean isMultiThread) {
         super(context,isMultiThread);
     }
 
     @Override
     public AbstractLoopableExecutor clone() throws CloneNotSupportedException {
         AbstractLoopableExecutor loopableExecutor = (AbstractLoopableExecutor) super.clone();
-        ExecutionContext context = loopableExecutor.getContext();
-        ExecutionContext clone = context.clone();
+        ChainContext context = loopableExecutor.getContext();
+        ChainContext clone = context.clone();
         loopableExecutor.setContext(clone);
         return loopableExecutor;
     }

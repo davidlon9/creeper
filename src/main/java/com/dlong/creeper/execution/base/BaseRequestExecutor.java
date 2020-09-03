@@ -2,7 +2,7 @@ package com.dlong.creeper.execution.base;
 
 import com.dlong.creeper.control.IntervalAction;
 import com.dlong.creeper.exception.ExecutionException;
-import com.dlong.creeper.execution.context.ExecutionContext;
+import com.dlong.creeper.execution.context.ChainContext;
 import com.dlong.creeper.execution.handler.RequestHandlerMethodExecutionResultHandler;
 import com.dlong.creeper.execution.handler.info.ExecutionMethodArgumentInfo;
 import com.dlong.creeper.execution.registry.ExecutionMethodResultHandlerRegistry;
@@ -41,16 +41,16 @@ public class BaseRequestExecutor<T extends RequestEntity> extends AbstractLoopab
 
     private static Logger logger=Logger.getLogger(BaseRequestExecutor.class);
 
-    public BaseRequestExecutor(ExecutionContext context) {
+    public BaseRequestExecutor(ChainContext context) {
         this(context,false);
     }
 
-    public BaseRequestExecutor(ExecutionContext context, boolean isMultiThread) {
+    public BaseRequestExecutor(ChainContext context, boolean isMultiThread) {
         super(context, isMultiThread);
         init();
     }
 
-    public BaseRequestExecutor(ExecutionContext context, HttpRequestBuilder requestBuilder) {
+    public BaseRequestExecutor(ChainContext context, HttpRequestBuilder requestBuilder) {
         this(context);
         this.requestBuilder = requestBuilder;
     }
@@ -124,7 +124,7 @@ public class BaseRequestExecutor<T extends RequestEntity> extends AbstractLoopab
     }
 
     private void executeByExecutionMethod(ExecutionResult<T> executionResult) throws ExecutionException {
-        ExecutionContext context = super.getContext();
+        ChainContext context = super.getContext();
         getExecutionMethodHandlerRegistry().invokeBeforeExecutionHandler(executionResult, context);
         getExecutionMethodResultResolverRegistry().beforeExecuteResolve(executionResult, context);
 
@@ -139,7 +139,7 @@ public class BaseRequestExecutor<T extends RequestEntity> extends AbstractLoopab
     }
 
     private void executeByExecutionHandler(ExecutionResult<T> executionResult) throws ExecutionException, IOException {
-        ExecutionContext context = super.getContext();
+        ChainContext context = super.getContext();
         //TODO 执行handlerMethodRequestExecutionHandler之前，检查其属性resultResolver，如果不是SimpleExecutionResultResolver则使其变成该Resolver
         getHandlerExecuteHandlerRegistry().invokeBeforeExecutionHandler(executionResult, context);
         getHandlerExecuteResultResolverRegistry().beforeExecuteResolve(executionResult, context);

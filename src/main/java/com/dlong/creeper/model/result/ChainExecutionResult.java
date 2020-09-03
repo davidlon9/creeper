@@ -1,6 +1,6 @@
 package com.dlong.creeper.model.result;
 
-import com.dlong.creeper.execution.context.ExecutionContext;
+import com.dlong.creeper.execution.context.ChainContext;
 import com.dlong.creeper.model.seq.RequestChainEntity;
 
 import java.util.ArrayList;
@@ -9,7 +9,7 @@ import java.util.List;
 public class ChainExecutionResult<T extends RequestChainEntity> extends ExecutionResult<T> {
     private List<ExecutionResult> chainResults = new ArrayList<>();
     private ExecutionResult finalResult;
-    private ExecutionContext context;
+    private ChainContext context;
 
     public ChainExecutionResult(T orginalChain) {
         super(orginalChain);
@@ -31,11 +31,11 @@ public class ChainExecutionResult<T extends RequestChainEntity> extends Executio
         this.finalResult = finalResult;
     }
 
-    public ExecutionContext getContext() {
+    public ChainContext getContext() {
         return context;
     }
 
-    public void setContext(ExecutionContext context) {
+    public void setContext(ChainContext context) {
         this.context = context;
     }
 }

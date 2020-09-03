@@ -1,7 +1,7 @@
 package com.dlong.creeper.execution.handler;
 
 import com.dlong.creeper.exception.ExecutionException;
-import com.dlong.creeper.execution.context.ExecutionContext;
+import com.dlong.creeper.execution.context.ChainContext;
 import com.dlong.creeper.execution.handler.help.ThreadLocalMap;
 import com.dlong.creeper.model.result.ExecutionResult;
 import com.dlong.creeper.model.seq.multi.Multiple;
@@ -22,11 +22,11 @@ public class MultiChainExecutionResultHandler implements ChainExecutionResultHan
     private static Logger logger=Logger.getLogger(MultiChainExecutionResultHandler.class);
 
     @Override
-    public void beforeExecute(ExecutionResult<? extends RequestChainEntity> executionResult,ExecutionContext context) throws ExecutionException {
+    public void beforeExecute(ExecutionResult<? extends RequestChainEntity> executionResult,ChainContext context) throws ExecutionException {
     }
 
     @Override
-    public void afterExecute(ExecutionResult<? extends RequestChainEntity> executionResult,ExecutionContext context) throws ExecutionException {
+    public void afterExecute(ExecutionResult<? extends RequestChainEntity> executionResult,ChainContext context) throws ExecutionException {
         handleMove(executionResult);
     }
 

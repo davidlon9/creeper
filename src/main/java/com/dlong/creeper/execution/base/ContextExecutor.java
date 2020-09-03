@@ -1,6 +1,6 @@
 package com.dlong.creeper.execution.base;
 
-import com.dlong.creeper.execution.context.ExecutionContext;
+import com.dlong.creeper.execution.context.ChainContext;
 import com.dlong.creeper.model.result.ChainResult;
 import com.dlong.creeper.model.result.HttpResult;
 
@@ -13,5 +13,5 @@ public interface ContextExecutor{
 
     ChainResult exeucteRootChain();
 
-    ExecutionContext getExecutionContext();
+    ChainContext getChainContext();
 }

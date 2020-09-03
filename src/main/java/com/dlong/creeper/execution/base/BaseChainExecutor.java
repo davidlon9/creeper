@@ -3,7 +3,7 @@ package com.dlong.creeper.execution.base;
 import com.dlong.creeper.exception.ExecutionException;
 import com.dlong.creeper.exception.RuntimeExecuteException;
 import com.dlong.creeper.execution.ExecutorFactory;
-import com.dlong.creeper.execution.context.ExecutionContext;
+import com.dlong.creeper.execution.context.ChainContext;
 import com.dlong.creeper.execution.registry.DefaultChainResultHandlerRegistry;
 import com.dlong.creeper.execution.registry.base.ChainExecutionResultHandlerRegistry;
 import com.dlong.creeper.execution.registry.base.ExecutionResultResolverRegistry;
@@ -23,11 +23,11 @@ public class BaseChainExecutor<T extends RequestChainEntity> extends AbstractLoo
     private ChainExecutionResultHandlerRegistry chainExecutionResultHandlerRegistry;
     private ExecutionResultResolverRegistry executionResultResolverRegistry;
 
-    public BaseChainExecutor(ExecutionContext context) {
+    public BaseChainExecutor(ChainContext context) {
         this(context,false);
     }
 
-    public BaseChainExecutor(ExecutionContext context, boolean isMultiThread) {
+    public BaseChainExecutor(ChainContext context, boolean isMultiThread) {
         super(context,isMultiThread);
         chainExecutionResultHandlerRegistry = new DefaultChainResultHandlerRegistry();
         executionResultResolverRegistry = new ExecutionResultResolverRegistry();
@@ -82,7 +82,7 @@ public class BaseChainExecutor<T extends RequestChainEntity> extends AbstractLoo
      */
     public ChainExecutionResult<T> doExecute(T chainEntity) throws IOException, ExecutionException {
         ChainExecutionResult<T> executionResult = new ChainExecutionResult<>(chainEntity);
-        ExecutionContext context = super.getContext();
+        ChainContext context = super.getContext();
         executionResult.setContext(context);
 
         SequentialEntity firstSeq = context.getSequntialFinder().findFirstSeqByFixedIndex(chainEntity);

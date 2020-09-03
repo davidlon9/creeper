@@ -1,7 +1,7 @@
 package com.dlong.creeper.execution.resolver;
 
 import com.dlong.creeper.exception.ExecutionException;
-import com.dlong.creeper.execution.context.ExecutionContext;
+import com.dlong.creeper.execution.context.ChainContext;
 import com.dlong.creeper.model.result.ExecutionResult;
 import com.dlong.creeper.model.result.MultiExecutionResult;
 import com.dlong.creeper.model.seq.SequentialEntity;
@@ -16,12 +16,12 @@ public class MultiExecutionResultResolver implements ExecutionResultResolver {
     private static Logger logger=Logger.getLogger(MultiExecutionResultResolver.class);
 
     @Override
-    public ExecutionResult beforeExecuteResolve(ExecutionResult executionResult, ExecutionContext context) throws ExecutionException {
+    public ExecutionResult beforeExecuteResolve(ExecutionResult executionResult, ChainContext context) throws ExecutionException {
         return null;
     }
 
     @Override
-    public ExecutionResult afterExecuteResovle(ExecutionResult executionResult, ExecutionContext context) throws ExecutionException {
+    public ExecutionResult afterExecuteResovle(ExecutionResult executionResult, ChainContext context) throws ExecutionException {
         Assert.isInstanceOf(MultiExecutionResult.class,executionResult,"ExecutionResult is not a instance of MultiExecutionResult");
 
         MultiExecutionResult<MultiRequestEntity> multiExecutionResult = (MultiExecutionResult<MultiRequestEntity>) executionResult;

@@ -3,7 +3,7 @@ package com.dlong.creeper.execution.resolver;
 import com.dlong.creeper.annotation.control.FailedStrategy;
 import com.dlong.creeper.control.MoveAction;
 import com.dlong.creeper.exception.ExecutionException;
-import com.dlong.creeper.execution.context.ExecutionContext;
+import com.dlong.creeper.execution.context.ChainContext;
 import com.dlong.creeper.execution.resolver.method.*;
 import com.dlong.creeper.model.result.ExecutionResult;
 import org.apache.log4j.Logger;
@@ -29,7 +29,7 @@ public class SimpleExecutionResultResolver extends BaseExecutionResultResolver{
     }
 
     @Override
-    public ExecutionResult beforeExecuteResolve(ExecutionResult executionResult, ExecutionContext context) throws ExecutionException {
+    public ExecutionResult beforeExecuteResolve(ExecutionResult executionResult, ChainContext context) throws ExecutionException {
         Object beforeResult = executionResult.getBeforeResult();
         if(beforeResult==null){
             return executionResult;
@@ -48,7 +48,7 @@ public class SimpleExecutionResultResolver extends BaseExecutionResultResolver{
     }
 
     @Override
-    public ExecutionResult afterExecuteResovle(ExecutionResult executionResult, ExecutionContext context) throws ExecutionException {
+    public ExecutionResult afterExecuteResovle(ExecutionResult executionResult, ChainContext context) throws ExecutionException {
         Object afterResult = executionResult.getAfterResult();
         HandlerMethodResultResolver handlerMethodResultResolver;
         if(afterResult==null){

@@ -1,7 +1,7 @@
 package com.dlong.creeper.execution.multi;
 
 import com.dlong.creeper.execution.base.BaseChainExecutor;
-import com.dlong.creeper.execution.context.ExecutionContext;
+import com.dlong.creeper.execution.context.ChainContext;
 import com.dlong.creeper.model.result.ChainExecutionResult;
 import com.dlong.creeper.model.result.ExecutionResult;
 import com.dlong.creeper.model.seq.multi.LoginUserInfo;
@@ -12,7 +12,7 @@ import java.util.concurrent.CountDownLatch;
 
 public class MultiUserExecutor extends BaseChainExecutor<MultiUserChainEntity> {
 
-    public MultiUserExecutor(ExecutionContext context) {
+    public MultiUserExecutor(ChainContext context) {
         super(context,true);
     }
 

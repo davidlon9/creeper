@@ -1,18 +1,18 @@
 package com.dlong.creeper.execution.base;
 
-import com.dlong.creeper.execution.context.ExecutionContext;
+import com.dlong.creeper.execution.context.ChainContext;
 import org.apache.log4j.Logger;
 
 
-public class ContextSeqExecutor{
-    private Logger logger= Logger.getLogger(ContextSeqExecutor.class);
+public class BaseChainContextExecutor {
+    private Logger logger= Logger.getLogger(BaseChainContextExecutor.class);
 
-    private ExecutionContext context;
+    private ChainContext context;
     private final boolean isMultiThread;
 
-    private ThreadLocal<ExecutionContext> contextThreadLocal=new ThreadLocal<ExecutionContext>(){
+    private ThreadLocal<ChainContext> contextThreadLocal=new ThreadLocal<ChainContext>(){
         @Override
-        protected ExecutionContext initialValue() {
+        protected ChainContext initialValue() {
             try {
                 return context.clone();
             } catch (CloneNotSupportedException e) {
@@ -23,35 +23,35 @@ public class ContextSeqExecutor{
     };
 
 
-    public ContextSeqExecutor(ExecutionContext context) {
+    public BaseChainContextExecutor(ChainContext context) {
         this(context,false);
     }
 
-    public ContextSeqExecutor(ExecutionContext context, boolean isMultiThread) {
+    public BaseChainContextExecutor(ChainContext context, boolean isMultiThread) {
         this.context = context;
         this.isMultiThread = isMultiThread;
     }
 
 
-    public ExecutionContext getContext() {
+    public ChainContext getContext() {
         if(!isMultiThread){
             return context;
         }
         return getThreadLocalContext();
     }
 
-    public void setContext(ExecutionContext context) {
+    public void setContext(ChainContext context) {
         this.context = context;
     }
 
-    private ExecutionContext getThreadLocalContext() {
-        ExecutionContext executionContext = contextThreadLocal.get();
-        logger.debug(Thread.currentThread().getName()+" get context "+ executionContext);
-        if(executionContext !=null){
-            return executionContext;
+    private ChainContext getThreadLocalContext() {
+        ChainContext chainContext = contextThreadLocal.get();
+        logger.debug(Thread.currentThread().getName()+" get context "+ chainContext);
+        if(chainContext !=null){
+            return chainContext;
         }else{
             try {
-                ExecutionContext clone = this.getContext().clone();
+                ChainContext clone = this.getContext().clone();
                 contextThreadLocal.set(clone);
                 return clone;
             } catch (CloneNotSupportedException e) {

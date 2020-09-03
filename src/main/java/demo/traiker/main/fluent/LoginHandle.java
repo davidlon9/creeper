@@ -1,7 +1,7 @@
 package demo.traiker.main.fluent;
 
 import com.alibaba.fastjson.JSONObject;
-import com.dlong.creeper.resolver.FluentRequestMappingMananger;
+import com.dlong.creeper.resolver.FluentRequestMananger;
 import demo.traiker.resovler.CallbackParam;
 import demo.traiker.resovler.CaptchaImage;
 import org.apache.http.client.CookieStore;
@@ -18,7 +18,7 @@ public class LoginHandle {
         //创建一个CookieStore
         CookieStore cookieStore = new BasicCookieStore();
         executor.use(cookieStore);
-        LoginMapping loginMapping = new FluentRequestMappingMananger(executor).getClassProxy(LoginMapping.class);
+        LoginMapping loginMapping = new FluentRequestMananger(executor).getClassProxy(LoginMapping.class);
         //第一步 deviceCookie中提取两个必备cookie
         String deivceCookie = loginMapping.deviceCookie();
         handleDeivceCookie(deivceCookie,cookieStore);

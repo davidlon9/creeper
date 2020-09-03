@@ -16,8 +16,8 @@ import com.dlong.creeper.control.MoveAction;
 import com.dlong.creeper.control.MoveActions;
 import com.dlong.creeper.execution.ChainContextExecutor;
 import com.dlong.creeper.execution.base.ContextExecutor;
-import com.dlong.creeper.execution.context.ContextParamStore;
 import com.dlong.creeper.execution.context.ExecutionContext;
+import com.dlong.creeper.execution.context.ContextParamStore;
 import com.dlong.creeper.execution.context.FormParamStore;
 import com.dlong.creeper.execution.handler.entity.ExecutionHandler;
 import com.dlong.creeper.model.result.ChainResult;
@@ -25,7 +25,6 @@ import com.dlong.creeper.model.seq.RequestInfo;
 import com.dlong.creeper.resolver.DefaultRequestInfoResolver;
 import com.dlong.creeper.util.FileUtil;
 import com.dlong.creeper.util.HttpDownload;
-import com.dlong.creeper.util.ResultUtil;
 import demo.pdf.model.PDFDetail;
 import demo.pdf.serivce.DZSWService;
 import org.apache.http.HttpResponse;
@@ -45,7 +44,7 @@ import java.util.Set;
 @RequestLog(showFilledParams = false, showFilledHeaders = false)
 @FileRecordsIgnore(filePath = "D:\\repository\\traiker\\records\\demo.txt")
 public class PDFdzswChain {
-//    @RequestReference(index = 0,chainClass = PDFdzswChain.PageHandleChain.DownloadFile.class,requestMethod = "getFileInfo")
+//    @RequestReference(index = 0,chainClass = PDFdzswChain.PageHandleChain.DownloadFile.class,requestName = "getFileInfo")
 //    Method getFileInfo;
 //    @ChainReference(index = 0,name = "downFileR")
 //    PageHandleChain.DownloadFile downFile;
@@ -108,7 +107,7 @@ public class PDFdzswChain {
 //        return new ContinueAction(100);
 //    }
 
-    @ForIndex(start = "1", end = "${#maxPage}")
+    @ForIndex(start = "1", end = "${#maxPage}",indexName = "index")
     @RequestChain(index = 2)
     @RequestLog(showFilledParams = false, showFilledHeaders = false)
     public class PageHandleChain {
@@ -234,9 +233,9 @@ public class PDFdzswChain {
         System.out.println();
 
 //        //手动调用方式
-//        ExecutionContext context = ExecutionContextFactory.createContext(LoginChain.class);
+//        ExecutionContext context = ExecutionContextFactory.createExecutionContext(LoginChain.class);
 //
-//        ContextExecutor contextExecutor = new ChainContextExecutor(context);
+//        ContextExecutor contextExecutor = new ExecutionContextExecutor(context);
 //        RequestEntity deviceCookie = context.getRequestEntity("deviceCookie");
 //        deviceCookie.setAfterHandler(new AfterHandler() {
 //            @Override

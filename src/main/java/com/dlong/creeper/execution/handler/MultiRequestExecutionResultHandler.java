@@ -2,7 +2,7 @@ package com.dlong.creeper.execution.handler;
 
 import com.dlong.creeper.control.StopAllAction;
 import com.dlong.creeper.exception.ExecutionException;
-import com.dlong.creeper.execution.context.ExecutionContext;
+import com.dlong.creeper.execution.context.ChainContext;
 import com.dlong.creeper.model.result.ExecutionResult;
 import com.dlong.creeper.model.seq.multi.Multiple;
 import com.dlong.creeper.model.seq.RequestEntity;
@@ -17,12 +17,12 @@ public class MultiRequestExecutionResultHandler implements RequestExecutionResul
     private static Logger logger = Logger.getLogger(MultiRequestExecutionResultHandler.class);
 
     @Override
-    public void beforeExecute(ExecutionResult<? extends RequestEntity> executionResult, ExecutionContext context) throws ExecutionException {
+    public void beforeExecute(ExecutionResult<? extends RequestEntity> executionResult, ChainContext context) throws ExecutionException {
 
     }
 
     @Override
-    public void afterExecute(ExecutionResult<? extends RequestEntity> executionResult, ExecutionContext context) throws ExecutionException {
+    public void afterExecute(ExecutionResult<? extends RequestEntity> executionResult, ChainContext context) throws ExecutionException {
         handleMove(executionResult);
     }
 

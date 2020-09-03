@@ -14,7 +14,7 @@ import com.dlong.creeper.annotation.seq.SeqRequest;
 import com.dlong.creeper.control.*;
 import com.dlong.creeper.execution.RequestChainExecutor;
 import com.dlong.creeper.execution.context.ContextParamStore;
-import com.dlong.creeper.execution.context.ExecutionContext;
+import com.dlong.creeper.execution.context.ChainContext;
 import com.dlong.creeper.execution.context.FormParamStore;
 import com.dlong.creeper.model.result.ChainExecutionResult;
 import com.dlong.creeper.model.result.ExecutionResult;
@@ -61,7 +61,7 @@ public class OrderChain {
 
     //        dc: "单程",
     @While()
-    @SeqRequest(index =2,name="leftTicket",description="查询余票")
+    @SeqRequest(index = 2,name="leftTicket",description="查询余票")
     @Get("/otn/leftTicket/queryO")
     @Parameters({
             @Parameter(name="leftTicketDTO.train_date",desc = "日期"),//dc
@@ -400,7 +400,7 @@ public class OrderChain {
         Map<String, String> stationCodeMap = StationDesc.stationCodeMap;
         //登陆
         ChainExecutionResult<RequestChainEntity> loginResult = (ChainExecutionResult<RequestChainEntity>) LoginChain.execute();
-        RequestChainEntity requestChainEntity = new ChainsMappingResolver(OrderChain.class).resolve();
+        RequestChainEntity requestChainEntity = new ChainsMappingResolver().resolve(OrderChain.class);
 
         List<Param> startParam=new ArrayList<>();
         String fromStation="衢州";
@@ -414,7 +414,9 @@ public class OrderChain {
         startParam.add(new Param("tour_flag","dc"));
         startParam.add(new Param("train_date", LeftTicketDesc.getTrainDate(date)));
 
-        ExecutionContext context = new ExecutionContext(requestChainEntity, startParam, loginResult.getContext());
+        ChainContext context = new ChainContext(requestChainEntity,loginResult.getContext());
+        FormParamStore paramStore = context.getParamStore();
+        paramStore.addParams(startParam);
         ContextParamStore contextStore = context.getContextStore();
 
         RequestChainExecutor requestChainExecutor = new RequestChainExecutor(context);

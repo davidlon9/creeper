@@ -12,9 +12,7 @@ import com.dlong.creeper.annotation.result.JsonResultCookies;
 import com.dlong.creeper.control.MoveAction;
 import com.dlong.creeper.control.MoveActions;
 import com.dlong.creeper.execution.RequestChainExecutor;
-import com.dlong.creeper.execution.context.ContextParamStore;
-import com.dlong.creeper.execution.context.ExecutionContext;
-import com.dlong.creeper.execution.context.FormParamStore;
+import com.dlong.creeper.execution.context.*;
 import com.dlong.creeper.model.result.ExecutionResult;
 import com.dlong.creeper.model.seq.RequestChainEntity;
 import com.dlong.creeper.resolver.ChainsMappingResolver;
@@ -172,9 +170,9 @@ public class LoginChain {
 
     public static ExecutionResult<RequestChainEntity> execute() {
         Map<String, String> stationCodeMap = StationDesc.stationCodeMap;
-        RequestChainEntity requestChainEntity = new ChainsMappingResolver(LoginChain.class).resolve();
-        ExecutionContext executionContext = new ExecutionContext(requestChainEntity);
-        RequestChainExecutor requestChainExecutor = new RequestChainExecutor(executionContext);
+        RequestChainEntity requestChainEntity = new ChainsMappingResolver().resolve(LoginChain.class);
+        ChainContext chainContext = new ChainContext(requestChainEntity);
+        RequestChainExecutor requestChainExecutor = new RequestChainExecutor(chainContext);
         ExecutionResult<RequestChainEntity> result = requestChainExecutor.execute();
         return result;
     }
@@ -182,4 +180,5 @@ public class LoginChain {
     public static void main(String[] args) {
         ExecutionResult<RequestChainEntity> execute = execute();
     }
+
 }

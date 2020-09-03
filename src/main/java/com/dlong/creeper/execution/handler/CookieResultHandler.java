@@ -3,7 +3,7 @@ package com.dlong.creeper.execution.handler;
 import com.alibaba.fastjson.JSONObject;
 import com.dlong.creeper.HttpConst;
 import com.dlong.creeper.exception.ExecutionException;
-import com.dlong.creeper.execution.context.ExecutionContext;
+import com.dlong.creeper.execution.context.ChainContext;
 import com.dlong.creeper.execution.handler.info.JsonResultCookieInfo;
 import com.dlong.creeper.model.result.ExecutionResult;
 import com.dlong.creeper.model.seq.RequestEntity;
@@ -44,7 +44,7 @@ public class CookieResultHandler implements RequestExecutionResultHandler{
      * 在执行前，判断是否有Cookie缓存，有则直接跳过执行
      */
     @Override
-    public void beforeExecute(ExecutionResult<? extends RequestEntity> executionResult,ExecutionContext context) throws ExecutionException {
+    public void beforeExecute(ExecutionResult<? extends RequestEntity> executionResult,ChainContext context) throws ExecutionException {
         RequestEntity requestEntity = executionResult.getOrginalSeq();
         List<JsonResultCookieInfo> infoList = requestEntity.getJsonResultCookieInfoList();
         //没有注解JsonResultCookie的话直接跳过
@@ -64,7 +64,7 @@ public class CookieResultHandler implements RequestExecutionResultHandler{
      * @throws ExecutionException
      */
     @Override
-    public void afterExecute(ExecutionResult<? extends RequestEntity> executionResult,ExecutionContext context) throws ExecutionException {
+    public void afterExecute(ExecutionResult<? extends RequestEntity> executionResult,ChainContext context) throws ExecutionException {
         RequestEntity requestEntity = executionResult.getOrginalSeq();
         List<JsonResultCookieInfo> infoList = requestEntity.getJsonResultCookieInfoList();
         if(infoList.size()==0){
@@ -87,7 +87,7 @@ public class CookieResultHandler implements RequestExecutionResultHandler{
         }
     }
 
-    private void handleCookie(JSONObject body, JsonResultCookieInfo info, CookieStore cookieStore,ExecutionContext context) {
+    private void handleCookie(JSONObject body, JsonResultCookieInfo info, CookieStore cookieStore,ChainContext context) {
         Object v = JSONUtil.getValue(body, info.getJsonKey());
         String value = v == null ? info.getDefaultValue():v.toString();
         //解析默认值中的表达式

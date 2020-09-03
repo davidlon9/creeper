@@ -2,7 +2,7 @@ package com.dlong.creeper.execution;
 
 import com.dlong.creeper.exception.RuntimeExecuteException;
 import com.dlong.creeper.execution.base.*;
-import com.dlong.creeper.execution.context.ExecutionContext;
+import com.dlong.creeper.execution.context.ChainContext;
 import com.dlong.creeper.execution.looper.*;
 import com.dlong.creeper.execution.multi.MultiChainExecutor;
 import com.dlong.creeper.execution.multi.MultiRequestExecutor;
@@ -60,12 +60,12 @@ public class ExecutorFactory {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T extends RequestEntity> RequestExecutor<T> createRequestExecutor(Class<? extends RequestEntity> requestClass, ExecutionContext context) {
+    public static <T extends RequestEntity> RequestExecutor<T> createRequestExecutor(Class<? extends RequestEntity> requestClass, ChainContext context) {
         Set<Class<? extends RequestEntity>> classes = requestExecutorClassMap.keySet();
         if(classes.contains(requestClass)){
             Class<?> executorClz = requestExecutorClassMap.get(requestClass);
             try {
-                Constructor constructor = executorClz.getConstructor(ExecutionContext.class);
+                Constructor constructor = executorClz.getConstructor(ChainContext.class);
                 constructor.setAccessible(true);
                 return (RequestExecutor<T>) constructor.newInstance(context);
             } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
@@ -75,12 +75,12 @@ public class ExecutorFactory {
         throw new RuntimeExecuteException(requestClass.getSimpleName()+" is not support");
     }
 
-    public static ChainExecutor createChainExecutor(Class<? extends RequestChainEntity> chainClass, ExecutionContext context) {
+    public static ChainExecutor createChainExecutor(Class<? extends RequestChainEntity> chainClass, ChainContext context) {
         Set<Class<? extends RequestChainEntity>> classes = chainExecutorClassMap.keySet();
         if(classes.contains(chainClass)){
             Class<?> executorClz = chainExecutorClassMap.get(chainClass);
             try {
-                Constructor constructor = executorClz.getConstructor(ExecutionContext.class);
+                Constructor constructor = executorClz.getConstructor(ChainContext.class);
                 constructor.setAccessible(true);
                 return (ChainExecutor) constructor.newInstance(context);
             } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {

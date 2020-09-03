@@ -1,14 +1,14 @@
 package com.dlong.creeper.execution.resolver;
 
 import com.dlong.creeper.exception.ExecutionException;
-import com.dlong.creeper.execution.context.ExecutionContext;
+import com.dlong.creeper.execution.context.ChainContext;
 import com.dlong.creeper.execution.resolver.method.*;
 import com.dlong.creeper.model.result.ExecutionResult;
 
 public class ChainExecutionResultResolver extends SimpleExecutionResultResolver {
 
     @Override
-    public ExecutionResult afterExecuteResovle(ExecutionResult executionResult, ExecutionContext context) throws ExecutionException {
+    public ExecutionResult afterExecuteResovle(ExecutionResult executionResult, ChainContext context) throws ExecutionException {
         Object afterResult = executionResult.getAfterResult();
         HandlerMethodResultResolver handlerMethodResultResolver;
         if(afterResult==null){

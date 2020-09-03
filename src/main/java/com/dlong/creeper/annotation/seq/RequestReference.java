@@ -10,6 +10,6 @@ import java.lang.annotation.Target;
 public @interface RequestReference {
     int index();
     Class chainClass();
-    String requestMethod() default "";//默认使用被注解的字段名称
+    String requestName() default "";//默认使用被注解的字段名称
     String description() default "";
 }

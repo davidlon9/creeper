@@ -17,8 +17,8 @@ import com.dlong.creeper.annotation.seq.SeqRequest;
 import com.dlong.creeper.annotation.seq.multi.MultiRequest;
 import com.dlong.creeper.annotation.seq.multi.MultiRequestChain;
 import com.dlong.creeper.execution.RequestChainExecutor;
+import com.dlong.creeper.execution.context.ChainContext;
 import com.dlong.creeper.execution.context.ContextParamStore;
-import com.dlong.creeper.execution.context.ExecutionContext;
 import com.dlong.creeper.execution.context.FormParamStore;
 import com.dlong.creeper.model.result.ExecutionResult;
 import com.dlong.creeper.model.seq.RequestChainEntity;
@@ -136,7 +136,7 @@ public class TestMulti {
 
     public static void main(String[] args) {
 
-        RequestChainEntity requestChainEntity = new ChainsMappingResolver(TestMulti.class).resolve();
+        RequestChainEntity requestChainEntity = new ChainsMappingResolver().resolve(TestMulti.class);
 //        RequestChainEntity loginChain = requestChainMap.get("LoginChain");
 //        startParam.add(new Param("timestamp",new Date().getTime()));
 //        BaseChainExecutor loginExecutor = new BaseChainExecutor(loginChain, startParam);
@@ -152,9 +152,9 @@ public class TestMulti {
 //        startParam.add(new Param("leftTicketDTO.train_date",date));
 //        startParam.add(new Param("leftTicketDTO.from_station",fromCode));
 //        startParam.add(new Param("leftTicketDTO.to_station",toCode));
-//        MultiChainExecutor chainExecutor = new MultiChainExecutor(new ExecutionContext(multiChainEntity));
+//        MultiChainExecutor chainExecutor = new MultiChainExecutor(new ChainContext(multiChainEntity));
 //        ExecutionResult<MultiRequestChainEntity> execute = chainExecutor.execute(multiChainEntity);
-        RequestChainExecutor executor = new RequestChainExecutor(new ExecutionContext(requestChainEntity));
+        RequestChainExecutor executor = new RequestChainExecutor(new ChainContext(requestChainEntity));
         ExecutionResult<RequestChainEntity> excute = executor.execute();
         System.out.println();
 //

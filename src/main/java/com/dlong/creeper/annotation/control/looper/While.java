@@ -10,6 +10,6 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD,ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface While {
-    String coniditionExpression() default "true";
+    String conditionExpr() default "true";
     ExecutionMode executionMode() default ExecutionMode.SEQUENTIAL;
 }

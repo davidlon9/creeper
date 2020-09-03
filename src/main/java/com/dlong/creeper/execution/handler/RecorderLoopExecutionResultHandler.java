@@ -1,7 +1,7 @@
 package com.dlong.creeper.execution.handler;
 
 import com.dlong.creeper.exception.ExecutionException;
-import com.dlong.creeper.execution.context.ExecutionContext;
+import com.dlong.creeper.execution.context.ChainContext;
 import com.dlong.creeper.model.result.LoopExecutionResult;
 import com.dlong.creeper.model.seq.LoopableEntity;
 import com.dlong.creeper.model.seq.RequestEntity;
@@ -15,7 +15,7 @@ public class RecorderLoopExecutionResultHandler implements LoopExecutionResultHa
     private static Logger logger = Logger.getLogger(RecorderLoopExecutionResultHandler.class);
 
     @Override
-    public void beforeExecute(LoopExecutionResult<? extends LoopableEntity> executionResult, ExecutionContext context) throws ExecutionException {
+    public void beforeExecute(LoopExecutionResult<? extends LoopableEntity> executionResult, ChainContext context) throws ExecutionException {
         LoopableEntity loopableEntity = executionResult.getOrginalSeq();
         if(loopableEntity instanceof RequestEntity){
             RequestEntity requestEntity = (RequestEntity) loopableEntity;
@@ -29,7 +29,7 @@ public class RecorderLoopExecutionResultHandler implements LoopExecutionResultHa
     }
 
     @Override
-    public void afterExecute(LoopExecutionResult<? extends LoopableEntity> executionResult, ExecutionContext context) throws ExecutionException {
+    public void afterExecute(LoopExecutionResult<? extends LoopableEntity> executionResult, ChainContext context) throws ExecutionException {
         LoopableEntity loopableEntity = executionResult.getOrginalSeq();
         if(loopableEntity instanceof RequestEntity){
             RequestEntity requestEntity = (RequestEntity) loopableEntity;

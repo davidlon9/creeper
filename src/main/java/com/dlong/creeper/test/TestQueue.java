@@ -1,9 +1,9 @@
 package com.dlong.creeper.test;
 
-import com.dlong.creeper.execution.base.ContextSeqExecutor;
+import com.dlong.creeper.execution.base.BaseChainContextExecutor;
+import com.dlong.creeper.execution.context.ChainContext;
 import com.dlong.creeper.execution.context.ContextParamStore;
 import com.dlong.creeper.execution.context.ContextRootObject;
-import com.dlong.creeper.execution.context.ExecutionContext;
 import com.dlong.creeper.model.seq.RequestChainEntity;
 import com.dlong.creeper.resolver.ChainsMappingResolver;
 import demo.pdf.main.PDFdzswChain;
@@ -16,11 +16,11 @@ import java.util.concurrent.LinkedBlockingDeque;
 
 public class TestQueue {
     public static void main(String[] args) throws CloneNotSupportedException, InterruptedException {
-        RequestChainEntity chainEntity = new ChainsMappingResolver(PDFdzswChain.class).resolve();
+        RequestChainEntity chainEntity = new ChainsMappingResolver().resolve(PDFdzswChain.class);
 
-        ExecutionContext executionContext =new ExecutionContext(chainEntity);
-        ContextSeqExecutor contextSeqExecutor = new ContextSeqExecutor(executionContext, true);
-        final ExecutionContext context2 = contextSeqExecutor.getContext();
+        ChainContext chainContext =new ChainContext(chainEntity);
+        BaseChainContextExecutor baseChainContextExecutor = new BaseChainContextExecutor(chainContext, true);
+        final ChainContext context2 = baseChainContextExecutor.getContext();
         int size=5;
         ExecutorService threadPool = Executors.newFixedThreadPool(size);
         ContextParamStore rootContexStore = context2.getContextStore();
@@ -36,11 +36,11 @@ public class TestQueue {
         System.out.println(Thread.currentThread()+":"+rootContexStore.getValue("queue"));
         for (int i = 0; i < size; i++) {
             threadPool.execute(() -> {
-                ExecutionContext context = contextSeqExecutor.getContext();
+                ChainContext context = baseChainContextExecutor.getContext();
                 System.out.println();
                 ContextParamStore contextStore = context.getContextStore();
                 System.out.println(Thread.currentThread().getName() + " contextStore:" + contextStore);
-                Map<String, Object> main = ((ContextRootObject) rootContexStore.getRootObject()).getContext();
+                Map<String, Object> main = rootContexStore.getParamMap();
 
                 while (true) {
                     if (queue.size() == 0) {
@@ -60,7 +60,7 @@ public class TestQueue {
                         e.printStackTrace();
                     }
                     System.out.println(Thread.currentThread().getName() + " get :" + contextStore.getValue("poll"));
-                    Object poll2 = contextStore.getRootObject().getContext().get("poll");
+                    Object poll2 = contextStore.getParamMap().get("poll");
 
                     System.out.println(Thread.currentThread().getName()+poll2);
                 }

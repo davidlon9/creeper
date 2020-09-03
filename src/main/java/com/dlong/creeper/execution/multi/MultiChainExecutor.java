@@ -4,8 +4,8 @@ import com.dlong.creeper.exception.ExecutionException;
 import com.dlong.creeper.exception.RuntimeExecuteException;
 import com.dlong.creeper.execution.base.BaseChainExecutor;
 import com.dlong.creeper.execution.base.ChainExecutor;
+import com.dlong.creeper.execution.context.ChainContext;
 import com.dlong.creeper.execution.context.ContextParamStore;
-import com.dlong.creeper.execution.context.ExecutionContext;
 import com.dlong.creeper.execution.resolver.MultiChainExecutionResultResolver;
 import com.dlong.creeper.model.result.ExecutionResult;
 import com.dlong.creeper.model.result.MultiChainExecutionResult;
@@ -24,7 +24,7 @@ public class MultiChainExecutor extends BaseChainExecutor<MultiRequestChainEntit
 
     private MultiChainExecutionResultResolver multiResultResolver;
 
-    public MultiChainExecutor(ExecutionContext context) {
+    public MultiChainExecutor(ChainContext context) {
         super(context,true);
         multiResultResolver=new MultiChainExecutionResultResolver();
     }
@@ -111,7 +111,7 @@ public class MultiChainExecutor extends BaseChainExecutor<MultiRequestChainEntit
         public void run() {
             ExecutionResult<MultiRequestChainEntity> result=null;
             try {
-                ExecutionContext context = getContext();
+                ChainContext context = getContext();
                 ContextParamStore contextStore = context.getContextStore();
                 logger.info(Thread.currentThread().getId()+" start time "+System.currentTimeMillis());
                 ChainExecutor<MultiRequestChainEntity> executor = new BaseChainExecutor<MultiRequestChainEntity>(context);

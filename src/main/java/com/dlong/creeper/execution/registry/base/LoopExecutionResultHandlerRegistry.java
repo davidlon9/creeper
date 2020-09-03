@@ -1,7 +1,7 @@
 package com.dlong.creeper.execution.registry.base;
 
 import com.dlong.creeper.exception.ExecutionException;
-import com.dlong.creeper.execution.context.ExecutionContext;
+import com.dlong.creeper.execution.context.ChainContext;
 import com.dlong.creeper.execution.handler.LoopExecutionResultHandler;
 import com.dlong.creeper.model.result.LoopExecutionResult;
 import com.dlong.creeper.model.seq.LoopableEntity;
@@ -19,7 +19,7 @@ public class LoopExecutionResultHandlerRegistry {
      * 1.CookieResultHandler
      * 2.RequestHandlerMethodExecutionResultHandler
      */
-    public void invokeBeforeExecutionHandler(LoopExecutionResult<? extends LoopableEntity> executionResult, ExecutionContext context) throws ExecutionException {
+    public void invokeBeforeExecutionHandler(LoopExecutionResult<? extends LoopableEntity> executionResult, ChainContext context) throws ExecutionException {
         for (LoopExecutionResultHandler loopExecutionResultHandler : loopExecutionResultHandlers) {
             loopExecutionResultHandler.beforeExecute(executionResult,context);
         }
@@ -31,7 +31,7 @@ public class LoopExecutionResultHandlerRegistry {
      * 默认调用以下handler
      * 1.RequestHandlerMethodExecutionResultHandler
      */
-    public void invokeAfterExecutionHandler(LoopExecutionResult<? extends LoopableEntity> executionResult,ExecutionContext context) throws ExecutionException {
+    public void invokeAfterExecutionHandler(LoopExecutionResult<? extends LoopableEntity> executionResult,ChainContext context) throws ExecutionException {
         for (LoopExecutionResultHandler loopExecutionResultHandler : loopExecutionResultHandlers) {
             loopExecutionResultHandler.afterExecute(executionResult,context);
         }
