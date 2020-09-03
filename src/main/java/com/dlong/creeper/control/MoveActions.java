@@ -17,16 +17,20 @@ public class MoveActions {
         return new RetryAction(interval);
     }
 
-    public static MoveAction CONTINUE(int interval){
-        return new ContinueAction(interval);
-    }
-
     public static MoveAction JUMP(Object jumpTo){
         return new JumpAction(jumpTo);
     }
 
     public static MoveAction JUMP(Object jumpTo,int interval){
         return new JumpAction(jumpTo,interval);
+    }
+
+    public static MoveAction CONTINUE(int interval){
+        return new ContinueAction(interval);
+    }
+
+    public static MoveAction BREAK(){
+        return new BreakAction();
     }
 
     public static MoveAction RESTART(boolean isGlobal){

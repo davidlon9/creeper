@@ -5,10 +5,6 @@ public class BreakAction extends AutoCurrentIndexAction {
         super("BREAK");
     }
 
-    public BreakAction(Object targetLooper) {
-        this();
-    }
-
     @Override
     public Object nextSequential() {
         return ++current;
