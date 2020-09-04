@@ -8,9 +8,9 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD,ElementType.METHOD,ElementType.ANNOTATION_TYPE,ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Parameter {
-   String value() default "$NULL";
-   String name();
-   String globalKey() default "";
-   String desc() default "";
-   boolean global() default true;
+    String value() default "$NULL";
+    String name();
+    String globalKey() default "";
+    String uniqueKey() default "";
+    String desc() default "";
 }

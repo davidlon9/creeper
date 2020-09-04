@@ -5,7 +5,7 @@ import org.apache.http.message.BasicNameValuePair;
 
 public class Param extends BasicNameValuePair{
     private String globalKey;
-    private boolean isGlobal = true;
+    private String uniqueKey;
 
     public Param(String name, String value) {
         super(name, value);
@@ -15,18 +15,10 @@ public class Param extends BasicNameValuePair{
         super(name, value.toString());
     }
 
-    public String getGlobalKey() {
-        return globalKey;
-    }
-
-    public void setGlobalKey(String globalKey) {
-        this.globalKey = globalKey;
-    }
-
     @Override
     public int hashCode() {
         int result = this.getName().hashCode();
-        result = 31 * result + (isGlobal ? 1 : 0);
+        result = 31 * result + (uniqueKey != null ? uniqueKey.hashCode() : 0);
         result = 31 * result + (globalKey != null ? globalKey.hashCode() : 0);
         return result;
     }
@@ -43,19 +35,35 @@ public class Param extends BasicNameValuePair{
     }
 
     public String getKey() {
-        return this.globalKey!=null?this.globalKey:this.getName();
+        String uniqueKey = this.uniqueKey;
+        if(uniqueKey!=null && !"".equals(uniqueKey)){
+            return uniqueKey;
+        }
+        String globalKey = this.globalKey;
+        if(globalKey !=null && !"".equals(globalKey)){
+            return globalKey;
+        }
+        return super.getName();
+    }
+
+    public String getGlobalKey() {
+        return globalKey;
+    }
+
+    public void setGlobalKey(String globalKey) {
+        this.globalKey = globalKey;
+    }
+
+    public String getUniqueKey() {
+        return uniqueKey;
+    }
+
+    public void setUniqueKey(String uniqueKey) {
+        this.uniqueKey = uniqueKey;
     }
 
     @Override
     public String toString() {
         return "< "+ super.getName() +" = "+ super.getValue() +" >";
-    }
-
-    public boolean isGlobal() {
-        return isGlobal;
-    }
-
-    public void setGlobal(boolean global) {
-        isGlobal = global;
     }
 }

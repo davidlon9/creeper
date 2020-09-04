@@ -11,20 +11,11 @@ import com.dlong.creeper.annotation.seq.RequestChain;
 import com.dlong.creeper.annotation.seq.SeqRequest;
 import com.dlong.creeper.control.MoveAction;
 import com.dlong.creeper.control.MoveActions;
-import com.dlong.creeper.execution.context.ContextParamStore;
 import com.dlong.creeper.execution.context.FormParamStore;
-import com.dlong.creeper.util.ResultUtil;
-import demo.traiker.Env;
 import demo.traiker.resovler.CallbackParam;
 import demo.traiker.resovler.CaptchaImage;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.CookieStore;
-import org.apache.http.cookie.Cookie;
-import org.apache.http.impl.client.BasicCookieStore;
-import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Scanner;
 
 //@RequestChain注解将当前类视为一个请求链配置类，该类中的所有序列请求，将会按顺序依次执行，并处理

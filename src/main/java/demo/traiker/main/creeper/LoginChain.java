@@ -33,8 +33,6 @@ import java.util.*;
 
 @Host(value="kyfw.12306.cn",scheme="https")
 @RequestChain(index =1,name="LoginChain",description="登陆请求链")
-@ResponseLog(showResult = false,showSetCookies = true)
-@RequestLog(showFilledParams = true,showFilledHeaders = true)
 public class LoginChain {
     private static Logger logger=Logger.getLogger(LoginChain.class);
 

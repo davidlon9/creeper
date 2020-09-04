@@ -6,22 +6,23 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-public class ContextParamStore implements ParamStore<String,Object>,Cloneable{
-    private final ThreadLocal<Map<String,Object>> localParams = new ThreadLocal<>();
+public class ContextParamStore implements ParamStore<String,Object>, Cloneable{
+    private final Map<String,Object> params = new ConcurrentHashMap<>();
     private StandardEvaluationContext evaluationContext;
-    private ContextRootObject rootObject;
     private ContextExpressionParser  expressionParser;
+    private Object rootObject;
 
-    public ContextParamStore(ContextRootObject rootObject) {
-      initEvaluationContext(rootObject);
+    public ContextParamStore(Object rootObject) {
+        initEvaluationContext(rootObject);
     }
 
-    private void initEvaluationContext(ContextRootObject rootObject){
+    private void initEvaluationContext(Object rootObject){
         if (rootObject == null) {
             rootObject=new ContextRootObject(this);
         }
-        this.rootObject=rootObject;
+        this.rootObject = rootObject;
         this.evaluationContext = new StandardEvaluationContext(rootObject);
         this.expressionParser = new ContextExpressionParser(new SpelExpressionParser(),evaluationContext);
     }
@@ -31,56 +32,37 @@ public class ContextParamStore implements ParamStore<String,Object>,Cloneable{
     }
 
     public Object getValue(String name){
-        return getParams().get(name);
+        return params.get(name);
     }
 
-    public void addParam(String name, Object value){
-        getParams().put(name,value);
+    public synchronized void addParam(String name, Object value){
+        params.put(name,value);
         this.evaluationContext.setVariable(name, value);
     }
 
-    public void addParams(Map<String, Object> params) {
-        getParams().putAll(params);
+    public synchronized void addParams(Map<String, Object> params) {
+        this.params.putAll(params);
         this.evaluationContext.setVariables(params);
     }
 
     public boolean containsName(String name){
-        return getParams().containsKey(name);
+        return params.containsKey(name);
     }
 
     public Map<String,Object> getParamMap() {
-        return getParams();
+        return params;
     }
 
     public StandardEvaluationContext getEvaluationContext() {
         return this.evaluationContext;
     }
 
-    public void setRootObject(ContextRootObject rootObject) {
+    public void setRootObject(Object rootObject) {
         this.rootObject = rootObject;
     }
 
-    public ContextRootObject getRootObject() {
+    public Object getRootObject() {
         return rootObject;
-    }
-
-    private Map<String, Object> getParams() {
-        Map<String, Object> map = localParams.get();
-        if(map!=null){
-            return map;
-        }
-        return initLocalMap();
-    }
-
-    private Map initLocalMap(){
-        Map map=new HashMap<>();
-        if(this.rootObject!=null){
-            Map<String, Object> context = this.rootObject.getContext();
-            map.putAll(context);
-        }
-        localParams.set(map);
-        initEvaluationContext(null);
-        return map;
     }
 
     public ContextExpressionParser getExpressionParser() {
@@ -88,9 +70,7 @@ public class ContextParamStore implements ParamStore<String,Object>,Cloneable{
     }
 
     @Override
-    protected Object clone() throws CloneNotSupportedException {
-        ContextParamStore clone = (ContextParamStore) super.clone();
-        return clone;
+    protected ContextParamStore clone() throws CloneNotSupportedException {
+        return (ContextParamStore) super.clone();
     }
-
 }

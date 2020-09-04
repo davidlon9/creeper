@@ -4,9 +4,9 @@ import com.dlong.creeper.control.RetryAction;
 import com.dlong.creeper.exception.ExecutionException;
 import com.dlong.creeper.execution.base.LoopableExecutor;
 import com.dlong.creeper.execution.context.ChainContext;
+import com.dlong.creeper.execution.context.ContextParamStore;
 import com.dlong.creeper.execution.resolver.AutoNextSeqResultResolver;
 import com.dlong.creeper.model.result.ExecutionResult;
-import com.dlong.creeper.execution.context.ParamStore;
 import com.dlong.creeper.model.result.LoopExecutionResult;
 import com.dlong.creeper.model.seq.multi.Multiple;
 import com.dlong.creeper.model.seq.LoopableEntity;
@@ -27,7 +27,7 @@ public class ForEachExecuteLooper<T extends LoopableEntity> extends BaseExecuteL
     @Override
     public LoopExecutionResult<T> doLoop(T loopableEntity) throws ExecutionException,IOException {
         ChainContext chainContext = getContext();
-        ParamStore<String, Object> contextStore = chainContext.getContextStore();
+        ContextParamStore contextStore = chainContext.getContextStore();
 
         Looper looper = loopableEntity.getLooper();
         ForEachLooper forEachLooper = (ForEachLooper) looper;

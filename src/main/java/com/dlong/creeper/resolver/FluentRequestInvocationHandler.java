@@ -10,7 +10,6 @@ import com.dlong.creeper.model.Param;
 import com.dlong.creeper.model.seq.RequestInfo;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.fluent.Content;
-import org.apache.http.client.fluent.Executor;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.client.fluent.Response;
 import org.apache.log4j.Logger;

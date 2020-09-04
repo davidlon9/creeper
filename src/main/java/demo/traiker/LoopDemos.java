@@ -1,16 +1,12 @@
 package demo.traiker;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.dlong.creeper.annotation.*;
-import com.dlong.creeper.annotation.control.FailedRetry;
 import com.dlong.creeper.annotation.control.looper.ForEach;
 import com.dlong.creeper.annotation.control.looper.ForIndex;
 import com.dlong.creeper.annotation.control.looper.While;
 import com.dlong.creeper.annotation.control.looper.scheduler.Scheduler;
 import com.dlong.creeper.annotation.control.looper.scheduler.Trigger;
 import com.dlong.creeper.annotation.control.recorder.FileRecordsIgnore;
-import com.dlong.creeper.annotation.handler.AfterMethod;
 import com.dlong.creeper.annotation.handler.BeforeMethod;
 import com.dlong.creeper.annotation.http.Get;
 import com.dlong.creeper.annotation.seq.RequestChain;
@@ -20,7 +16,6 @@ import com.dlong.creeper.control.ForwardAction;
 import com.dlong.creeper.control.MoveAction;
 import com.dlong.creeper.control.MoveActions;
 import com.dlong.creeper.execution.context.ContextParamStore;
-import com.dlong.creeper.util.ResultUtil;
 import demo.pdf.serivce.DZSWService;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -28,7 +23,6 @@ import org.jsoup.nodes.Document;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Set;
 
 public class LoopDemos {
     //While Demo

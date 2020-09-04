@@ -92,8 +92,6 @@ public class ExecutionContext {
         this.executor.use(this.cookieStore);
     }
 
-
-
     public ContextExpressionParser getExpressionParser() {
         return this.contextStore.getExpressionParser();
     }
@@ -101,7 +99,7 @@ public class ExecutionContext {
     @Override
     public ExecutionContext clone() throws CloneNotSupportedException {
         ExecutionContext clone = (ExecutionContext) super.clone();
-        clone.setContextStore((ContextParamStore) this.contextStore.clone());
+        clone.setContextStore(this.contextStore.clone());
         return clone;
     }
 }

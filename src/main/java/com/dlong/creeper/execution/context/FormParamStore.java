@@ -17,24 +17,11 @@ public class FormParamStore implements ParamStore<String,String>{
         return isNullValue(v) ? null : v;
     }
 
-    public void addParam(String name, String value){
+    public synchronized void addParam(String name, String value){
         params.put(name,value == null ? NULL_VALUE : value);
     }
 
-    public void addParams(Map<String, String> params) {
-        Set<Map.Entry<String, String>> entries = params.entrySet();
-        for (Map.Entry<String, String> entry : entries) {
-            addParam(entry.getKey(),entry.getValue());
-        }
-    }
-
-    public void addParams(List<Param> params) {
-        for (Param param : params) {
-            addParam(param);
-        }
-    }
-
-    private void addParam(Param param) {
+    private synchronized void addParam(Param param) {
         String contextKey = param.getGlobalKey();
         if(contextKey!=null && !"".equals(contextKey)){
             addParam(contextKey,param.getValue());
@@ -43,7 +30,7 @@ public class FormParamStore implements ParamStore<String,String>{
         }
     }
 
-    public void addIfNull(Param param) {
+    public synchronized void addIfNull(Param param) {
         String key=param.getName();
         String contextKey = param.getGlobalKey();
         if(contextKey!=null && !"".equals(contextKey)){
@@ -56,6 +43,19 @@ public class FormParamStore implements ParamStore<String,String>{
             }
         }else{
             addParam(key,param.getValue());
+        }
+    }
+
+    public void addParams(Map<String, String> params) {
+        Set<Map.Entry<String, String>> entries = params.entrySet();
+        for (Map.Entry<String, String> entry : entries) {
+            addParam(entry.getKey(),entry.getValue());
+        }
+    }
+
+    public void addParams(List<Param> params) {
+        for (Param param : params) {
+            addParam(param);
         }
     }
 
@@ -75,5 +75,9 @@ public class FormParamStore implements ParamStore<String,String>{
 
     public Map<String, String> getParamMap() {
         return params;
+    }
+
+    public static void main(String[] args) {
+        
     }
 }

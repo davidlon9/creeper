@@ -1,6 +1,5 @@
 package com.dlong.creeper.execution.context;
 
-import com.dlong.creeper.expression.ContextExpressionParser;
 import com.dlong.creeper.model.Param;
 import com.dlong.creeper.model.seq.RequestChainEntity;
 import com.dlong.creeper.model.seq.RequestEntity;
@@ -39,7 +38,7 @@ public class ChainContext extends ExecutionContext implements Cloneable{
             if (seq instanceof RequestEntity){
                 List<Param> params = ((RequestEntity) seq).getRequestInfo().getParams();
                 for (Param param : params) {
-                    paramStore.addIfNull(param);
+                    paramStore.setIfNull(param);
                 }
             }
         }
@@ -70,7 +69,7 @@ public class ChainContext extends ExecutionContext implements Cloneable{
     @Override
     public ChainContext clone() throws CloneNotSupportedException {
         ChainContext clone = (ChainContext) super.clone();
-        clone.setContextStore((ContextParamStore) this.contextStore.clone());
+        clone.setContextStore(this.contextStore.clone());
         return clone;
     }
 }

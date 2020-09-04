@@ -159,7 +159,7 @@ public class DefaultRequestBuilder implements HttpRequestBuilder {
             String value=param.getValue();
 //            if(!param.isGlobal()){
 //                if(value.equals(FormParamStore.NULL_VALUE)){
-//                    logger.warn("non global param value is null，please add in FormParamStore");
+//                    logger.warn("non unique param value is null，please add in FormParamStore");
 //                }
 //            }
 
