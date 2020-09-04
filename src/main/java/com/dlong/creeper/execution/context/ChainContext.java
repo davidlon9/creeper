@@ -38,7 +38,7 @@ public class ChainContext extends ExecutionContext implements Cloneable{
             if (seq instanceof RequestEntity){
                 List<Param> params = ((RequestEntity) seq).getRequestInfo().getParams();
                 for (Param param : params) {
-                    paramStore.setIfNull(param);
+                    paramStore.addIfNull(param);
                 }
             }
         }
