@@ -382,10 +382,10 @@ public class LoginChain{
 ### 请求链上下文
 请求链上下文ChainContext继承自ExecutionContext，是执行请求链的必需参数。拥有一个请求链的实体对象，比ExecutionContext多了一些对于请求链的操作。
 
-### FormParamStore
-FormParamStore用于存储请求链中的所有参数，每个请求链只拥有一个FormParamStore，可以作为前后处理器的参数，可以使用其来添加参数，并作用到整个请求链。
-#### 参数Parameter
-注解在序列请求下，未指定值时，需要向FormParamStore添加一个相同名称的Param对象，若FormParamStore中也没有，则为空值，如下例中的answer参数:
+### 表单参数库
+表单参数库FormParamStore用于存储请求链中的所有的Http请求参数，每个请求链只拥有一个FormParamStore，可以作为前后处理器的参数，可以使用其来添加Http请求参数，并作用到整个请求链。
+#### 自动从库中读值
+注解在序列请求下的@Parameter，只指定了Http参数名，未指定值时，需要向FormParamStore添加一个相同Http参数名，并被赋值的参数，若FormParamStore中不存在，则为空值，如下例中的answer参数:
 ```java
 @SeqRequest(index = 3,description="检测验证码答案")
 @Get("/passport/captcha/captcha-check")
@@ -405,8 +405,8 @@ public boolean login(String result) throws IOException {
     return true;
 }
 ```
-当两个参数名不同，但是参数的值一致时，例如有个参数名为answer1，又有个参数为answer2，他们两个的值是相同的，可以使用@Parameter注解的globalKey，如下例:
-@Parameter(name = "test",globalKey = "globalName")
+#### 参数不同名但值相同
+当两个Http参数名不同，但是参数的值一致时，例如有个参数名为answer1，又有个参数为answer2，他们两个的值是相同的，可以使用@Parameter注解的globalKey，如下例:
 ```java
 @SeqRequest(index = 3,description="检测验证码答案")
 @Get("/passport/captcha/captcha-check")
@@ -426,14 +426,40 @@ public boolean login(String result) throws IOException {
     return true;
 }
 ```
-### ContextParamStore
-ContextParamStore用于存储SpringEl表达式中的对象，SpringEl表达式一般用在链接，参数上，其他可用注解值请看下表
+#### 参数同名但值不相同
+当两个Http参数名相同，但是参数的值却不同，例如有个Http参数名为answer，又有个参数也名为answer，但是他们两个的值是不相同的，可以使用@Parameter注解的uniqueKey，如下例:
+```java
+@SeqRequest(index = 3,description="检测验证码答案")
+@Get("/passport/captcha/captcha-check")
+public boolean captchaCheck(FormParamStore formParamStore){
+    formParamStore.addParam("answer","result1");//添加登陆1中的answer值
+    formParamStore.addParam("answer2","result2");//使用uniqueKey "answer2" 添加登陆2中的answer值
+    return true;
+}
+
+@SeqRequest(index = 4,description = "登陆1")
+@Post("/passport/web/login")
+@Parameter(name="answer")//自动从FormParamStore中读取name为answer参数的值
+public boolean login(String result) throws IOException {
+    return true;
+}
+
+@SeqRequest(index = 5,description = "登陆2")
+@Post("/passport/web/login")
+@Parameter(name="answer",uniqueKey = "answer2")//自动从FormParamStore中读取name为answer2参数的值
+public boolean login(String result) throws IOException {
+    return true;
+}
+```
+
+### 上下文参数库
+上下文参数库ContextParamStore用于存储SpringEl表达式中的对象，SpringEl表达式一般用在链接，参数上，其他可用注解值请看下表
 除了用在SpringEl上，ContextParamStore存储的对象，也可直接用在一些注解中，例如[@ForEach](#ForEach)注解。  
 在Creeper中SpringEl表达式必需被${}包裹住，例如${time.now()}。  
 
 #### SpringEl解析上下文
 SpringEl解析也需要一个EvaluationContext上下文，用于解析字符串中的对象。  
-EvaluationContext需要传入一个对象，系统默认传入ContextRootObject。  
+EvaluationContext需要传入一个Context根对象，可在表达式中使用根对象中的属性与方法，ContextParamStore默认传入ContextRootObject作为根对象，可自定义传入任意对象作为根对象。  
 ContextRootObject包含两个字段，TimeUtil中包含一些获取时间的工具类，context字段就是ContextParamStore的Map形式，
 ```java
 private final TimeUtil time;
@@ -443,7 +469,6 @@ private final Map<String,Object> context;
 ${time.now()}  
 ${context.value1}  
 
-ContextParamStore的构造器可以传入一个ContextRootObject，因此可以通过继承ContextRootOject，来自定义拓展SpringEl的解析上下文。
 #### 支持SpringEl表达式的注解属性
 | 注解                      | 支持SpringEl的属性        |
 | :------------------------ | :------------------------ |
