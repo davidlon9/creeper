@@ -115,19 +115,13 @@ public class DefaultRequestBuilder implements HttpRequestBuilder {
         for (Param param : params) {
             String value=param.getValue();
             if(!value.contains("$")){
-                appendParam(hasParam,urlBuilder,param);
+                hasParam = appendParam(hasParam,urlBuilder,param);
                 continue;
             }
 
-            String contextKey = param.getGlobalKey();
-            //先从paramStore中获取value
-            if(contextKey!=null && !"".equals(contextKey)){
-                value = paramStore.getValue(contextKey);
-            }else{
-                value = paramStore.getValue(param.getName());
-            }
+            value = paramStore.getValue(param.getKey());
 
-            if(value==null||FormParamStore.NULL_VALUE.equals(value)){
+            if (checkNullValue(value)) {
                 logger.warn("null value param "+param+" founded");
                 continue;
             }
@@ -139,10 +133,16 @@ public class DefaultRequestBuilder implements HttpRequestBuilder {
         return  urlBuilder.toString();
     }
 
+    private boolean checkNullValue(String value) {
+        if(value == null || FormParamStore.NULL_VALUE.equals(value)){
+            return true;
+        }
+        return false;
+    }
+
     private boolean appendParam(boolean hasParam, StringBuilder urlBuilder, Param param) {
         if(hasParam){
             urlBuilder.append("&");
-            hasParam=false;
         }
 
         urlBuilder.append(param.getName()).append("=").append(param.getValue()).append("&");
@@ -150,20 +150,14 @@ public class DefaultRequestBuilder implements HttpRequestBuilder {
         if (logInfo.isShowFilledParams()) {
             logger.info("param "+param+" filled");
         }
-        return hasParam;
+        return false;
     }
 
     private List<Param> getFilledParams(List<Param> params) {
         List<Param> filledParams=new ArrayList<>(params.size());
         for (Param param : params) {
             String value=param.getValue();
-//            if(!param.isGlobal()){
-//                if(value.equals(FormParamStore.NULL_VALUE)){
-//                    logger.warn("non unique param value is null，please add in FormParamStore");
-//                }
-//            }
 
-            String globalKey = param.getGlobalKey();
             if(!value.equals(FormParamStore.NULL_VALUE)){
                 filledParams.add(param);
                 if (logInfo.isShowFilledParams()) {
@@ -172,14 +166,9 @@ public class DefaultRequestBuilder implements HttpRequestBuilder {
                 continue;
             }
 
-            //先从paramStore中获取value
-            if(globalKey!=null && !"".equals(globalKey)){
-                value = paramStore.getValue(globalKey);
-            }else{
-                value = paramStore.getValue(param.getName());
-            }
+            value = paramStore.getValue(param.getKey());
 
-            if(value==null || FormParamStore.NULL_VALUE.equals(value)){
+            if (checkNullValue(value)) {
                 logger.warn("null value param "+param+" founded");
                 continue;
             }

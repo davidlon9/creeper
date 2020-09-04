@@ -22,20 +22,11 @@ public class FormParamStore implements ParamStore<String,String>{
     }
 
     private synchronized void addParam(Param param) {
-        String contextKey = param.getGlobalKey();
-        if(contextKey!=null && !"".equals(contextKey)){
-            addParam(contextKey,param.getValue());
-        }else{
-            addParam(param.getName(),param.getValue());
-        }
+        addParam(param.getKey(),param.getValue());
     }
 
     public synchronized void addIfNull(Param param) {
-        String key=param.getName();
-        String contextKey = param.getGlobalKey();
-        if(contextKey!=null && !"".equals(contextKey)){
-            key=contextKey;
-        }
+        String key=param.getKey();
         if (params.containsKey(key)) {
             String s = params.get(key);
             if(NULL_VALUE.equals(s)){
