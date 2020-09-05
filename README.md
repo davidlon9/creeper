@@ -8,9 +8,10 @@
 
 也就是说，仅需要一个类，就能够迅速完成一个复杂的爬虫程序。
 
-[RequestChain使用文档](https://github.com/davidlon9/creeper/blob/master/doc/RequestChain.md)  
 # 下载
 [creeper.jar](https://raw.githubusercontent.com/davidlon9/creeper/master/jar/creeper.jar)
+# 文档
+[RequestChain使用文档](https://github.com/davidlon9/creeper/blob/master/doc/RequestChain.md)  
 # 示例
 * [Request映射配置](#request%E6%98%A0%E5%B0%84%E9%85%8D%E7%BD%AE)
   * [构建Request映射配置类](#%E6%9E%84%E5%BB%BArequest%E6%98%A0%E5%B0%84%E9%85%8D%E7%BD%AE%E7%B1%BB)
