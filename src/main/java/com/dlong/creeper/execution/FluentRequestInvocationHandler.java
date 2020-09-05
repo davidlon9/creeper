@@ -1,4 +1,4 @@
-package com.dlong.creeper.resolver;
+package com.dlong.creeper.execution;
 
 import com.dlong.creeper.exception.RuntimeResolveException;
 import com.dlong.creeper.exception.UnsupportedFluentReturnTypeException;
@@ -8,6 +8,7 @@ import com.dlong.creeper.execution.request.DefaultRequestBuilder;
 import com.dlong.creeper.execution.request.HttpRequestBuilder;
 import com.dlong.creeper.model.Param;
 import com.dlong.creeper.model.seq.RequestInfo;
+import com.dlong.creeper.resolver.DefaultRequestInfoResolver;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.fluent.Content;
 import org.apache.http.client.fluent.Request;

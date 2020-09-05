@@ -22,14 +22,15 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.*;
 
+/**
+ * 多线程共同从一个队列中争抢对象，根据每个对象来生成不同的链接，执行并处理
+ */
 public class MultiRequestQueueExecutor extends BaseRequestExecutor<MultiRequestQueueEntity> {
     private static Logger logger=Logger.getLogger(MultiRequestQueueExecutor.class);
 
-    private MultiExecutionResultResolver multiResultResolver;
-
     public MultiRequestQueueExecutor(ChainContext context) {
-        super(context,true);
-        this.multiResultResolver=new MultiExecutionResultResolver();
+        //多线程共享一个Context
+        super(context);
     }
 
     @Override
@@ -149,15 +150,15 @@ public class MultiRequestQueueExecutor extends BaseRequestExecutor<MultiRequestQ
                     ExecutionResult<MultiRequestQueueEntity> innerResult = innerExecutor.execute(multiRequestEntity);
                     result.addLoopResult(innerResult);
 
-                   if(BaseExecuteLooper.isBreak(innerResult)){
+                    if(BaseExecuteLooper.isBreak(innerResult)){
                        result.setNextSeq(innerResult.getNextSeq());
                        break;
-                   }
+                    }
                     condition = mainContext.getExpressionParser().parse(multiRequestEntity.getStopConditionExpr(), Boolean.class);
-                   if(condition && queue.size()==0){
+                    if(condition && queue.size()==0){
                        logger.warn("no element in queue ["+ queueElementKey+"]");
                        break;
-                   }
+                    }
                 } while (queue.size()>0);
             }catch (RequestAbortedException e){
                 //其他线程执行成功，导致该线程interrupted，同时该线程正在执行Request，就会报RequestAbortedException

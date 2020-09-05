@@ -13,6 +13,7 @@ import java.util.concurrent.CountDownLatch;
 public class MultiUserExecutor extends BaseChainExecutor<MultiUserChainEntity> {
 
     public MultiUserExecutor(ChainContext context) {
+        //每个线程单独使用一个Context
         super(context,true);
     }
 

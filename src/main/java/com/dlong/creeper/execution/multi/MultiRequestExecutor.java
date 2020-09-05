@@ -23,7 +23,8 @@ public class MultiRequestExecutor extends BaseRequestExecutor<MultiRequestEntity
     private MultiExecutionResultResolver multiResultResolver;
 
     public MultiRequestExecutor(ChainContext context) {
-        super(context,true);
+        //多线程共享一个Context
+        super(context);
         this.multiResultResolver=new MultiExecutionResultResolver();
 //        super.setResultResolver(new MultiExecutionResultResolver());
 //        super.getHandlerExecuteHandlerRegistry().registerExecutionHandler(new MultiResultRequestHandler<>());

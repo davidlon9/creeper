@@ -52,16 +52,16 @@ public class ContextParamStore implements ParamStore<String,Object>, Cloneable{
         return params;
     }
 
-    public StandardEvaluationContext getEvaluationContext() {
-        return this.evaluationContext;
-    }
-
     public void setRootObject(Object rootObject) {
         this.rootObject = rootObject;
     }
 
     public Object getRootObject() {
         return rootObject;
+    }
+
+    public StandardEvaluationContext getEvaluationContext() {
+        return this.evaluationContext;
     }
 
     public ContextExpressionParser getExpressionParser() {

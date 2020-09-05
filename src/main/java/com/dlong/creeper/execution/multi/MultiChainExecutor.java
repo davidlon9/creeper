@@ -25,6 +25,7 @@ public class MultiChainExecutor extends BaseChainExecutor<MultiRequestChainEntit
     private MultiChainExecutionResultResolver multiResultResolver;
 
     public MultiChainExecutor(ChainContext context) {
+        //每个线程单独使用一个Context
         super(context,true);
         multiResultResolver=new MultiChainExecutionResultResolver();
     }

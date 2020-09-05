@@ -17,6 +17,13 @@ public class ExecutionContext {
         this(null,null);
     }
 
+    public ExecutionContext(ContextParamStore contextStore) {
+        this.cookieStore = new BasicCookieStore();
+        this.paramStore = new FormParamStore();
+        this.contextStore = contextStore;
+        init(executor);
+    }
+
     public ExecutionContext(ExecutionContext context) {
       this(null,context);
     }
