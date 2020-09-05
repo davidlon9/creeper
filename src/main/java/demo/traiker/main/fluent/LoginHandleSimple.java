@@ -1,7 +1,7 @@
 package demo.traiker.main.fluent;
 
 import com.alibaba.fastjson.JSONObject;
-import com.dlong.creeper.resolver.FluentRequestMananger;
+import com.dlong.creeper.execution.FluentRequestMananger;
 import demo.traiker.resovler.CallbackParam;
 
 public class LoginHandleSimple {
