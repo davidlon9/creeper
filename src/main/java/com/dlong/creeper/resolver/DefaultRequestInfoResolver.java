@@ -130,10 +130,14 @@ public class DefaultRequestInfoResolver implements RequestInfoResolver {
 
         if(path!=null){
             String p = path.value();
-            if(!p.startsWith("/")){
-                base+="/";
+            if(p.startsWith("http")){
+                return p;
+            }else{
+                if(!p.startsWith("/")){
+                    base+="/";
+                }
+                base += p;
             }
-            base += p;
         }
         return base;
     }

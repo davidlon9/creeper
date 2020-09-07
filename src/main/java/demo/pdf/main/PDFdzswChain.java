@@ -20,6 +20,7 @@ import com.dlong.creeper.execution.context.ExecutionContext;
 import com.dlong.creeper.execution.context.ContextParamStore;
 import com.dlong.creeper.execution.context.FormParamStore;
 import com.dlong.creeper.execution.handler.entity.ExecutionHandler;
+import com.dlong.creeper.model.result.ChainExecutionResult;
 import com.dlong.creeper.model.result.ChainResult;
 import com.dlong.creeper.model.seq.RequestInfo;
 import com.dlong.creeper.resolver.DefaultRequestInfoResolver;
@@ -229,7 +230,7 @@ public class PDFdzswChain {
         Map<AnnotatedElement, RequestInfo> resolve = defaultRequestInfoResolver.resolve(PDFdzswChain.class);
         //Chain调用方式
         ContextExecutor executor = new ChainContextExecutor(PDFdzswChain.class);
-        ChainResult chainResult = executor.exeucteRootChain();
+        ChainExecutionResult chainResult = executor.exeucteRootChain();
         System.out.println();
 
 //        //手动调用方式
