@@ -37,7 +37,21 @@ public class RequestChainEntity extends LoopableEntity{
     }
 
     public void setChainInstance(Object chainInstance) {
-        this.chainInstance = chainInstance;
+        if(chainInstance==null){
+            return;
+        }
+        Class<?> chainClz = chainInstance.getClass();
+        if (chainClz.equals(this.chainClass)) {
+            this.chainInstance = chainInstance;
+        }else{
+            for (SequentialEntity sequentialEntity : this.sequentialList) {
+                Class<? extends SequentialEntity> clz = sequentialEntity.getClass();
+                if(clz.equals(chainClz) && sequentialEntity instanceof RequestChainEntity){
+                    RequestChainEntity chainEntity = (RequestChainEntity) sequentialEntity;
+                    chainEntity.setChainInstance(chainInstance);
+                }
+            }
+        }
     }
 
     public SequentialEntity getFirstSequential(){

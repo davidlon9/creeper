@@ -28,11 +28,21 @@ public class DefaultRequestInfoResolver implements RequestInfoResolver {
     private Logger logger=Logger.getLogger(DefaultRequestInfoResolver.class);
 
     public Map<AnnotatedElement,RequestInfo> resolve(Class chainClass){
+        return resolve(chainClass,null);
+    }
+
+    public Map<AnnotatedElement,RequestInfo> resolve(Class chainClass,Class parentClass){
         Map<AnnotatedElement,RequestInfo> requestInfoMap = new HashMap<>();
         if(requestInfoMap.size()>0){
             requestInfoMap.clear();
         }
-        resolve("", null, chainClass,requestInfoMap);
+        String basePath = "";
+        ProxyInfo baseProxy = null;
+        if(parentClass!=null){
+            basePath = getPath("", parentClass);
+            baseProxy = getProxyInfo(parentClass);
+        }
+        resolve(basePath, baseProxy, chainClass,requestInfoMap);
         return requestInfoMap;
     }
 

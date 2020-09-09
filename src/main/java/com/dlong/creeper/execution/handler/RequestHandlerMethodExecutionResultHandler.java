@@ -148,7 +148,7 @@ public class RequestHandlerMethodExecutionResultHandler implements RequestExecut
         Method method = (Method) requestEntity.getAfterHandler();
         handlerMethodWrapper.setMethod(method);
         //TODO RequestEntityODO 需要缓存
-        Object[] args = new RequestAfterMethodArgumentInfo(context).fetchHandlerMethodArgs(method, executionResult.getHttpResponse());
+        Object[] args = new RequestAfterMethodArgumentInfo(context).fetchHandlerMethodArgs(method, executionResult);
         handlerMethodWrapper.setArgs(args);
         Object currentChainInstance = requestEntity.getParent().getChainInstance();
         handlerMethodWrapper.setInvokeInstance(currentChainInstance);

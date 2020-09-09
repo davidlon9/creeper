@@ -31,6 +31,7 @@ import demo.pdf.model.PDFDetail;
 import demo.pdf.serivce.DZSWService;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.fluent.Content;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.util.EntityUtils;
 import org.jsoup.Jsoup;
@@ -126,8 +127,8 @@ public class PDFdzswChain {
 
         @SeqRequest(index = 1, description = "处理列表页面")
         @Get("/category-30${#index==1?'':'_'+#index}.html")
-        public MoveAction handlePDFListBook(String result, ContextParamStore contextParamStore){
-            Document rootPage = Jsoup.parse(result);
+        public MoveAction handlePDFListBook(Content content, ContextParamStore contextParamStore){
+            Document rootPage = Jsoup.parse(content.asString());
             DZSWService.handlePDFListBook(rootPage, contextParamStore);
             return MoveActions.FORWARD(1000);
         }

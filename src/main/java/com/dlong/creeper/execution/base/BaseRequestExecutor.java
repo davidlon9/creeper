@@ -19,13 +19,14 @@ import com.dlong.creeper.model.seq.RequestChainEntity;
 import com.dlong.creeper.model.seq.RequestEntity;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.fluent.Executor;
-import org.apache.http.client.fluent.Request;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.fluent.*;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 import org.springframework.util.Assert;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.Collections;
 
@@ -149,8 +150,7 @@ public class BaseRequestExecutor<T extends RequestEntity> extends AbstractLoopab
             logger.warn("request "+requestEntity.getFullName()+" execution skiped");
             return;
         }
-        HttpResponse response = exeucteRequest(requestEntity);
-        executionResult.setHttpResponse(response);
+        exeucteRequest(requestEntity,executionResult);
         getHandlerExecuteHandlerRegistry().invokeAfterExecutionHandler(executionResult, context);
         getHandlerExecuteResultResolverRegistry().afterExecuteResolve(executionResult, context);
     }
@@ -172,7 +172,7 @@ public class BaseRequestExecutor<T extends RequestEntity> extends AbstractLoopab
         return executionResult.isSkipExecute();
     }
 
-    public HttpResponse exeucteRequest(RequestEntity requestEntity) throws ExecutionException, IOException {
+    public ExecutionResult<T> exeucteRequest(RequestEntity requestEntity,ExecutionResult<T> executionResult) throws ExecutionException, IOException {
         Request request = requestEntity.getRequest();
         Executor executor = super.getContext().getExecutor();
 
@@ -181,24 +181,27 @@ public class BaseRequestExecutor<T extends RequestEntity> extends AbstractLoopab
         }
         logger.debug("executing request ["+request+"]");
 
-        HttpResponse response = executor.execute(request).returnResponse();
+        Response response = executor.execute(request);
+        HttpResponse httpResponse = response.returnResponse();
 
+        executionResult.setContent(new ContentResponseHandler().handleResponse(httpResponse));
+        executionResult.setHttpResponse(httpResponse);
         ResponseLogInfo responseLogInfo = requestEntity.getResponseLogInfo();
         if (responseLogInfo.isShowStatus()) {
-            logger.info(requestEntity.getName()+" response status:"+response.getStatusLine());
+            logger.info(requestEntity.getName()+" response status:"+httpResponse.getStatusLine());
         }
 
         if(responseLogInfo.isShowResult()){
-            logger.info(requestEntity.getName()+" response result:\n"+EntityUtils.toString(response.getEntity()));
+            logger.info(requestEntity.getName()+" response result:\n"+EntityUtils.toString(httpResponse.getEntity()));
         }
 
         if(responseLogInfo.isShowSetCookies()){
-            Header[] headers = response.getHeaders("Set-Cookie");
+            Header[] headers = httpResponse.getHeaders("Set-Cookie");
             for (Header header : headers) {
                 logger.info("set cookie < "+header+" >");
             }
         }
-        return response;
+        return executionResult;
     }
 
     public HttpRequestBuilder getRequestBuilder() {

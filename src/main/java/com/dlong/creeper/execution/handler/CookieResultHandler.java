@@ -15,6 +15,7 @@ import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.log4j.Logger;
 import org.springframework.util.Assert;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

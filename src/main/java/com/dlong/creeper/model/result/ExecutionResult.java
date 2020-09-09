@@ -4,6 +4,10 @@ import com.dlong.creeper.control.MoveAction;
 import com.dlong.creeper.model.seq.RequestChainEntity;
 import com.dlong.creeper.model.seq.SequentialEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.fluent.Content;
+import org.apache.http.client.fluent.Response;
+
+import java.io.IOException;
 
 public class ExecutionResult<T extends SequentialEntity> {
     private T orginalSeq;
@@ -13,6 +17,7 @@ public class ExecutionResult<T extends SequentialEntity> {
     private Object beforeResult;
     private MoveAction actionResult;
     private HttpResponse httpResponse;
+    private Content content;
 
     private boolean isExecuted = false;
     private boolean isSkipExecute = false;
@@ -102,11 +107,19 @@ public class ExecutionResult<T extends SequentialEntity> {
         isFailed = failed;
     }
 
-    public HttpResponse getHttpResponse() {
-        return httpResponse;
+    public HttpResponse getHttpResponse(){
+        return this.httpResponse;
     }
 
     public void setHttpResponse(HttpResponse httpResponse) {
         this.httpResponse = httpResponse;
+    }
+
+    public Content getContent() {
+        return this.content;
+    }
+
+    public void setContent(Content content) {
+        this.content = content;
     }
 }

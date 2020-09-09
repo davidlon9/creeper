@@ -4,6 +4,7 @@ import com.dlong.creeper.exception.RuntimeResolveException;
 import com.dlong.creeper.exception.UnsupportedFluentReturnTypeException;
 import com.dlong.creeper.execution.context.ExecutionContext;
 import com.dlong.creeper.execution.context.FormParamStore;
+import com.dlong.creeper.execution.handler.info.RequestAfterMethodArgumentInfo;
 import com.dlong.creeper.execution.request.DefaultRequestBuilder;
 import com.dlong.creeper.execution.request.HttpRequestBuilder;
 import com.dlong.creeper.model.Param;
@@ -33,7 +34,6 @@ public class FluentRequestInvocationHandler implements InvocationHandler{
     private HttpRequestBuilder requestBuilder;
     private Map<AnnotatedElement, RequestInfo> requestInfoMap;
 
-    private static final List<Class<?>> AFTER_EXECUTE_RETURN_TYPES = Arrays.asList(HttpResponse.class, Content.class, String.class, InputStream.class, Response.class);
     private static final Class<com.dlong.creeper.annotation.Parameter> PARAMETER_ANNO_CLASS = com.dlong.creeper.annotation.Parameter.class;
 
     public FluentRequestInvocationHandler(Class<?> mappingClass, ExecutionContext context) {
@@ -64,19 +64,9 @@ public class FluentRequestInvocationHandler implements InvocationHandler{
         Object result;
         if(returnType.equals(Request.class)){
             result = request;
-        }else if(AFTER_EXECUTE_RETURN_TYPES.contains(returnType)){
+        }else if(RequestAfterMethodArgumentInfo.isResponseDataType(returnType)){
             Response response = executeRequest(request);
-            if(returnType.equals(String.class)){
-                result = response.returnContent().asString();
-            }else if(returnType.equals(HttpResponse.class)){
-                result = response.returnResponse();
-            }else if(returnType.equals(Content.class)){
-                result = response.returnContent();
-            }else if(returnType.equals(InputStream.class)){
-                result = response.returnContent().asStream();
-            }else{
-                result = response;
-            }
+            result = getData(response, returnType);
         }else if(returnType.getSimpleName().equals("byte[]")){
             result = executeRequest(request).returnContent().asBytes();
         }else{
@@ -129,5 +119,21 @@ public class FluentRequestInvocationHandler implements InvocationHandler{
                 throw new RuntimeResolveException("parameter "+parameter.getName()+" of method "+method.getName()+" does't annotated with @Parameter");
             }
         }
+    }
+
+    public static Object getData(Response response,Class<?> dataType) throws IOException {
+        Object result;
+        if(dataType.equals(String.class)){
+            result = response.returnContent().asString();
+        }else if(dataType.equals(HttpResponse.class)){
+            result = response.returnResponse();
+        }else if(dataType.equals(Content.class)){
+            result = response.returnContent();
+        }else if(dataType.equals(InputStream.class)){
+            result = response.returnContent().asStream();
+        }else{
+            throw new IllegalArgumentException(dataType+" is not support");
+        }
+        return result;
     }
 }
