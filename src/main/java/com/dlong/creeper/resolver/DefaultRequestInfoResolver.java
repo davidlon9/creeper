@@ -5,10 +5,12 @@ import com.dlong.creeper.annotation.*;
 import com.dlong.creeper.annotation.http.*;
 import com.dlong.creeper.exception.RuntimeResolveException;
 import com.dlong.creeper.model.Param;
+import com.dlong.creeper.model.seq.ProxyInfo;
 import com.dlong.creeper.model.seq.RequestInfo;
 import com.dlong.creeper.resolver.util.ResolveUtil;
 import com.dlong.creeper.resolver.util.WrapUtil;
 import org.apache.http.Header;
+import org.apache.http.HttpHost;
 import org.apache.http.message.BasicHeader;
 import org.apache.log4j.Logger;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -30,48 +32,69 @@ public class DefaultRequestInfoResolver implements RequestInfoResolver {
         if(requestInfoMap.size()>0){
             requestInfoMap.clear();
         }
-        resolve("", chainClass,requestInfoMap);
+        resolve("", null, chainClass,requestInfoMap);
         return requestInfoMap;
     }
 
-    public Map<AnnotatedElement,RequestInfo> resolve(String basePath,Class resolveClass,Map<AnnotatedElement,RequestInfo> requestInfoMap){
+    public Map<AnnotatedElement,RequestInfo> resolve(String basePath,ProxyInfo baseProxyInfo,Class resolveClass,Map<AnnotatedElement,RequestInfo> requestInfoMap){
         basePath = "".equals(basePath) ? getPath("", resolveClass) : basePath;
-
-        requestInfoMap.putAll(resolveRequestTarget(basePath, resolveClass));
+        ProxyInfo proxy = getProxyInfo(resolveClass);
+        if(proxy == null){
+            proxy = baseProxyInfo;
+        }
+        requestInfoMap.putAll(resolveRequestTarget(basePath, proxy, resolveClass));
 
         Class<?>[] classes = resolveClass.getDeclaredClasses();
         if(classes.length>0){
             for (Class<?> clz : classes) {
-                resolve(getPath(basePath, clz), clz, requestInfoMap);
+                resolve(getPath(basePath, clz), proxy, clz, requestInfoMap);
             }
         }
         return requestInfoMap;
     }
 
-    private Map<AnnotatedElement,RequestInfo> resolveRequestTarget(String basePath, Class clz){
+    private Map<AnnotatedElement,RequestInfo> resolveRequestTarget(String basePath,ProxyInfo baseProxyInfo, Class clz){
         Map<AnnotatedElement,RequestInfo> requestInfoMap = new HashMap<>();
-        ReflectionUtils.doWithMethods(clz, method -> putRequestInfo(method,basePath,requestInfoMap)
+        ReflectionUtils.doWithMethods(clz, method -> putRequestInfo(method,basePath,baseProxyInfo,requestInfoMap)
                 , method -> ResolveUtil.isAnnotatedPath(method) || ResolveUtil.isAnnotatedRequest(method));
-        ReflectionUtils.doWithFields(clz, field -> putRequestInfo(field,basePath,requestInfoMap)
+        ReflectionUtils.doWithFields(clz, field -> putRequestInfo(field,basePath,baseProxyInfo,requestInfoMap)
                 ,  method -> ResolveUtil.isAnnotatedPath(method) || ResolveUtil.isAnnotatedRequest(method));
         return requestInfoMap;
     }
 
-    private void putRequestInfo(AnnotatedElement target,String basePath, Map<AnnotatedElement, RequestInfo> requestInfoMap) {
+    private void putRequestInfo(AnnotatedElement target,String basePath,ProxyInfo baseProxyInfo, Map<AnnotatedElement, RequestInfo> requestInfoMap) {
         Member member = (Member) target;
 
         RequestInfo requestInfo = new RequestInfo();
-        requestInfo.setUrl(getRequestUrl(target, basePath, requestInfo));
+        requestInfo.setUrl(getRequestUrl(target, basePath));
         requestInfo.setHttpMethod(getHttpMethod(target));
         logger.info("set prepare Url "+requestInfo+" for target ["+ member.getName()+"] in ["+member.getDeclaringClass().getSimpleName()+"]");
-
         requestInfo.setParams(getRequestParams(target));
         requestInfo.setHeaders(getRequestHeaders(target));
+        requestInfo.setProxyInfo(baseProxyInfo);
+
+        ProxyInfo proxyInfo = getProxyInfo(target);
+        if(proxyInfo != null){
+            requestInfo.setProxyInfo(proxyInfo);
+        }
         logger.info("resolved request info for target ["+ member.getName()+"] in ["+member.getDeclaringClass().getSimpleName()+"]\n");
         requestInfoMap.put(target, requestInfo);
     }
 
-    private String getRequestUrl(AnnotatedElement target, String basePath, RequestInfo requestInfo) {
+    private ProxyInfo getProxyInfo(AnnotatedElement target) {
+        Proxy proxy = AnnotationUtils.getAnnotation(target, Proxy.class);
+        if(proxy != null){
+            HttpHost httpHost = new HttpHost(proxy.value(), proxy.port(), proxy.scheme());
+            return new ProxyInfo(httpHost);
+        }
+        Proxys proxys = AnnotationUtils.getAnnotation(target, Proxys.class);
+        if(proxys != null){
+            return new ProxyInfo(proxys.contextKey());
+        }
+        return null;
+    }
+
+    private String getRequestUrl(AnnotatedElement target, String basePath) {
         Member member = (Member) target;
 
         String url = getPath(basePath, target);

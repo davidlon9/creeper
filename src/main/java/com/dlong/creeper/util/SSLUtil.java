@@ -2,8 +2,10 @@ package com.dlong.creeper.util;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.config.ConnectionConfig;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
@@ -68,9 +70,9 @@ public class SSLUtil {
                 .register("https", new SSLConnectionSocketFactory(sslcontext))
                 .build();
         PoolingHttpClientConnectionManager connManager = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
-
+        RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(10000).build();
         //创建自定义的httpclient对象
-        CloseableHttpClient client = HttpClients.custom().setConnectionManager(connManager).build();
+        CloseableHttpClient client = HttpClients.custom().setConnectionManager(connManager).setDefaultRequestConfig(requestConfig).build();
         return client;
     }
 

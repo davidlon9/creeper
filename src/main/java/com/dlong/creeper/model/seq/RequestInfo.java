@@ -2,15 +2,18 @@ package com.dlong.creeper.model.seq;
 
 import com.dlong.creeper.model.Param;
 import org.apache.http.Header;
+import org.apache.http.HttpHost;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 public class RequestInfo {
     private String httpMethod;
     private String url;
     private List<Header> headers;
     private List<Param> params;
+    private ProxyInfo proxyInfo;
 
     public String getHttpMethod() {
         return httpMethod;
@@ -42,6 +45,14 @@ public class RequestInfo {
 
     public void setHeaders(List<Header> headers) {
         this.headers = headers;
+    }
+
+    public ProxyInfo getProxyInfo() {
+        return proxyInfo;
+    }
+
+    public void setProxyInfo(ProxyInfo proxyInfo) {
+        this.proxyInfo = proxyInfo;
     }
 
     @Override

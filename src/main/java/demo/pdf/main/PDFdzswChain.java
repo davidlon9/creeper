@@ -16,6 +16,7 @@ import com.dlong.creeper.control.MoveAction;
 import com.dlong.creeper.control.MoveActions;
 import com.dlong.creeper.execution.ChainContextExecutor;
 import com.dlong.creeper.execution.base.ContextExecutor;
+import com.dlong.creeper.execution.context.ChainContext;
 import com.dlong.creeper.execution.context.ExecutionContext;
 import com.dlong.creeper.execution.context.ContextParamStore;
 import com.dlong.creeper.execution.context.FormParamStore;
@@ -28,6 +29,7 @@ import com.dlong.creeper.util.FileUtil;
 import com.dlong.creeper.util.HttpDownload;
 import demo.pdf.model.PDFDetail;
 import demo.pdf.serivce.DZSWService;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.util.EntityUtils;
@@ -37,13 +39,16 @@ import org.jsoup.nodes.Document;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.AnnotatedElement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-@RequestChain(index = 1)
+@RequestChain()
 @Host(value = "www.xgv5.com", scheme = "https")
 @RequestLog(showFilledParams = false, showFilledHeaders = false)
 @FileRecordsIgnore(filePath = "D:\\repository\\traiker\\records\\demo.txt")
+@Proxys(contextKey="proxyList")
 public class PDFdzswChain {
 //    @RequestReference(index = 0,chainClass = PDFdzswChain.PageHandleChain.DownloadFile.class,requestName = "getFileInfo")
 //    Method getFileInfo;
@@ -71,7 +76,7 @@ public class PDFdzswChain {
             int maxPageNum = DZSWService.getMaxPageNum(rootPage, contextStore);
             contextStore.addParam("maxPage",maxPageNum);
             contextStore.addParam("isHandlePage",true);
-            return MoveActions.FORWARD();
+            return MoveActions.FORWARD(1000);
         }
     };
 
@@ -116,7 +121,7 @@ public class PDFdzswChain {
         public MoveAction afterHandle(ContextParamStore contextParamStore) {
             Set pdfGetFileUrls = (Set) contextParamStore.getValue("pdfGetFileUrls");
             pdfGetFileUrls.clear();
-            return new ContinueAction(100);
+            return new ContinueAction(1000);
         }
 
         @SeqRequest(index = 1, description = "处理列表页面")
@@ -124,7 +129,7 @@ public class PDFdzswChain {
         public MoveAction handlePDFListBook(String result, ContextParamStore contextParamStore){
             Document rootPage = Jsoup.parse(result);
             DZSWService.handlePDFListBook(rootPage, contextParamStore);
-            return MoveActions.FORWARD();
+            return MoveActions.FORWARD(1000);
         }
 
         @ForEach(itemsContextKey = "pagePDFDetailUrls", itemName = "detailUrl")
@@ -226,10 +231,18 @@ public class PDFdzswChain {
     }
 
     public static void main(String[] args) {
-        DefaultRequestInfoResolver defaultRequestInfoResolver = new DefaultRequestInfoResolver();
-        Map<AnnotatedElement, RequestInfo> resolve = defaultRequestInfoResolver.resolve(PDFdzswChain.class);
+//        DefaultRequestInfoResolver defaultRequestInfoResolver = new DefaultRequestInfoResolver();
+//        Map<AnnotatedElement, RequestInfo> resolve = defaultRequestInfoResolver.resolve(PDFdzswChain.class);
         //Chain调用方式
         ContextExecutor executor = new ChainContextExecutor(PDFdzswChain.class);
+        ChainContext chainContext = executor.getChainContext();
+        ContextParamStore contextStore = chainContext.getContextStore();
+        List<HttpHost> proxyList = new ArrayList<>();
+//        proxyList.add(new HttpHost("61.183.176.122",57210));
+//        proxyList.add(new HttpHost("183.195.106.118",8118));
+//        proxyList.add(new HttpHost("218.204.153.156",8080));
+//        proxyList.add(new HttpHost("117.186.49.50",55443));
+        contextStore.addParam("proxyList",proxyList);
         ChainExecutionResult chainResult = executor.exeucteRootChain();
         System.out.println();
 

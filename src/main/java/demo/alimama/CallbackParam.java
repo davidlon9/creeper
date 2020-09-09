@@ -1,6 +1,8 @@
 package demo.alimama;
 
 import com.dlong.creeper.model.Param;
+import org.apache.http.HttpHost;
+import org.apache.http.client.fluent.Request;
 
 import java.util.ArrayList;
 import java.util.Date;

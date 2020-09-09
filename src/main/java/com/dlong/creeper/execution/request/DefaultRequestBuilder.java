@@ -7,16 +7,18 @@ import com.dlong.creeper.execution.context.FormParamStore;
 import com.dlong.creeper.expression.ContextExpressionParser;
 import com.dlong.creeper.model.Param;
 import com.dlong.creeper.model.log.RequestLogInfo;
+import com.dlong.creeper.model.seq.ProxyInfo;
 import com.dlong.creeper.model.seq.RequestInfo;
 import com.dlong.creeper.resolver.util.WrapUtil;
 import org.apache.http.Header;
+import org.apache.http.HttpHost;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.message.BasicHeader;
 import org.apache.log4j.Logger;
 
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class DefaultRequestBuilder implements HttpRequestBuilder {
     private ContextParamStore contextStore;
@@ -98,8 +100,47 @@ public class DefaultRequestBuilder implements HttpRequestBuilder {
         request.setHeaders(headers);
         request.setHeader(new BasicHeader("User-Agents","Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.26 Safari/537.36 Core/1.63.6788.400 QQBrowser/10.3.2864.400"));
 
+        setRequestProxy(requestInfo.getProxyInfo(), request);
+
         logger.info("finish build request "+ WrapUtil.enAngleBrackets(request.toString(),true));
         return request;
+    }
+
+    private void setRequestProxy(ProxyInfo proxyInfo, Request request) {
+        if(proxyInfo != null){
+            HttpHost proxy = proxyInfo.getProxy();
+            String proxysContextKey = proxyInfo.getProxysContextKey();
+            if(proxy == null && proxysContextKey != null){
+                proxy = getProxyInContext(proxysContextKey);
+            }
+            if(proxy != null){
+                logger.info("request via proxy < "+proxy+" >");
+                request.viaProxy(proxy);
+            }
+        }
+    }
+
+    private HttpHost getProxyInContext(String proxysContextKey){
+        Object value = contextStore.getValue(proxysContextKey);
+        if(value == null){
+            logger.warn("proxysContextKey stored object is null");
+            return null;
+        }
+        if(value instanceof List){
+            List proxys = (List) value;
+            if(proxys.size()>0){
+                int rand = new Random().nextInt(proxys.size());
+                Object v = proxys.get(rand);
+                if(v instanceof HttpHost){
+                    return (HttpHost) v;
+                }
+            }else{
+                logger.warn("proxysContextKey stored list is empty");
+            }
+        }else{
+            logger.warn("proxysContextKey stored object should be type of List<HttpHost>");
+        }
+        return null;
     }
 
     private String fillUrlParams(String url,List<Param> params) {
