@@ -31,6 +31,16 @@ public class ResolveUtil {
         return false;
     }
 
+    public static boolean isAnnotatedRequest(AnnotatedElement element) {
+        Annotation[] annotations = element.getAnnotations();
+        for (Annotation annotation : annotations) {
+            if(annotation.annotationType().isAnnotationPresent(Request.class)){
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static boolean isAnnotatedPath(AnnotatedElement element) {
         Annotation[] annotations = element.getAnnotations();
         for (Annotation annotation : annotations) {

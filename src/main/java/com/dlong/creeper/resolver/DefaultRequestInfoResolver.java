@@ -50,8 +50,10 @@ public class DefaultRequestInfoResolver implements RequestInfoResolver {
 
     private Map<AnnotatedElement,RequestInfo> resolveRequestTarget(String basePath, Class clz){
         Map<AnnotatedElement,RequestInfo> requestInfoMap = new HashMap<>();
-        ReflectionUtils.doWithMethods(clz, method -> putRequestInfo(method,basePath,requestInfoMap), ResolveUtil::isAnnotatedPath);
-        ReflectionUtils.doWithFields(clz, field -> putRequestInfo(field,basePath,requestInfoMap), ResolveUtil::isAnnotatedPath);
+        ReflectionUtils.doWithMethods(clz, method -> putRequestInfo(method,basePath,requestInfoMap)
+                , method -> ResolveUtil.isAnnotatedPath(method) || ResolveUtil.isAnnotatedRequest(method));
+        ReflectionUtils.doWithFields(clz, field -> putRequestInfo(field,basePath,requestInfoMap)
+                ,  method -> ResolveUtil.isAnnotatedPath(method) || ResolveUtil.isAnnotatedRequest(method));
         return requestInfoMap;
     }
 
