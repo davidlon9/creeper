@@ -199,6 +199,6 @@ public class DefaultRequestInfoResolver implements RequestInfoResolver {
                 return annotation.annotationType().getSimpleName().toLowerCase();
             }
         }
-        return null;
+        return "get";
     }
 }

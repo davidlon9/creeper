@@ -9,6 +9,10 @@ public class MoveActions {
         return new ForwardAction();
     }
 
+    public static MoveAction FORWARD(int interval){
+        return new ForwardAction(interval);
+    }
+
     public static MoveAction BACK(int interval){
         return new BackAction(interval);
     }
