@@ -5,7 +5,7 @@
 
 可将类中的请求按顺序组成一个请求链，然后按顺序执行，可直接在请求方法中处理Http响应，并可以通过注解再度包装请求或请求链，使单个请求或请求链以循环执行、多线程执行等。
 
-也就是说，仅需要一个类，就能够迅速完成一个复杂的爬虫程序。
+仅需要一个类，就能够迅速完成一个复杂的爬虫程序。
 
 # 下载
 [creeper.jar](https://raw.githubusercontent.com/davidlon9/creeper/master/jar/creeper.jar)
