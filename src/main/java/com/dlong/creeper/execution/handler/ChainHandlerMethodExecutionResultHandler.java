@@ -91,7 +91,7 @@ public class ChainHandlerMethodExecutionResultHandler implements ChainExecutionR
             if(beforeHandler instanceof Method){
                 handlerResult = buildHandlerMethodWrapper(chainEntity, (Method) beforeHandler,context).invokeHandlerMethod();
             }else if(beforeHandler instanceof ChainBeforeHandler){
-                    handlerResult = ((ChainBeforeHandler) beforeHandler).beforeHandle(context);
+                handlerResult = ((ChainBeforeHandler) beforeHandler).beforeHandle(context);
             }
             executionResult.setBeforeResult(handlerResult);
         } catch (IOException e) {
@@ -112,7 +112,7 @@ public class ChainHandlerMethodExecutionResultHandler implements ChainExecutionR
 
             Object afterHandler = chainEntity.getAfterHandler();
             if(afterHandler == null){
-                if(chainEntity.getLooper() != null) logger.warn("Loop chain dose't have a after handler, looper will proceeding loop");
+                if(chainEntity.getLooper() != null) logger.info("Loop chain dose't have a after handler, looper will proceeding loop");
                 return;
             }
 
