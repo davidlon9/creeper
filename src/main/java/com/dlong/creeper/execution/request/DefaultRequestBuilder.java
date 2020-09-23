@@ -16,9 +16,11 @@ import org.apache.http.client.fluent.Request;
 import org.apache.http.message.BasicHeader;
 import org.apache.log4j.Logger;
 
+import java.net.URI;
 import java.nio.charset.Charset;
-import java.util.*;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class DefaultRequestBuilder implements HttpRequestBuilder {
     private ContextParamStore contextStore;
@@ -27,7 +29,7 @@ public class DefaultRequestBuilder implements HttpRequestBuilder {
 
     public static final String templateIdentifier="${";
 
-    private static Logger logger=Logger.getLogger(DefaultRequestBuilder.class);
+    private static Logger logger= Logger.getLogger(DefaultRequestBuilder.class);
 
     public DefaultRequestBuilder(ExecutionContext context) {
         this(context.getContextStore(),context.getParamStore());
@@ -37,21 +39,21 @@ public class DefaultRequestBuilder implements HttpRequestBuilder {
         this(contextStore,paramStore,new RequestLogInfo());
     }
 
-    public DefaultRequestBuilder(ContextParamStore contextStore, FormParamStore paramStore,RequestLogInfo logInfo) {
+    public DefaultRequestBuilder(ContextParamStore contextStore, FormParamStore paramStore, RequestLogInfo logInfo) {
         this.contextStore = contextStore;
         this.paramStore = paramStore;
         this.logInfo = logInfo;
     }
 
-    private List<Param> parseExpressionOfParameters(List<Param> params, ContextExpressionParser expressionParser) {
+    private List<Param> parseExpressionOfParameters(List<Param> params) {
         List<Param> parsedParams=new ArrayList<>();
         int size = params.size();
         for (int i = 0; i < size; i++) {
             Param param = params.get(i);
             if (param.getValue().contains(templateIdentifier)) {
-                String parsedValue = expressionParser.parse(param.getValue(), String.class);
+                String parsedValue = contextStore.getExpressionParser().parse(param.getValue(), String.class);
                 if(parsedValue==null){
-                    parsedValue=FormParamStore.NULL_VALUE;
+                    parsedValue= FormParamStore.NULL_VALUE;
                 }
                 param = new Param(param.getName(),parsedValue);
             }
@@ -60,50 +62,78 @@ public class DefaultRequestBuilder implements HttpRequestBuilder {
         return parsedParams;
     }
 
-    @Override
-    public Request buildRequest(RequestInfo requestInfo){
-        logger.info("start build request "+requestInfo);
-
-        String method = requestInfo.getHttpMethod().toUpperCase();
-        Request request;
+    /**
+     * 获取解析后的Url，同时解析RequestInfo中的参数
+     * @param requestInfo
+     * @return
+     */
+    public String getParsedUrl(RequestInfo requestInfo){
         String url = requestInfo.getUrl();
-        List<Param> params = requestInfo.getParams();
-
-        ContextExpressionParser expressionParser = contextStore.getExpressionParser();
         //解析url中的表达式
-        url = expressionParser.parse(url, String.class);
+        url = contextStore.getExpressionParser().parse(url, String.class);
         if(url == null){
             throw new RuntimeExecuteException("url "+requestInfo.getUrl()+" parsed as null");
         }
-        //解析参数中的表达式
-        params = parseExpressionOfParameters(params,expressionParser);
-
-        if(method.equals("POST")){
-            request=Request.Post(url);
-        }else if(method.equals("PUT")){
-            request=Request.Put(url);
-        }else if(method.equals("DELETE")){
-            request=Request.Delete(url);
-        }else{
-            request=Request.Get(fillUrlParams(url, params));
+        String method = requestInfo.getHttpMethod().toUpperCase();
+        //Get方法时将参数拼接到url上
+        if(method.equals("GET")){
+            //解析参数中的表达式
+            url = fillUrlParams(url, parseExpressionOfParameters(requestInfo.getParams()));
         }
+        return url;
+    }
+
+    @Override
+    public Request buildRequest(RequestInfo requestInfo){
+        logger.debug("start build request "+requestInfo);
+
+        String method = requestInfo.getHttpMethod().toUpperCase();
+
+        String url = getParsedUrl(requestInfo);
+
+        Request request = createRequest(method, url);
         if(!method.equals("GET")){
-            fillParams(request, params);
+            //非Get方法时将参数添加到请求中
+            fillParams(request, parseExpressionOfParameters(requestInfo.getParams()));
         }
 
+        //添加请求Headr
+        setRequestHeader(requestInfo, request);
+
+        //添加请求代理
+        setRequestProxy(requestInfo.getProxyInfo(), request);
+
+        logger.debug("finish build request "+ WrapUtil.enAngleBrackets(request.toString(),true));
+        return request;
+    }
+
+    private Request createRequest(String method, String url) {
+        Request request;
+        if(method.equals("POST")){
+            request= Request.Post(url);
+        }else if(method.equals("PUT")){
+            request= Request.Put(url);
+        }else if(method.equals("DELETE")){
+            request= Request.Delete(url);
+        }else{
+            request= Request.Get(url);
+        }
+        return request;
+    }
+
+    private void setRequestHeader(RequestInfo requestInfo, Request request) {
         Header[] headers = requestInfo.getHeaders().toArray(new Header[]{});
         if(logInfo.isShowFilledHeaders()){
-            for (Header header : headers) {
-                logger.info("filled header < "+header+" >");
+            for (int i = 0; i < headers.length; i++) {
+                Header header = headers[i];
+                if(header.getValue().contains("$")){
+                    headers[i] = new BasicHeader(header.getName(),getExpressionParser().parse(header.getValue(),String.class));
+                }
+                logger.debug("filled header < "+headers[i]+" >");
             }
         }
         request.setHeaders(headers);
         request.setHeader(new BasicHeader("User-Agents","Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.26 Safari/537.36 Core/1.63.6788.400 QQBrowser/10.3.2864.400"));
-
-        setRequestProxy(requestInfo.getProxyInfo(), request);
-
-        logger.info("finish build request "+ WrapUtil.enAngleBrackets(request.toString(),true));
-        return request;
     }
 
     private void setRequestProxy(ProxyInfo proxyInfo, Request request) {
@@ -114,7 +144,7 @@ public class DefaultRequestBuilder implements HttpRequestBuilder {
                 proxy = getProxyInContext(proxysContextKey);
             }
             if(proxy != null){
-                logger.info("request via proxy < "+proxy+" >");
+                logger.debug("request via proxy < "+proxy+" >");
                 request.viaProxy(proxy);
             }
         }
@@ -189,7 +219,7 @@ public class DefaultRequestBuilder implements HttpRequestBuilder {
         urlBuilder.append(param.getName()).append("=").append(param.getValue()).append("&");
 
         if (logInfo.isShowFilledParams()) {
-            logger.info("param "+param+" filled");
+            logger.debug("param "+param+" filled");
         }
         return false;
     }
@@ -202,7 +232,7 @@ public class DefaultRequestBuilder implements HttpRequestBuilder {
             if(!value.equals(FormParamStore.NULL_VALUE)){
                 filledParams.add(param);
                 if (logInfo.isShowFilledParams()) {
-                    logger.info("param "+param+" filled");
+                    logger.debug("param "+param+" filled");
                 }
                 continue;
             }
@@ -218,7 +248,7 @@ public class DefaultRequestBuilder implements HttpRequestBuilder {
             filledParams.add(new Param(param.getName(),value));
 
             if (logInfo.isShowFilledParams()) {
-                logger.info("param "+param+" filled");
+                logger.debug("param "+param+" filled");
             }
         }
         return filledParams;
@@ -226,6 +256,10 @@ public class DefaultRequestBuilder implements HttpRequestBuilder {
 
     private Request fillParams(Request request, List<Param> params) {
         return request.bodyForm(getFilledParams(params),Charset.forName("UTF-8"));
+    }
+
+    public ContextExpressionParser getExpressionParser(){
+        return contextStore.getExpressionParser();
     }
 
     public void setLogInfo(RequestLogInfo logInfo) {
