@@ -72,7 +72,6 @@ public class FileUrlRecorder extends AbstractUrlRecorder {
         while ((line = reader.readLine()) != null) {
             if (line.startsWith("http")) {
                 addUrlRecord(line);
-                currentIterateCount++;
             }
         }
         return getUrlRecords();
