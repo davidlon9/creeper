@@ -1,6 +1,6 @@
 package com.dlong.creeper.execution.resolver.method;
 
-import com.dlong.creeper.annotation.control.FailedStrategy;
+import com.dlong.creeper.annotation.control.ExceptionStrategy;
 import com.dlong.creeper.exception.ExecutionException;
 import com.dlong.creeper.execution.context.ChainContext;
 import com.dlong.creeper.model.result.ExecutionResult;
@@ -16,9 +16,9 @@ public class FailedStrategyAfterResultResolver implements HandlerMethodResultRes
         SequentialEntity seq = executionResult.getOrginalSeq();
         SequentialEntity next=null;
         if(seq instanceof RequestEntity){
-            if(methodResult instanceof FailedStrategy){
-                FailedStrategy failedStrategy = (FailedStrategy) methodResult;
-                int failedNextIndex = getFailedNextIndex(executionResult.getOrginalIndex(), failedStrategy);
+            if(methodResult instanceof ExceptionStrategy){
+                ExceptionStrategy exceptionStrategy = (ExceptionStrategy) methodResult;
+                int failedNextIndex = getFailedNextIndex(executionResult.getOrginalIndex(), exceptionStrategy);
                 next = context.getSequntialFinder().findSeqByFixedIndex(failedNextIndex,seq.getParent());
             }
         }
@@ -26,29 +26,29 @@ public class FailedStrategyAfterResultResolver implements HandlerMethodResultRes
         return executionResult;
     }
 
-    public int getFailedNextIndex(int currentIdx,FailedStrategy failedStrategy) throws ExecutionException {
-        if(failedStrategy ==null || FailedStrategy.FORWARD.equals(failedStrategy) || FailedStrategy.SUCCESS.equals(failedStrategy)){
+    public int getFailedNextIndex(int currentIdx,ExceptionStrategy exceptionStrategy) throws ExecutionException {
+        if(exceptionStrategy ==null || ExceptionStrategy.FORWARD.equals(exceptionStrategy) || ExceptionStrategy.SUCCESS.equals(exceptionStrategy)){
             return ++currentIdx;
-        }else if(FailedStrategy.BACK.equals(failedStrategy)){
+        }else if(ExceptionStrategy.BACK.equals(exceptionStrategy)){
             return --currentIdx;
-        }else if(FailedStrategy.RESTART.equals(failedStrategy)){
+        }else if(ExceptionStrategy.RESTART.equals(exceptionStrategy)){
             return 1;
-        }else if(FailedStrategy.TERMINATE.equals(failedStrategy)){
+        }else if(ExceptionStrategy.TERMINATE.equals(exceptionStrategy)){
             return -1;
-        }else if(FailedStrategy.RETRY.equals(failedStrategy)){
-            Integer wait = failedStrategy.getWait();
+        }else if(ExceptionStrategy.RETRY.equals(exceptionStrategy)){
+            Integer wait = exceptionStrategy.getWait();
             try {
                 Thread.sleep(wait);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             return currentIdx;
-        }else if("JUMP".equals(failedStrategy.getName())){
-            return failedStrategy.getTo();
-        }else if(FailedStrategy.MUTABLE.equals(failedStrategy)){
+        }else if("JUMP".equals(exceptionStrategy.getName())){
+            return exceptionStrategy.getTo();
+        }else if(ExceptionStrategy.MUTABLE.equals(exceptionStrategy)){
             throw new ExecutionException("MUTABLE failed strategy can't as a return value please try others");
         }else{
-            throw new ExecutionException("unkown failed strategy "+ failedStrategy +" please try others");
+            throw new ExecutionException("unkown failed strategy "+ exceptionStrategy +" please try others");
         }
     }
 }

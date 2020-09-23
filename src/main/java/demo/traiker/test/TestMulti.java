@@ -4,8 +4,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.dlong.creeper.annotation.Host;
 import com.dlong.creeper.annotation.Parameter;
 import com.dlong.creeper.annotation.Parameters;
-import com.dlong.creeper.annotation.control.FailedRetry;
-import com.dlong.creeper.annotation.control.FailedTerminate;
 import com.dlong.creeper.annotation.control.looper.While;
 import com.dlong.creeper.annotation.handler.AfterMethod;
 import com.dlong.creeper.annotation.handler.BeforeMethod;
@@ -75,7 +73,6 @@ public class TestMulti {
                 @Parameter(name="leftTicketDTO.to_station",desc = "到达站"),//杭州,WHN
                 @Parameter(name="purpose_codes",value = "ADULT")
         })
-        @FailedRetry(interval = 1000)
         public boolean leftTicket(JSONObject result){
             JSONObject body = ResultUtil.getJsonBody(result);
             //TODO nullpoint
@@ -95,7 +92,6 @@ public class TestMulti {
 
         @SeqRequest(index =2,name="checkUser",description="提交订单前验证用户")
         @Get("/otn/loginChain/checkUser")
-        @FailedRetry
         public boolean checkUser(JSONObject result){
             return true;
         }
@@ -115,7 +111,6 @@ public class TestMulti {
                 @JsonResultCookie(jsonKey ="dfp",name = "RAIL_DEVICEID",domain = ".12306.cn",cache = true),
                 @JsonResultCookie(jsonKey ="exp",name = "RAIL_EXPIRATION",domain = ".12306.cn",cache = true)
         })
-        @FailedTerminate
         public Object deivceCookie(JSONObject result, HttpResponse httpResponse, FormParamStore paramStore, ContextParamStore contextParamStore, CookieStore cookieStore){
             paramStore.addParams(callbackParam.getExtraParams());
             return true;

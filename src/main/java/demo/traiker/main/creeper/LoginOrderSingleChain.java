@@ -51,7 +51,6 @@ public class LoginOrderSingleChain {
                 @JsonResultCookie(jsonKey ="dfp",name = "RAIL_DEVICEID",domain = ".12306.cn",cache = true),
                 @JsonResultCookie(jsonKey ="exp",name = "RAIL_EXPIRATION",domain = ".12306.cn",cache = true)
         })
-        @FailedTerminate
         public Object deivceCookie(JSONObject result,HttpResponse httpResponse, FormParamStore paramStore,ContextParamStore contextParamStore, CookieStore cookieStore){
             paramStore.addParams(callbackParam.getExtraParams());
             return true;
@@ -91,7 +90,6 @@ public class LoginOrderSingleChain {
                 @Parameter(name="answer"),
                 @Parameter(name="callback"),
                 @Parameter(name="_")})
-        @FailedBack
         public boolean captchaCheck(HttpResponse response,FormParamStore paramStore,CookieStore cookieStore){
 //            JSONObject result = ResultUtil.getResult(response);
 //            JSONObject body = (JSONObject) ResultUtil.getBody(result);
@@ -149,7 +147,6 @@ public class LoginOrderSingleChain {
                 @Parameter(name="leftTicketDTO.to_station",desc = "到达站"),//杭州,WHN
                 @Parameter(name="purpose_codes",value = "ADULT")
         })
-        @FailedRetry(interval = 1000)
         public MoveAction leftTicket(JSONObject result, ContextParamStore contextParamStore){
             JSONObject body = ResultUtil.getJsonBody(result);
             Integer loopNum = (Integer) contextParamStore.getValue("loopNum");
@@ -175,7 +172,6 @@ public class LoginOrderSingleChain {
         //{"validateMessagesShowId":"_validatorMessage","status":true,"httpstatus":200,"data":{"flag":true},"messages":[],"validateMessages":{}}
         @SeqRequest(index =2,name="checkUser",description="提交订单前验证用户")
         @Get("/otn/loginChain/checkUser")
-        @FailedRetry
         public boolean checkUser(JSONObject result){
             return false;
         }
