@@ -66,6 +66,14 @@ public class ContextExpressionParser {
                 if("".equals(value) || value == null){
                     logger.warn("expression "+ WrapUtil.enDoubleQuote(spelExpression.getExpressionString())+" parsed value is null or empty.");
                 }else{
+                    if(value.startsWith("/")){
+                        //el表达式解析的值以/开始，则删除/
+                        value = value.substring(1,value.length());
+                    }
+                    if(value.startsWith("http")){
+                        //el表达式解析的值以http开始，则直接返回
+                        return value;
+                    }
                     sb.append(value);
                 }
             }else{
