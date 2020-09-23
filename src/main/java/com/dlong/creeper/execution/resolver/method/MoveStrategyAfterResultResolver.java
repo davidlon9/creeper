@@ -15,7 +15,13 @@ public class MoveStrategyAfterResultResolver implements HandlerMethodResultResol
     public ExecutionResult resolveResult(ExecutionResult executionResult, ChainContext context, Object methodResult) throws ExecutionException {
         SequentialEntity seq = executionResult.getOrginalSeq();
         SequentialEntity next=null;
-        if(methodResult instanceof MoveAction){
+        if(methodResult instanceof ContinueAction){
+            return new ContinueActionResolver().resolveResult(executionResult,context,methodResult);
+        }else if(methodResult instanceof TerminateAction){
+            executionResult.setFailed(true);
+        }else if(methodResult instanceof RestartAction){
+            executionResult.setFailed(true);
+        }else if(methodResult instanceof MoveAction){
             MoveAction moveAction;
             if(methodResult instanceof AutoCurrentIndexAction){
                 AutoCurrentIndexAction autoCurrentIndexStrategy = (AutoCurrentIndexAction) methodResult;
@@ -26,11 +32,6 @@ public class MoveStrategyAfterResultResolver implements HandlerMethodResultResol
             }
             executionResult.setActionResult(moveAction);
 
-            if(moveAction.getClass().equals(TerminateAction.class)){
-                executionResult.setFailed(true);
-                return executionResult;
-            }
-
             Object nextIdentifier = moveAction.nextSequential();
 
             RequestChainEntity parent = seq.getRefParent();
@@ -40,6 +41,10 @@ public class MoveStrategyAfterResultResolver implements HandlerMethodResultResol
             if(parent == null){
                 logger.warn("can't resolve next for root entity "+seq);
                 return executionResult;
+            }
+
+            if(moveAction instanceof RetryAction){
+                logger.info(seq+" will be retry");
             }
 
             if(nextIdentifier instanceof Integer){
