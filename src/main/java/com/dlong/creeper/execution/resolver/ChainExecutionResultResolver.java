@@ -1,11 +1,15 @@
 package com.dlong.creeper.execution.resolver;
 
+import com.dlong.creeper.control.MoveAction;
 import com.dlong.creeper.exception.ExecutionException;
 import com.dlong.creeper.execution.context.ChainContext;
 import com.dlong.creeper.execution.resolver.method.*;
 import com.dlong.creeper.model.result.ExecutionResult;
 
 public class ChainExecutionResultResolver extends SimpleExecutionResultResolver {
+    static{
+        afterResultResolvers.put(MoveAction.class,new ChainMoveStrategyAfterResultResolver());
+    }
 
     @Override
     public ExecutionResult afterExecuteResovle(ExecutionResult executionResult, ChainContext context) throws ExecutionException {
