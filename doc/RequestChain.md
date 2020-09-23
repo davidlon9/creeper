@@ -314,6 +314,7 @@ public boolean userinfo4(Request request, ExecutionContext context) {
 
 ##### RequestChain的处理器接口
 直接让RequestChain类继承ChainExecutionHandler抽象类
+```java
 @Host(value="kyfw.12306.cn",scheme="https")
 @RequestChain(name="LoginChain",description="登陆请求链")
 public class LoginChain extends ChainExecutionHandler {
@@ -327,6 +328,7 @@ public class LoginChain extends ChainExecutionHandler {
         return true;
     }
 }
+```
 ChainExecutionHandler抽象类，实现了ChainBeforeHandler与ChainAfterHandler接口，可以根据需要为RequestChain实现前后处理器接口，如下例
 ```java
 @Host(value="kyfw.12306.cn",scheme="https")
