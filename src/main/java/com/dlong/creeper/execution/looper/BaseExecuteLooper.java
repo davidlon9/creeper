@@ -6,7 +6,6 @@ import com.dlong.creeper.exception.ExecutionException;
 import com.dlong.creeper.exception.RuntimeExecuteException;
 import com.dlong.creeper.execution.base.*;
 import com.dlong.creeper.execution.context.ChainContext;
-import com.dlong.creeper.execution.handler.RecorderLoopExecutionResultHandler;
 import com.dlong.creeper.execution.registry.base.LoopExecutionResultHandlerRegistry;
 import com.dlong.creeper.model.result.ExecutionResult;
 import com.dlong.creeper.model.result.LoopExecutionResult;
@@ -29,7 +28,6 @@ public abstract class BaseExecuteLooper<T extends LoopableEntity> implements Exe
         this.executor = executor;
         this.looperClass = looperClass;
         this.loopExecutionResultHandlerRegistry = new LoopExecutionResultHandlerRegistry();
-        this.loopExecutionResultHandlerRegistry.registerExecutionHandler(new RecorderLoopExecutionResultHandler());
     }
 
     @Override
@@ -77,7 +75,7 @@ public abstract class BaseExecuteLooper<T extends LoopableEntity> implements Exe
         this.loopExecutionResultHandlerRegistry.invokeAfterExecutionHandler(result, context);
 
         if (result.isFailed()) {
-            logger.error("循环执行失败");
+            logger.error(loopableEntity+" 循环执行失败");
             return result;
         }
         return result;
