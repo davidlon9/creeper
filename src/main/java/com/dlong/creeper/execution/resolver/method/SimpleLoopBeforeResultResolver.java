@@ -1,5 +1,6 @@
 package com.dlong.creeper.execution.resolver.method;
 
+import com.dlong.creeper.control.ContinueAction;
 import com.dlong.creeper.exception.ExecutionException;
 import com.dlong.creeper.execution.context.ChainContext;
 import com.dlong.creeper.model.result.ExecutionResult;
@@ -12,7 +13,7 @@ public class SimpleLoopBeforeResultResolver implements HandlerMethodResultResolv
     public ExecutionResult resolveResult(ExecutionResult executionResult, ChainContext context, Object methodResult) throws ExecutionException {
         if(methodResult instanceof Boolean && !(Boolean) methodResult){
             logger.info("before handler return a false,looper will continue next loop");
-            executionResult.setSkipExecute(true);
+            new MoveStrategyBeforeResultResolver().resolveResult(executionResult,context,new ContinueAction(1000));
         }
         return executionResult;
     }
