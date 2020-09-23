@@ -2,10 +2,11 @@ package com.dlong.creeper.resolver;
 
 import com.dlong.creeper.HttpConst;
 import com.dlong.creeper.annotation.*;
-import com.dlong.creeper.annotation.http.*;
+import com.dlong.creeper.annotation.http.Path;
 import com.dlong.creeper.exception.RuntimeResolveException;
 import com.dlong.creeper.model.Param;
 import com.dlong.creeper.model.seq.ProxyInfo;
+import com.dlong.creeper.model.seq.RequestChainEntity;
 import com.dlong.creeper.model.seq.RequestInfo;
 import com.dlong.creeper.resolver.util.ResolveUtil;
 import com.dlong.creeper.resolver.util.WrapUtil;
@@ -25,28 +26,44 @@ import java.util.List;
 import java.util.Map;
 
 public class DefaultRequestInfoResolver implements RequestInfoResolver {
-    private Logger logger=Logger.getLogger(DefaultRequestInfoResolver.class);
+    private Logger logger= Logger.getLogger(DefaultRequestInfoResolver.class);
 
     public Map<AnnotatedElement,RequestInfo> resolve(Class chainClass){
         return resolve(chainClass,null);
     }
 
-    public Map<AnnotatedElement,RequestInfo> resolve(Class chainClass,Class parentClass){
+    public Map<AnnotatedElement,RequestInfo> resolve(Class chainClass, RequestChainEntity parentChain){
         Map<AnnotatedElement,RequestInfo> requestInfoMap = new HashMap<>();
         if(requestInfoMap.size()>0){
             requestInfoMap.clear();
         }
         String basePath = "";
         ProxyInfo baseProxy = null;
-        if(parentClass!=null){
-            basePath = getPath("", parentClass);
-            baseProxy = getProxyInfo(parentClass);
+        if (parentChain!=null){
+            basePath = getBasePath(parentChain);
+            baseProxy = getBaseProxy(parentChain);
         }
         resolve(basePath, baseProxy, chainClass,requestInfoMap);
         return requestInfoMap;
     }
 
-    public Map<AnnotatedElement,RequestInfo> resolve(String basePath,ProxyInfo baseProxyInfo,Class resolveClass,Map<AnnotatedElement,RequestInfo> requestInfoMap){
+    private ProxyInfo getBaseProxy(RequestChainEntity parentChain) {
+        ProxyInfo baseProxy = getProxyInfo(parentChain.getChainClass());
+        if(baseProxy == null && parentChain.getParent()!=null){
+            baseProxy = getBaseProxy(parentChain.getParent());
+        }
+        return baseProxy;
+    }
+
+    private String getBasePath(RequestChainEntity parentChain) {
+        String basePath = getPath("", parentChain.getChainClass());
+        if("".equals(basePath) && parentChain.getParent()!=null){
+            basePath = getBasePath(parentChain.getParent());
+        }
+        return basePath;
+    }
+
+    public Map<AnnotatedElement,RequestInfo> resolve(String basePath, ProxyInfo baseProxyInfo, Class resolveClass, Map<AnnotatedElement,RequestInfo> requestInfoMap){
         basePath = "".equals(basePath) ? getPath("", resolveClass) : basePath;
         ProxyInfo proxy = getProxyInfo(resolveClass);
         if(proxy == null){
@@ -63,7 +80,7 @@ public class DefaultRequestInfoResolver implements RequestInfoResolver {
         return requestInfoMap;
     }
 
-    private Map<AnnotatedElement,RequestInfo> resolveRequestTarget(String basePath,ProxyInfo baseProxyInfo, Class clz){
+    private Map<AnnotatedElement,RequestInfo> resolveRequestTarget(String basePath, ProxyInfo baseProxyInfo, Class clz){
         Map<AnnotatedElement,RequestInfo> requestInfoMap = new HashMap<>();
         ReflectionUtils.doWithMethods(clz, method -> putRequestInfo(method,basePath,baseProxyInfo,requestInfoMap)
                 , method -> ResolveUtil.isAnnotatedPath(method) || ResolveUtil.isAnnotatedRequest(method));
@@ -72,7 +89,7 @@ public class DefaultRequestInfoResolver implements RequestInfoResolver {
         return requestInfoMap;
     }
 
-    private void putRequestInfo(AnnotatedElement target,String basePath,ProxyInfo baseProxyInfo, Map<AnnotatedElement, RequestInfo> requestInfoMap) {
+    private void putRequestInfo(AnnotatedElement target, String basePath, ProxyInfo baseProxyInfo, Map<AnnotatedElement, RequestInfo> requestInfoMap) {
         Member member = (Member) target;
 
         RequestInfo requestInfo = new RequestInfo();
@@ -116,7 +133,7 @@ public class DefaultRequestInfoResolver implements RequestInfoResolver {
             }
         }
         if(basePath.equals(url)){
-            logger.warn("request target "+WrapUtil.enBrackets(member.getName())+" does't have a path of host, request url resolved as host");
+            logger.warn("request target "+ WrapUtil.enBrackets(member.getName())+" does't have a path of host, request url resolved as host");
         }
         return url;
     }
@@ -125,7 +142,8 @@ public class DefaultRequestInfoResolver implements RequestInfoResolver {
         if(obj instanceof Class){
             base = buildBase(base,obj);
         }else if(obj instanceof AnnotatedElement){
-            StringBuilder sb=new StringBuilder(buildBase(base, obj));
+            String basePath = buildBase(base, obj);
+            StringBuilder sb=new StringBuilder(basePath);
             Annotation[] annotations = ((AnnotatedElement)obj).getAnnotations();
             for (Annotation annotation : annotations) {
                 if(ResolveUtil.isPathAnno(annotation)){
@@ -134,7 +152,11 @@ public class DefaultRequestInfoResolver implements RequestInfoResolver {
                     if(!urlInheritable){
                         return url;
                     }
-                    if(!url.startsWith("/")){
+                    if(url.startsWith("http")){
+                        sb.append(url);
+                        return url;
+                    }
+                    if(!url.startsWith("/") && basePath.startsWith("http")){
                         sb.append("/");
                     }
                     sb.append(url);
@@ -160,7 +182,7 @@ public class DefaultRequestInfoResolver implements RequestInfoResolver {
         }
 
         if(host!=null){
-            base=host.scheme()+HttpConst.URI_BEGIN_IDENTIFIER+host.value();
+            base=host.scheme()+ HttpConst.URI_BEGIN_IDENTIFIER+host.value();
         }
 
         if(path!=null){
@@ -192,7 +214,7 @@ public class DefaultRequestInfoResolver implements RequestInfoResolver {
         return params;
     }
 
-    private void addParamsToList(List<Param> params, Parameter parameter,AnnotatedElement target) {
+    private void addParamsToList(List<Param> params, Parameter parameter, AnnotatedElement target) {
         Param param = new Param(parameter.name(), parameter.value());
         if(!"".equals(parameter.globalKey())){
             param.setGlobalKey(parameter.globalKey());
@@ -216,7 +238,7 @@ public class DefaultRequestInfoResolver implements RequestInfoResolver {
         return headers;
     }
 
-    private void addHeaderToList(List<Header> headers, RequestHeader requestHeader,AnnotatedElement target) {
+    private void addHeaderToList(List<Header> headers, RequestHeader requestHeader, AnnotatedElement target) {
         Header header = new BasicHeader(requestHeader.name(), requestHeader.value());
         headers.add(header);
         logger.info("add prepare Header "+ WrapUtil.enAngleBrackets(header.toString(),true)+" to Request "+ WrapUtil.enAngleBrackets(((Member) target).getName()));
