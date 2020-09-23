@@ -23,6 +23,7 @@ import com.dlong.creeper.execution.context.FormParamStore;
 import com.dlong.creeper.execution.handler.entity.ExecutionHandler;
 import com.dlong.creeper.model.result.ChainExecutionResult;
 import com.dlong.creeper.model.result.ChainResult;
+import com.dlong.creeper.model.result.ExecutionResult;
 import com.dlong.creeper.model.seq.RequestInfo;
 import com.dlong.creeper.resolver.DefaultRequestInfoResolver;
 import com.dlong.creeper.util.FileUtil;
@@ -244,7 +245,7 @@ public class PDFdzswChain {
 //        proxyList.add(new HttpHost("218.204.153.156",8080));
 //        proxyList.add(new HttpHost("117.186.49.50",55443));
         contextStore.addParam("proxyList",proxyList);
-        ChainExecutionResult chainResult = executor.exeucteRootChain();
+        ExecutionResult chainResult = executor.exeucteRootChain();
         System.out.println();
 
 //        //手动调用方式
