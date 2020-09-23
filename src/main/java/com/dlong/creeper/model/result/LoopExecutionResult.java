@@ -9,7 +9,8 @@ import java.util.List;
 public class LoopExecutionResult<T extends LoopableEntity> extends ExecutionResult<T> {
     private boolean isLoopOver = false;
     private boolean isOtherThreadSuccessed = false;
-
+    private int loopNum = 0;
+    private int totalNum = 0;
     private List<ExecutionResult> loopResults = new ArrayList<>();
 
     public LoopExecutionResult(T orginalSeq) {
@@ -21,11 +22,7 @@ public class LoopExecutionResult<T extends LoopableEntity> extends ExecutionResu
     }
 
     public boolean isLoopOver() {
-        return isLoopOver;
-    }
-
-    public void setLoopOver(boolean loopOver) {
-        isLoopOver = loopOver;
+        return loopNum == totalNum;
     }
 
     public void addLoopResult(ExecutionResult executionResult){
@@ -40,12 +37,45 @@ public class LoopExecutionResult<T extends LoopableEntity> extends ExecutionResu
         if(isOtherThreadSuccessed){
             return false;
         }
+        if(this.loopResults.size()==0){
+            return false;
+        }
         for (ExecutionResult loopResult : loopResults) {
             if(!loopResult.isFailed()){
                 return false;
             }
         }
         return true;
+    }
+
+    public int getSuccessedLoopNum(){
+        int num = loopResults.size();
+        for (ExecutionResult loopResult : loopResults) {
+            if(!loopResult.isFailed()){
+                num--;
+            }
+        }
+        return num;
+    }
+
+    public int getLoopNum() {
+        return loopNum;
+    }
+
+    public void setLoopNum(int loopNum) {
+        this.loopNum = loopNum;
+    }
+
+    public int getTotalNum() {
+        return totalNum;
+    }
+
+    public void setTotalNum(int totalNum) {
+        this.totalNum = totalNum;
+    }
+
+    public void setLoopResults(List<ExecutionResult> loopResults) {
+        this.loopResults = loopResults;
     }
 
     public boolean isOtherThreadSuccessed() {

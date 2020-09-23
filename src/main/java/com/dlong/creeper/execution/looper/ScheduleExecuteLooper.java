@@ -5,10 +5,10 @@ import com.dlong.creeper.exception.ExecutionException;
 import com.dlong.creeper.execution.base.LoopableExecutor;
 import com.dlong.creeper.model.result.ExecutionResult;
 import com.dlong.creeper.model.result.LoopExecutionResult;
-import com.dlong.creeper.model.seq.multi.Multiple;
 import com.dlong.creeper.model.seq.LoopableEntity;
 import com.dlong.creeper.model.seq.RequestChainEntity;
 import com.dlong.creeper.model.seq.control.ScheduleLooper;
+import com.dlong.creeper.model.seq.multi.Multiple;
 import org.apache.log4j.Logger;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
@@ -19,18 +19,19 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+@SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
 public class ScheduleExecuteLooper<T extends LoopableEntity> extends BaseExecuteLooper<T> {
-    private static Logger logger=Logger.getLogger(ScheduleExecuteLooper.class);
+    private static Logger logger= Logger.getLogger(ScheduleExecuteLooper.class);
     private static Map<String,DateBuilder.IntervalUnit> intervalUnitMap=new HashMap<>(10);
 
     static {
-        intervalUnitMap.put("MILLISECOND",DateBuilder.IntervalUnit.MILLISECOND);
-        intervalUnitMap.put("SECOND",DateBuilder.IntervalUnit.SECOND);
-        intervalUnitMap.put("MINUTE",DateBuilder.IntervalUnit.MINUTE);
-        intervalUnitMap.put("HOUR",DateBuilder.IntervalUnit.HOUR);
-        intervalUnitMap.put("DAY",DateBuilder.IntervalUnit.DAY);
-        intervalUnitMap.put("MONTH",DateBuilder.IntervalUnit.MONTH);
-        intervalUnitMap.put("YEAR",DateBuilder.IntervalUnit.YEAR);
+        intervalUnitMap.put("MILLISECOND", DateBuilder.IntervalUnit.MILLISECOND);
+        intervalUnitMap.put("SECOND", DateBuilder.IntervalUnit.SECOND);
+        intervalUnitMap.put("MINUTE", DateBuilder.IntervalUnit.MINUTE);
+        intervalUnitMap.put("HOUR", DateBuilder.IntervalUnit.HOUR);
+        intervalUnitMap.put("DAY", DateBuilder.IntervalUnit.DAY);
+        intervalUnitMap.put("MONTH", DateBuilder.IntervalUnit.MONTH);
+        intervalUnitMap.put("YEAR", DateBuilder.IntervalUnit.YEAR);
     }
 
     public ScheduleExecuteLooper(LoopableExecutor<T> executor) {
@@ -81,9 +82,7 @@ public class ScheduleExecuteLooper<T extends LoopableEntity> extends BaseExecute
                     logger.info("ScheduleExecuteLooper finished!!!");
                 }
             }
-        } catch (SchedulerException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
+        } catch (SchedulerException | InterruptedException e) {
             e.printStackTrace();
         }
         return loopResult;
@@ -112,7 +111,7 @@ public class ScheduleExecuteLooper<T extends LoopableEntity> extends BaseExecute
     }
 
     public static class DefaultJob implements Job {
-        public void execute(JobExecutionContext context) throws JobExecutionException{
+        public void execute(JobExecutionContext context) throws JobExecutionException {
             JobDataMap dataMap = context.getMergedJobDataMap();
             Scheduler scheduler = context.getScheduler();
 
@@ -139,11 +138,12 @@ public class ScheduleExecuteLooper<T extends LoopableEntity> extends BaseExecute
 
                 ExecutionResult innerResult = executor.doExecute(entity);
                 result.addLoopResult(innerResult);
-
+                int loopNum = result.getLoopNum();
+                result.setLoopNum(++loopNum);
+                result.setTotalNum(loopNum);
                 synchronized (scheduler){
                     if(!repeatForever && (count>=repeatCount || isBreak(innerResult))){
                         result.setNextSeq(innerResult.getNextSeq());
-                        result.setLoopOver(true);
                         shutdown(scheduler);
                     }
                 }

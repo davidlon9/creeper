@@ -8,16 +8,16 @@ import com.dlong.creeper.execution.context.ContextParamStore;
 import com.dlong.creeper.execution.resolver.AutoNextSeqResultResolver;
 import com.dlong.creeper.model.result.ExecutionResult;
 import com.dlong.creeper.model.result.LoopExecutionResult;
-import com.dlong.creeper.model.seq.multi.Multiple;
 import com.dlong.creeper.model.seq.LoopableEntity;
 import com.dlong.creeper.model.seq.control.ForIndexLooper;
 import com.dlong.creeper.model.seq.control.Looper;
+import com.dlong.creeper.model.seq.multi.Multiple;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
 public class ForIndexExecuteLooper<T extends LoopableEntity> extends BaseExecuteLooper<T> {
-    private static Logger logger=Logger.getLogger(ForIndexExecuteLooper.class);
+    private static Logger logger= Logger.getLogger(ForIndexExecuteLooper.class);
 
     public ForIndexExecuteLooper(LoopableExecutor<T> executor) {
         super(executor,ForIndexLooper.class);
@@ -42,8 +42,8 @@ public class ForIndexExecuteLooper<T extends LoopableEntity> extends BaseExecute
         Integer end = context.getExpressionParser().parse(endExpr,Integer.class);
         contextStore.addParam("start",start);
         contextStore.addParam("end",end);
-
-        for (int i = start; i <= end; i++) {
+        int i;
+        for (i = start; i <= end; i++) {
             if(isMultipleShutdown(multiple)){
                 loopResult.setOtherThreadSuccessed(true);
                 logger.warn("Looper of "+loopableEntity+" is break probably cause by other thread successed!");
@@ -55,8 +55,6 @@ public class ForIndexExecuteLooper<T extends LoopableEntity> extends BaseExecute
 
             ExecutionResult<T> innerResult = executor.doExecute(loopableEntity);
 
-            loopResult.addLoopResult(innerResult);
-
             if(isBreak(innerResult)){
                 loopResult.setNextSeq(innerResult.getNextSeq());
                 break;
@@ -65,9 +63,12 @@ public class ForIndexExecuteLooper<T extends LoopableEntity> extends BaseExecute
             if(innerResult.getActionResult() instanceof RetryAction){
                 logger.info("* Loop "+i+" of "+end+" of "+loopableEntity+" will be retry");
                 i--;
+                continue;
             }
+            loopResult.addLoopResult(innerResult);
         }
-        loopResult.setLoopOver(true);
+        loopResult.setLoopNum(i);
+        loopResult.setTotalNum(end);
         new AutoNextSeqResultResolver().afterExecuteResovle(loopResult,getContext());
         return loopResult;
     }

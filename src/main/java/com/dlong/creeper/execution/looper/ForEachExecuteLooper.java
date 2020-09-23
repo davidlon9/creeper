@@ -8,17 +8,17 @@ import com.dlong.creeper.execution.context.ContextParamStore;
 import com.dlong.creeper.execution.resolver.AutoNextSeqResultResolver;
 import com.dlong.creeper.model.result.ExecutionResult;
 import com.dlong.creeper.model.result.LoopExecutionResult;
-import com.dlong.creeper.model.seq.multi.Multiple;
 import com.dlong.creeper.model.seq.LoopableEntity;
 import com.dlong.creeper.model.seq.control.ForEachLooper;
 import com.dlong.creeper.model.seq.control.Looper;
+import com.dlong.creeper.model.seq.multi.Multiple;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.Collection;
 
-public class ForEachExecuteLooper<T extends LoopableEntity> extends BaseExecuteLooper<T>{
-    private static Logger logger=Logger.getLogger(ForEachExecuteLooper.class);
+public class ForEachExecuteLooper<T extends LoopableEntity> extends BaseExecuteLooper<T> {
+    private static Logger logger= Logger.getLogger(ForEachExecuteLooper.class);
 
     public ForEachExecuteLooper(LoopableExecutor<T> executor) {
         super(executor,ForEachLooper.class);
@@ -50,23 +50,24 @@ public class ForEachExecuteLooper<T extends LoopableEntity> extends BaseExecuteL
                 contextStore.addParam(forEachLooper.getItemName(),obj);
 
                 logger.info("* Loop "+count+" of "+collection.size()+" of "+loopableEntity+" will be execute by "+this.getClass().getSimpleName());
-                ExecutionResult<T> innerResult = loopExecute(loopableEntity, loopResult);
+                ExecutionResult<T> innerResult = executor.doExecute(loopableEntity);
                 if(isBreak(innerResult)){
-                    loopResult.setNextSeq(innerResult.getNextSeq());
                     break;
                 }
                 if(innerResult.getActionResult() instanceof RetryAction){
                     logger.info("* Loop "+count+" of "+collection.size()+" of "+loopableEntity+" will be retry");
-                    ExecutionResult<T> retryResult = loopExecute(loopableEntity, loopResult);
-                    if(isBreak(retryResult)){
-                        loopResult.setNextSeq(innerResult.getNextSeq());
+                    innerResult = retryInLoop(loopableEntity, loopResult);
+                    if(isBreak(innerResult)){
                         break;
                     }
                 }else{
                     count++;
                 }
+                loopResult.setNextSeq(innerResult.getNextSeq());
+                loopResult.addLoopResult(innerResult);
             }
-            loopResult.setLoopOver(true);
+            loopResult.setLoopNum(count);
+            loopResult.setTotalNum(collection.size());
         }else if(value == null){
             throw new ExecutionException("itemsContextKey "+itemsContextKey+" mapped paramValue is null");
         }else{
@@ -76,10 +77,13 @@ public class ForEachExecuteLooper<T extends LoopableEntity> extends BaseExecuteL
         return loopResult;
     }
 
-    private ExecutionResult<T> loopExecute(T loopableEntity, LoopExecutionResult<T> loopResult) throws IOException, ExecutionException {
-        ExecutionResult<T> innerResult = executor.doExecute(loopableEntity);
-
-        loopResult.addLoopResult(innerResult);
-        return innerResult;
+    private ExecutionResult<T> retryInLoop(T loopableEntity, LoopExecutionResult<T> loopResult) throws IOException, ExecutionException {
+        ExecutionResult<T> retryResult = executor.doExecute(loopableEntity);
+        if(retryResult.getActionResult() instanceof RetryAction){
+            logger.info("* Loop of "+loopableEntity+" will be retry again");
+            return retryInLoop(loopableEntity, loopResult);
+        }
+        return retryResult;
     }
+
 }

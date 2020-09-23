@@ -4,16 +4,16 @@ import com.dlong.creeper.exception.ExecutionException;
 import com.dlong.creeper.execution.base.LoopableExecutor;
 import com.dlong.creeper.model.result.ExecutionResult;
 import com.dlong.creeper.model.result.LoopExecutionResult;
-import com.dlong.creeper.model.seq.multi.Multiple;
 import com.dlong.creeper.model.seq.LoopableEntity;
-import com.dlong.creeper.model.seq.control.WhileLooper;
 import com.dlong.creeper.model.seq.control.Looper;
+import com.dlong.creeper.model.seq.control.WhileLooper;
+import com.dlong.creeper.model.seq.multi.Multiple;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
 public class WhileExecuteLooper<T extends LoopableEntity> extends BaseExecuteLooper<T> {
-    private static Logger logger=Logger.getLogger(WhileExecuteLooper.class);
+    private static Logger logger= Logger.getLogger(WhileExecuteLooper.class);
 
     public WhileExecuteLooper(LoopableExecutor<T> executor) {
         super(executor,WhileLooper.class);
@@ -54,7 +54,8 @@ public class WhileExecuteLooper<T extends LoopableEntity> extends BaseExecuteLoo
             }
             count++;
         }while (condition);
-        loopResult.setLoopOver(true);
+        loopResult.setLoopNum(count);
+        loopResult.setTotalNum(count);
         return loopResult;
     }
 
