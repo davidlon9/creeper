@@ -45,10 +45,8 @@ public class RequestChainEntity extends LoopableEntity{
             this.chainInstance = chainInstance;
         }else{
             for (SequentialEntity sequentialEntity : this.sequentialList) {
-                Class<? extends SequentialEntity> clz = sequentialEntity.getClass();
-                if(clz.equals(chainClz) && sequentialEntity instanceof RequestChainEntity){
-                    RequestChainEntity chainEntity = (RequestChainEntity) sequentialEntity;
-                    chainEntity.setChainInstance(chainInstance);
+                if(sequentialEntity instanceof RequestChainEntity){
+                    ((RequestChainEntity) sequentialEntity).setChainInstance(chainInstance);
                 }
             }
         }
