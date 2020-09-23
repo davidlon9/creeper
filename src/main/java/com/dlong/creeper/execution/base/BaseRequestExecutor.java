@@ -12,26 +12,27 @@ import com.dlong.creeper.execution.registry.base.RequestExecutionResultHandlerRe
 import com.dlong.creeper.execution.request.DefaultRequestBuilder;
 import com.dlong.creeper.execution.request.HttpRequestBuilder;
 import com.dlong.creeper.execution.resolver.SimpleExecutionResultResolver;
-import com.dlong.creeper.model.result.ExecutionResult;
 import com.dlong.creeper.model.HandlerMethodWrapper;
 import com.dlong.creeper.model.log.ResponseLogInfo;
+import com.dlong.creeper.model.result.ExecutionResult;
 import com.dlong.creeper.model.seq.RequestChainEntity;
 import com.dlong.creeper.model.seq.RequestEntity;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.fluent.*;
+import org.apache.http.client.fluent.ContentResponseHandler;
+import org.apache.http.client.fluent.Executor;
+import org.apache.http.client.fluent.Request;
+import org.apache.http.client.fluent.Response;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 import org.springframework.util.Assert;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.Collections;
 
 
-public class BaseRequestExecutor<T extends RequestEntity> extends AbstractLoopableExecutor<T> implements RequestExecutor<T>{
+public class BaseRequestExecutor<T extends RequestEntity> extends AbstractLoopableExecutor<T> implements RequestExecutor<T> {
     private HttpRequestBuilder requestBuilder;
 
     private RequestExecutionResultHandlerRegistry handlerExecuteHandlerRegistry;
@@ -40,7 +41,7 @@ public class BaseRequestExecutor<T extends RequestEntity> extends AbstractLoopab
     private RequestExecutionResultHandlerRegistry executionMethodHandlerRegistry;
     private ExecutionResultResolverRegistry executionMethodResultResolverRegistry;
 
-    private static Logger logger=Logger.getLogger(BaseRequestExecutor.class);
+    private static Logger logger= Logger.getLogger(BaseRequestExecutor.class);
 
     public BaseRequestExecutor(ChainContext context) {
         this(context,false);
@@ -82,9 +83,12 @@ public class BaseRequestExecutor<T extends RequestEntity> extends AbstractLoopab
 
         logger.info("+ begin execute request "+requestEntity);
 
-        Request request = requestBuilder.buildRequest(requestEntity.getRequestInfo());
-        if(request==null){
+        Request request;
+        try {
+            request = requestBuilder.buildRequest(requestEntity.getRequestInfo());
+        } catch (Exception e) {
             logger.error("request build error, no url parsed out");
+            return handleError(e,executionResult);
         }
         requestEntity.setRequest(request);
         logger.debug("build request successfully!");
@@ -111,7 +115,14 @@ public class BaseRequestExecutor<T extends RequestEntity> extends AbstractLoopab
         return executionResult;
     }
 
-    private void executeInterval(ExecutionResult<T> executionResult,T requestEntity) {
+    private ExecutionResult<T> handleError(Exception e,ExecutionResult<T> executionResult) {
+        logger.error(e.getClass().getSimpleName()+":"+e.getMessage());
+        executionResult.setFailed(true);
+        executionResult.setException(e);
+        return executionResult;
+    }
+
+    private void executeInterval(ExecutionResult<T> executionResult, T requestEntity) {
         if(executionResult.getAfterResult() instanceof IntervalAction){
             IntervalAction afterResult = (IntervalAction) executionResult.getAfterResult();
             try {
@@ -150,7 +161,11 @@ public class BaseRequestExecutor<T extends RequestEntity> extends AbstractLoopab
             logger.warn("request "+requestEntity.getFullName()+" execution skiped");
             return;
         }
-        exeucteRequest(requestEntity,executionResult);
+        try {
+            exeucteRequest(requestEntity,executionResult);
+        } catch (Exception e) {
+            handleError(e,executionResult);
+        }
         getHandlerExecuteHandlerRegistry().invokeAfterExecutionHandler(executionResult, context);
         getHandlerExecuteResultResolverRegistry().afterExecuteResolve(executionResult, context);
     }
@@ -172,7 +187,7 @@ public class BaseRequestExecutor<T extends RequestEntity> extends AbstractLoopab
         return executionResult.isSkipExecute();
     }
 
-    public ExecutionResult<T> exeucteRequest(RequestEntity requestEntity,ExecutionResult<T> executionResult) throws ExecutionException, IOException {
+    public ExecutionResult<T> exeucteRequest(RequestEntity requestEntity, ExecutionResult<T> executionResult) throws ExecutionException, IOException {
         Request request = requestEntity.getRequest();
         Executor executor = super.getContext().getExecutor();
 
@@ -184,15 +199,13 @@ public class BaseRequestExecutor<T extends RequestEntity> extends AbstractLoopab
         Response response = executor.execute(request);
         HttpResponse httpResponse = response.returnResponse();
 
-        executionResult.setContent(new ContentResponseHandler().handleResponse(httpResponse));
-        executionResult.setHttpResponse(httpResponse);
         ResponseLogInfo responseLogInfo = requestEntity.getResponseLogInfo();
         if (responseLogInfo.isShowStatus()) {
             logger.info(requestEntity.getName()+" response status:"+httpResponse.getStatusLine());
         }
 
         if(responseLogInfo.isShowResult()){
-            logger.info(requestEntity.getName()+" response result:\n"+EntityUtils.toString(httpResponse.getEntity()));
+            logger.info(requestEntity.getName()+" response result:\n"+ EntityUtils.toString(httpResponse.getEntity()));
         }
 
         if(responseLogInfo.isShowSetCookies()){
@@ -200,6 +213,12 @@ public class BaseRequestExecutor<T extends RequestEntity> extends AbstractLoopab
             for (Header header : headers) {
                 logger.info("set cookie < "+header+" >");
             }
+        }
+
+        executionResult.setHttpResponse(httpResponse);
+        int statusCode = httpResponse.getStatusLine().getStatusCode();
+        if(statusCode<300 || statusCode>400){
+            executionResult.setContent(new ContentResponseHandler().handleResponse(httpResponse));
         }
         return executionResult;
     }
