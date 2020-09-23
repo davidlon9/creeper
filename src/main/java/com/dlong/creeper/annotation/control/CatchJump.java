@@ -7,7 +7,9 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.FIELD,ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
+@CatchStrategy
 public @interface CatchJump {
     String jumpTo();
     Class[] exceptions() default {};
+    String msg() default "";
 }

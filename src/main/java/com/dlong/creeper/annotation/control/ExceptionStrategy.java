@@ -1,16 +1,16 @@
 package com.dlong.creeper.annotation.control;
 
-public class FailedStrategy {
+public class ExceptionStrategy {
     public static final int defualtFailedWait=50;
-    public static final FailedStrategy BACK=new FailedStrategy("BACK");
-    public static final FailedStrategy FORWARD=new FailedStrategy("FORWARD");
-    public static final FailedStrategy RESTART=new FailedStrategy("RESTART");
-    public static final FailedStrategy RETRY=new FailedStrategy("RETRY");
-    public static final FailedStrategy TERMINATE=new FailedStrategy("TERMINATE");
+    public static final ExceptionStrategy BACK=new ExceptionStrategy("BACK");
+    public static final ExceptionStrategy FORWARD=new ExceptionStrategy("FORWARD");
+    public static final ExceptionStrategy RESTART=new ExceptionStrategy("RESTART");
+    public static final ExceptionStrategy RETRY=new ExceptionStrategy("RETRY");
+    public static final ExceptionStrategy TERMINATE=new ExceptionStrategy("TERMINATE");
 
-    public static final FailedStrategy MUTABLE=new FailedStrategy("MUTABLE");
+    public static final ExceptionStrategy MUTABLE=new ExceptionStrategy("MUTABLE");
 
-    public static final FailedStrategy SUCCESS=new FailedStrategy("SUCCESS");
+    public static final ExceptionStrategy SUCCESS=new ExceptionStrategy("SUCCESS");
 
     static {
         RETRY.setWait(defualtFailedWait);
@@ -20,7 +20,7 @@ public class FailedStrategy {
     private Integer to;
     private Integer wait=defualtFailedWait;
 
-    private FailedStrategy(String name, Integer to) {
+    private ExceptionStrategy(String name, Integer to) {
         this.name = name;
         this.to = to;
     }
@@ -33,7 +33,7 @@ public class FailedStrategy {
         this.wait = wait;
     }
 
-    private FailedStrategy(String name) {
+    private ExceptionStrategy(String name) {
         this.name = name;
     }
 
@@ -49,12 +49,12 @@ public class FailedStrategy {
         return name;
     }
 
-    public static FailedStrategy JUMP(Integer to){
-        return new FailedStrategy("JUMP",to);
+    public static ExceptionStrategy JUMP(Integer to){
+        return new ExceptionStrategy("JUMP",to);
     }
 
     @Override
     public String toString() {
-        return "FailedStrategy["+name+"]";
+        return "ExceptionStrategy["+name+"]";
     }
 }

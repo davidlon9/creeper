@@ -7,6 +7,8 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.FIELD,ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
+@CatchStrategy
 public @interface CatchRestart {
     Class[] exceptions() default {};
+    String msg() default "";
 }
