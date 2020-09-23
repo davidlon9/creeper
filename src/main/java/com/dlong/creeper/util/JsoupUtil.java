@@ -2,6 +2,7 @@ package com.dlong.creeper.util;
 
 public class JsoupUtil {
     public static String getVarValue(String html,String varName){
+        if(html == null) return null;
         String[] split = html.split("\n");
         for (String line : split) {
             if (JsoupUtil.lineIsVarPair(line, varName)) {
@@ -12,9 +13,11 @@ public class JsoupUtil {
     }
 
     public static String getVarValue(String varpair){
-        String[] split = varpair.split("=");
-        if (split.length==2) {
-            return removeQWrap(removeLastSemicolon(split[1].trim()));
+        if(varpair == null) return null;
+        int i = varpair.indexOf("=");
+        if(i!=-1){
+            String e = varpair.substring(i+1,varpair.length());
+            return removeQWrap(removeLastSemicolon(e.trim()));
         }
         return null;
     }
@@ -47,9 +50,5 @@ public class JsoupUtil {
             return str.substring(1,str.length()-1);
         }
         return str;
-    }
-
-    public static void main(String[] args) {
-        System.out.println(removeLastSemicolon("abc;asbasd; "));
     }
 }
