@@ -8,15 +8,15 @@ import com.dlong.creeper.model.seq.SequentialEntity;
 
 import java.io.IOException;
 
-public interface ChainExecutor<T extends RequestChainEntity> extends SequentialExecutor<T>{
+public interface ChainExecutor<T extends RequestChainEntity> extends SequentialExecutor<T> {
     /**
      * 执行context中，当前处理中的Chain，默认是根Chain
      * @return
      */
-    ChainExecutionResult<T> execute();
+    ExecutionResult<T> execute();
 
     @Override
-    ChainExecutionResult<T> execute(T t) throws IOException, ExecutionException;
+    ExecutionResult<T> execute(T t) throws IOException, ExecutionException;
 
     /**
      * 执行单个SequentialEntity

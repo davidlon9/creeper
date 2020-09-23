@@ -5,7 +5,6 @@ import com.dlong.creeper.execution.base.ChainExecutor;
 import com.dlong.creeper.execution.base.ContextExecutor;
 import com.dlong.creeper.execution.base.RequestExecutor;
 import com.dlong.creeper.execution.context.ChainContext;
-import com.dlong.creeper.model.result.ChainExecutionResult;
 import com.dlong.creeper.model.result.ExecutionResult;
 import com.dlong.creeper.model.seq.RequestChainEntity;
 import com.dlong.creeper.model.seq.RequestEntity;
@@ -42,7 +41,7 @@ public class ChainContextExecutor implements ContextExecutor {
     }
 
     @Override
-    public ChainExecutionResult exeucteChain(String name) {
+    public ExecutionResult exeucteChain(String name) {
         SequentialEntity seq = chainContext.getSequntialFinder().findSeqByName(name);
         Assert.isInstanceOf(RequestChainEntity.class,seq);
         RequestChainEntity chainEntity = (RequestChainEntity) seq;
@@ -56,7 +55,7 @@ public class ChainContextExecutor implements ContextExecutor {
     }
 
     @Override
-    public ChainExecutionResult exeucteRootChain() {
+    public ExecutionResult exeucteRootChain() {
         ChainExecutor executor = ExecutorFactory.createChainExecutor(chainContext.getRootChain().getClass(), chainContext);
         return executor.execute();
     }

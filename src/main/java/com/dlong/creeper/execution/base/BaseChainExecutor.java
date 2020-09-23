@@ -1,7 +1,9 @@
 package com.dlong.creeper.execution.base;
 
+import com.dlong.creeper.control.RestartAction;
 import com.dlong.creeper.exception.ExecutionException;
 import com.dlong.creeper.exception.RuntimeExecuteException;
+import com.dlong.creeper.execution.ChainContextExecutor;
 import com.dlong.creeper.execution.ExecutorFactory;
 import com.dlong.creeper.execution.context.ChainContext;
 import com.dlong.creeper.execution.registry.DefaultChainResultHandlerRegistry;
@@ -12,9 +14,14 @@ import com.dlong.creeper.model.result.ExecutionResult;
 import com.dlong.creeper.model.seq.RequestChainEntity;
 import com.dlong.creeper.model.seq.RequestEntity;
 import com.dlong.creeper.model.seq.SequentialEntity;
+import com.dlong.creeper.util.SSLUtil;
+import org.apache.http.client.fluent.Executor;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class BaseChainExecutor<T extends RequestChainEntity> extends AbstractLoopableExecutor<T> implements ChainExecutor<T> {
@@ -34,14 +41,14 @@ public class BaseChainExecutor<T extends RequestChainEntity> extends AbstractLoo
     }
 
     @Override
-    public ChainExecutionResult<T> execute() {
+    public ExecutionResult<T> execute() {
         return this.execute((T) getRootChain());
     }
 
-    public ChainExecutionResult<T> execute(T chainEntity){
+    public ExecutionResult<T> execute(T chainEntity){
         try {
             if (isInRoot(chainEntity)) {
-                return (ChainExecutionResult<T>) super.execute(chainEntity);
+                return super.execute(chainEntity);
             }else{
                 throw new RuntimeExecuteException("no chain found in context, executor can't execute "+chainEntity+" in current execution context");
             }
@@ -82,7 +89,11 @@ public class BaseChainExecutor<T extends RequestChainEntity> extends AbstractLoo
      */
     public ChainExecutionResult<T> doExecute(T chainEntity) throws IOException, ExecutionException {
         ChainExecutionResult<T> executionResult = new ChainExecutionResult<>(chainEntity);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date startDate = new Date();
+
         ChainContext context = super.getContext();
+
         executionResult.setContext(context);
 
         SequentialEntity firstSeq = context.getSequntialFinder().findFirstSeqByFixedIndex(chainEntity);
@@ -95,20 +106,22 @@ public class BaseChainExecutor<T extends RequestChainEntity> extends AbstractLoo
         //在Chain中从第一个Sequential开始递归执行
         executeSeqEntity(executionResult,firstSeq);
 
-        ExecutionResult finalResult = executionResult.getFinalResult();
-        if(finalResult.isFailed()){
-            executionResult.setFailed(true);
-        }
         //调用handlerMethod——>多线程处理
         getChainExecutionResultHandlerRegistry().invokeAfterExecutionHandler(executionResult, context);
 
         getExecutionResultResolverRegistry().afterExecuteResolve(executionResult, context);
 
+        if(executionResult.getActionResult() instanceof RestartAction){
+            ChainContext chainContext = this.getContext();
+            chainContext.setExecutor(Executor.newInstance(SSLUtil.getIgnoreVerifySSLHttpClient()));
+            ChainContextExecutor chainContextExecutor = new ChainContextExecutor(chainContext);
+            return (ChainExecutionResult<T>) chainContextExecutor.exeucteRootChain();
+        }
         if(executionResult.isFailed()){
             logger.error("Chain "+chainEntity+" execute failed!");
         }
         executionResult.setExecuted(true);
-        logger.info("End Chain "+chainEntity+"\n");
+        logger.info("End Chain "+chainEntity+" "+dateFormat.format(startDate)+" to "+dateFormat.format(new Date())+" use time "+(System.currentTimeMillis()-startDate.getTime())+"\n");
         return executionResult;
     }
 
@@ -122,9 +135,10 @@ public class BaseChainExecutor<T extends RequestChainEntity> extends AbstractLoo
         }
 
         //添加至ChainResult
-        if(innerResult==null){
+        if(innerResult == null){
             innerResult = new ExecutionResult(sequentialEntity);
         }
+
         executionResult.addChainResult(innerResult);
 
         SequentialEntity nextSeq = innerResult.getNextSeq();
