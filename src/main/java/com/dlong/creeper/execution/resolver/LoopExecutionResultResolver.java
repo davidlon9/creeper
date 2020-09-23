@@ -1,6 +1,5 @@
 package com.dlong.creeper.execution.resolver;
 
-import com.dlong.creeper.annotation.control.FailedStrategy;
 import com.dlong.creeper.control.MoveAction;
 import com.dlong.creeper.exception.ExecutionException;
 import com.dlong.creeper.execution.context.ChainContext;
@@ -23,7 +22,6 @@ public class LoopExecutionResultResolver extends BaseExecutionResultResolver {
         beforeResultResolvers.put(MoveAction.class,new MoveStrategyBeforeResultResolver());
 
         afterResultResolvers.put(Boolean.class,new SimpleLoopAfterResultResolver());
-        afterResultResolvers.put(FailedStrategy.class,new FailedStrategyAfterResultResolver());
         afterResultResolvers.put(MoveAction.class,new MoveStrategyAfterResultResolver());
         afterResultResolvers.put(String.class,new StringAfterResultResolver());
     }
