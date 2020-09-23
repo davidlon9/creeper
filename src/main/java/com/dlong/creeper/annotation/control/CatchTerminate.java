@@ -7,6 +7,6 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.FIELD,ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface FailedForward {
-   long value() default -1L;
+public @interface CatchTerminate {
+    Class[] exceptions() default {};
 }

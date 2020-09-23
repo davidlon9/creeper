@@ -7,6 +7,7 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.FIELD,ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface FailedTerminate {
-   boolean terminateAll() default false;
+public @interface CatchBack {
+    int interval() default 0;
+    Class[] exceptions() default {};
 }

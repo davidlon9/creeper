@@ -7,6 +7,6 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.FIELD,ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface FailedRetry {
-   int interval() default 50;
+public @interface CatchRestart {
+    Class[] exceptions() default {};
 }

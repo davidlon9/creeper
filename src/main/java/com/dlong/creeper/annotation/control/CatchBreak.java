@@ -7,6 +7,6 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.FIELD,ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface FailedRestart {
-   int value() default -1;
+public @interface CatchBreak {
+    Class[] exceptions() default {};
 }

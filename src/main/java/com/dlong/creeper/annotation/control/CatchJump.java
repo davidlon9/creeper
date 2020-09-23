@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.FIELD,ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface FailedBack {
-   int value() default -1;
-   int maxCount() default -1;
+public @interface CatchJump {
+    String jumpTo();
+    Class[] exceptions() default {};
 }
