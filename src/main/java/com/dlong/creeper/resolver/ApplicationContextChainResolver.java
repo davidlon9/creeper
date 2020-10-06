@@ -1,32 +1,42 @@
-package com.davidlong.http.resolver;
+package com.dlong.creeper.resolver;
 
-import com.davidlong.http.model.seq.RequestChainEntity;
-import com.davidlong.http.model.seq.SequentialEntity;
+import com.dlong.creeper.model.seq.RequestChainEntity;
+import com.dlong.creeper.model.seq.SequentialEntity;
+import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 import java.util.List;
 
-public class ApplicationContextChainResolver extends ChainsMappingResolver{
+public class ApplicationContextChainResolver extends ChainsMappingResolver implements ApplicationContextAware{
     private ApplicationContext beanContext;
 
-    public ApplicationContextChainResolver(Class<?> rootClass,ApplicationContext beanContext) {
-        super(rootClass);
-        this.beanContext = beanContext;
+    public ApplicationContextChainResolver() {
     }
 
-    public ApplicationContextChainResolver(Class<?> rootClass, boolean fixIndex,ApplicationContext beanContext) {
-        this(rootClass,beanContext);
-        super.setFixIndex(fixIndex);
+    public ApplicationContextChainResolver(boolean fixIndex) {
+        super(fixIndex);
     }
 
     @Override
-    public RequestChainEntity resolve() {
-        RequestChainEntity chainEntity = super.resolve();
-        setBeanForChain(chainEntity);
+    public RequestChainEntity resolve(Class chainClass) {
+        RequestChainEntity chainEntity = super.resolve(chainClass);
+        if(this.beanContext!=null){
+            setBeanForChain(chainEntity);
+        }
         return chainEntity;
     }
 
-    public void setBeanForChain(RequestChainEntity chainEntity){
+    @Override
+    public RequestChainEntity resolve(Class chainClass, RequestChainEntity parent) {
+        RequestChainEntity chainEntity = super.resolve(chainClass, parent);
+        if(this.beanContext!=null){
+            setBeanForChain(chainEntity);
+        }
+        return chainEntity;
+    }
+
+    private void setBeanForChain(RequestChainEntity chainEntity){
         Object beanInstance = this.beanContext.getBean(chainEntity.getChainClass());
         if(beanInstance != null){
             chainEntity.setChainInstance(beanInstance);
@@ -39,5 +49,10 @@ public class ApplicationContextChainResolver extends ChainsMappingResolver{
                 }
             }
         }
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.beanContext = applicationContext;
     }
 }

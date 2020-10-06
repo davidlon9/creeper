@@ -9,7 +9,7 @@ import com.dlong.creeper.model.log.ResponseLogInfo;
 import java.util.*;
 
 public class RequestChainEntity extends LoopableEntity{
-    private Class chainClass;
+    private Class<?> chainClass;
     private Object chainInstance;
     private List<SequentialEntity> sequentialList;
     private RequestLogInfo requestLogInfo;
@@ -24,11 +24,11 @@ public class RequestChainEntity extends LoopableEntity{
         this.sequentialList = sequentialList;
     }
 
-    public Class getChainClass() {
+    public Class<?> getChainClass() {
         return chainClass;
     }
 
-    public void setChainClass(Class chainClass) {
+    public void setChainClass(Class<?> chainClass) {
         this.chainClass = chainClass;
     }
 

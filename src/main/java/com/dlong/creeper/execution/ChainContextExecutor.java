@@ -9,6 +9,7 @@ import com.dlong.creeper.model.result.ExecutionResult;
 import com.dlong.creeper.model.seq.RequestChainEntity;
 import com.dlong.creeper.model.seq.RequestEntity;
 import com.dlong.creeper.model.seq.SequentialEntity;
+import com.dlong.creeper.resolver.ChainResolver;
 import com.dlong.creeper.resolver.ChainsMappingResolver;
 import org.springframework.util.Assert;
 
@@ -17,12 +18,18 @@ import java.io.IOException;
 public class ChainContextExecutor implements ContextExecutor {
     private ChainContext chainContext;
 
+    private ChainResolver chainResolver;
+
     public ChainContextExecutor(ChainContext context) {
         this.chainContext = context;
     }
 
     public ChainContextExecutor(Class entityClass) {
-        RequestChainEntity chainEntity = new ChainsMappingResolver().resolve(entityClass);
+        this(entityClass,new ChainsMappingResolver());
+    }
+
+    public ChainContextExecutor(Class entityClass,ChainResolver chainResolver) {
+        RequestChainEntity chainEntity = chainResolver.resolve(entityClass);
         this.chainContext = new ChainContext(chainEntity);
     }
 
@@ -65,5 +72,12 @@ public class ChainContextExecutor implements ContextExecutor {
         return chainContext;
     }
 
+    public ChainResolver getChainResolver() {
+        return chainResolver;
+    }
+
+    public void setChainResolver(ChainResolver chainResolver) {
+        this.chainResolver = chainResolver;
+    }
 
 }
