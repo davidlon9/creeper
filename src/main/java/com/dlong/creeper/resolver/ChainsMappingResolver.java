@@ -36,11 +36,11 @@ public class ChainsMappingResolver implements ChainResolver{
         this.fixIndex = fixIndex;
     }
 
-    public RequestChainEntity resolve(Class chainClass) {
+    public RequestChainEntity resolve(Class<?> chainClass) {
         return resolve(chainClass,null);
     }
 
-    public RequestChainEntity resolve(Class chainClass,RequestChainEntity parent) {
+    public RequestChainEntity resolve(Class<?> chainClass,RequestChainEntity parent) {
         RequestChainEntity requestChainEntity = null;
         try {
             logger.info("Start resolving Chain class "+ LogNames.chain(chainClass));
