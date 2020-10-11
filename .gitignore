@@ -6,11 +6,12 @@ target/
 creeper.iml
 
 # master ignore
-#jar/
-#doc/
-#records/
-#src/main/java/demo
-#src/main/java/test
+jar/
+doc/
+records/
+src/main/java/demo
+src/main/java/test
 
 # demo mode
-records/
+#jar/
+#records/
