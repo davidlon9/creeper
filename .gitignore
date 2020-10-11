@@ -4,3 +4,10 @@ target/
 # ignore idea files
 .idea/
 creeper.iml
+
+# master ignore 
+jar/
+doc/
+records/
+src/main/java/demo
+src/main/java/test
