@@ -13,7 +13,4 @@ creeper.iml
 #src/main/java/test
 
 # demo mode
-jar/
-doc/
-src/main/java/demo
-src/main/java/test
+records/
