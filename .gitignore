@@ -5,9 +5,15 @@ target/
 .idea/
 creeper.iml
 
-# master ignore 
+# master ignore
 jar/
 doc/
 records/
 src/main/java/demo
 src/main/java/test
+
+# demo mode
+#jar/
+#doc/
+#src/main/java/demo
+#src/main/java/test
