@@ -1,4 +1,4 @@
-package com.dlong.creeper.test;
+package test;
 
 public class TestThread {
     public static void main(String[] args) {

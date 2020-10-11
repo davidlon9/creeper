@@ -1,4 +1,4 @@
-package com.dlong.creeper.test;
+package test;
 
 import com.alibaba.fastjson.JSONObject;
 import com.dlong.creeper.util.FileUtil;

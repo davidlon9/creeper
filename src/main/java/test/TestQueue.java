@@ -1,4 +1,4 @@
-package com.dlong.creeper.test;
+package test;
 
 import com.dlong.creeper.execution.base.BaseChainContextExecutor;
 import com.dlong.creeper.execution.context.ChainContext;

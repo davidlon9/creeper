@@ -1,4 +1,4 @@
-package com.dlong.creeper.test;
+package test;
 
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;

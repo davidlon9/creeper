@@ -1,4 +1,4 @@
-package com.dlong.creeper.test;
+package test;
 
 import com.dlong.creeper.execution.context.ContextRootObject;
 import org.springframework.expression.ParserContext;
