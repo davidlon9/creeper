@@ -5,7 +5,7 @@ target/
 .idea/
 creeper.iml
 
-# master ignore
+# master mode
 jar/
 doc/
 records/
