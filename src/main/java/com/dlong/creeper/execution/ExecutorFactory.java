@@ -42,6 +42,7 @@ public class ExecutorFactory {
         registerExecutor(WhileLooper.class, WhileExecuteLooper.class);
         registerExecutor(ScheduleLooper.class, ScheduleExecuteLooper.class);
         registerExecutor(ForEachLooper.class, ForEachExecuteLooper.class);
+        registerExecutor(ParallelForEachLooper.class, ParallelForEachExecuteLooper.class);
         registerExecutor(ForIndexLooper.class, ForIndexExecuteLooper.class);
     }
 

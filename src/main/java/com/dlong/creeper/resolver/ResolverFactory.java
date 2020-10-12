@@ -1,5 +1,6 @@
 package com.dlong.creeper.resolver;
 
+import com.dlong.creeper.annotation.control.looper.ParallelForEach;
 import com.dlong.creeper.annotation.control.recorder.DatabaseRecordsIgnore;
 import com.dlong.creeper.annotation.control.recorder.FileRecordsIgnore;
 import com.dlong.creeper.annotation.control.looper.ForEach;
@@ -41,6 +42,7 @@ public class ResolverFactory {
 
         looperAnnoResolverClassMap.put(ForIndex.class, ForIndexLooperResolver.class);
         looperAnnoResolverClassMap.put(ForEach.class, ForEachLooperResolver.class);
+        looperAnnoResolverClassMap.put(ParallelForEach.class, ParallelForEachLooperResolver.class);
         looperAnnoResolverClassMap.put(While.class, WhileLooperResolver.class);
         looperAnnoResolverClassMap.put(Scheduler.class, ScheduleLooperResolver.class);
 
