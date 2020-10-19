@@ -117,9 +117,9 @@ public abstract class BaseExecuteLooper<T extends LoopableEntity> implements Exe
     }
 
     public static boolean isBreak(ExecutionResult innerResult) {
-        if (innerResult.isFailed()) {
-            return true;
-        }
+//        if (innerResult.isFailed()) {
+//            return true;
+//        }
         boolean isBreak = false;
         if (innerResult.getActionResult() != null && BreakAction.class.equals(innerResult.getActionResult().getClass())) {
             isBreak = true;
