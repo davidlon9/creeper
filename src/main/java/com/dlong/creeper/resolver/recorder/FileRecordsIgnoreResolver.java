@@ -1,8 +1,7 @@
 package com.dlong.creeper.resolver.recorder;
 
-import com.dlong.creeper.annotation.control.recorder.FileRecordsIgnore;
+import com.dlong.creeper.annotation.control.recorder.FileUrlRecorder;
 import com.dlong.creeper.exception.AnnotationNotFoundException;
-import com.dlong.creeper.model.seq.recorder.FileUrlRecorder;
 import com.dlong.creeper.model.seq.recorder.UrlRecorder;
 import com.dlong.creeper.resolver.base.AnnotationResolver;
 import com.dlong.creeper.util.FileUtil;
@@ -17,15 +16,15 @@ public class FileRecordsIgnoreResolver extends AnnotationResolver implements Rec
     public static final String DEFAULT_RECORD_FILE_NAME = "all.txt";
 
     public FileRecordsIgnoreResolver(AnnotatedElement target) {
-        super(target,FileRecordsIgnore.class);
+        super(target,FileUrlRecorder.class);
     }
 
     @Override
     public UrlRecorder resolve() throws AnnotationNotFoundException {
         Annotation annotation = super.resolveAnnotation();
-        FileRecordsIgnore fileRecordsIgnore = (FileRecordsIgnore) annotation;
-        if(fileRecordsIgnore != null){
-            String path = fileRecordsIgnore.filePath();
+        FileUrlRecorder fileRecorder = (FileUrlRecorder) annotation;
+        if(fileRecorder != null){
+            String path = fileRecorder.filePath();
             File file;
             if(path.equals("/")){
                 file = new File(System.getProperty("user.dir") + File.separator + DEFAULT_RECORD_FILE_DIR_NAME + File.separator + DEFAULT_RECORD_FILE_NAME);
@@ -37,10 +36,9 @@ public class FileRecordsIgnoreResolver extends AnnotationResolver implements Rec
             }
             try {
                 FileUtil.createIfNotExists(file);
-                FileUrlRecorder fileUrlRecorder = new FileUrlRecorder(file);
-                fileUrlRecorder.readUrlRecords();
+                com.dlong.creeper.model.seq.recorder.FileUrlRecorder fileUrlRecorder = new com.dlong.creeper.model.seq.recorder.FileUrlRecorder(file);
                 fileUrlRecorder.setRecordFile(file);
-                fileUrlRecorder.setPerIterateTimesUpdate(fileRecordsIgnore.perIterateTimesUpdate());
+                fileUrlRecorder.setPerIterateTimesUpdate(fileRecorder.perIterateTimesUpdate());
                 return fileUrlRecorder;
             } catch (IOException e) {
                 e.printStackTrace();

@@ -6,9 +6,12 @@ import com.dlong.creeper.exception.ExecutionException;
 import com.dlong.creeper.exception.RuntimeExecuteException;
 import com.dlong.creeper.execution.base.*;
 import com.dlong.creeper.execution.context.ChainContext;
+import com.dlong.creeper.execution.handler.RecorderLoopExecutionResultHandler;
 import com.dlong.creeper.execution.registry.base.LoopExecutionResultHandlerRegistry;
 import com.dlong.creeper.model.result.ExecutionResult;
 import com.dlong.creeper.model.result.LoopExecutionResult;
+import com.dlong.creeper.model.seq.RequestEntity;
+import com.dlong.creeper.model.seq.control.PredictableUrlLooper;
 import com.dlong.creeper.model.seq.multi.Multiple;
 import com.dlong.creeper.model.seq.LoopableEntity;
 import com.dlong.creeper.model.seq.control.Looper;
@@ -16,6 +19,8 @@ import org.apache.log4j.Logger;
 import org.springframework.util.Assert;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class BaseExecuteLooper<T extends LoopableEntity> implements ExecuteLooper<T>, Cloneable, ParallelThreadHandleControl {
     private static Logger logger = Logger.getLogger(ForIndexExecuteLooper.class);
@@ -28,19 +33,8 @@ public abstract class BaseExecuteLooper<T extends LoopableEntity> implements Exe
         this.executor = executor;
         this.looperClass = looperClass;
         this.loopExecutionResultHandlerRegistry = new LoopExecutionResultHandlerRegistry();
-    }
-
-    @Override
-    public BaseExecuteLooper clone() throws CloneNotSupportedException {
-        BaseExecuteLooper executeLooper = (BaseExecuteLooper) super.clone();
-        if (!(executor instanceof AbstractLoopableExecutor)) {
-            throw new RuntimeExecuteException("Execution not support for executor " + executor);
-        }
-
-        AbstractLoopableExecutor abstractLoopableExecutor = (AbstractLoopableExecutor) this.executor;
-        LoopableExecutor clonedExecutor = abstractLoopableExecutor.clone();
-        executeLooper.setExecutor(clonedExecutor);
-        return executeLooper;
+        //过滤掉可预测Url的Looper中已被记录的items
+        this.loopExecutionResultHandlerRegistry.registerExecutionHandler(new RecorderLoopExecutionResultHandler());
     }
 
     /**
@@ -55,6 +49,9 @@ public abstract class BaseExecuteLooper<T extends LoopableEntity> implements Exe
 
         LoopExecutionResult<T> result = new LoopExecutionResult<>(loopableEntity);
         ChainContext context = getContext();
+        //预测循环的所有url
+        predictItemUrlsForLooper(result,context);
+        //过滤掉预测Url的Looper中已被记录的items
         this.loopExecutionResultHandlerRegistry.invokeBeforeExecutionHandler(result, context);
 
         if (result.isSkipExecute()) {
@@ -129,6 +126,25 @@ public abstract class BaseExecuteLooper<T extends LoopableEntity> implements Exe
         return isBreak;
     }
 
+    public static <T> List<List<T>> splitList(List<T> list, int len) {
+        if (list == null || len < 1) {
+            return null;
+        }
+        if(list.size()==0){
+            return new ArrayList<>();
+        }
+        List<List<T>> result = new ArrayList<>();
+
+        int size = list.size();
+        int count = (size + len - 1) / len;
+
+        for (int i = 0; i < count; i++) {
+            List<T> subList = list.subList(i * len, ((i + 1) * len > size ? size : len * (i + 1)));
+            result.add(subList);
+        }
+        return result;
+    }
+
     public static boolean isMultipleShutdown(Multiple multiple) {
         return multiple != null && multiple.isShutdown();
     }
@@ -143,11 +159,41 @@ public abstract class BaseExecuteLooper<T extends LoopableEntity> implements Exe
         return contextExecutor.getContext();
     }
 
+    @Override
+    public BaseExecuteLooper clone() throws CloneNotSupportedException {
+        BaseExecuteLooper executeLooper = (BaseExecuteLooper) super.clone();
+        if (!(executor instanceof AbstractLoopableExecutor)) {
+            throw new RuntimeExecuteException("Execution not support for executor " + executor);
+        }
+
+        AbstractLoopableExecutor abstractLoopableExecutor = (AbstractLoopableExecutor) this.executor;
+        LoopableExecutor clonedExecutor = abstractLoopableExecutor.clone();
+        executeLooper.setExecutor(clonedExecutor);
+        return executeLooper;
+    }
+
+    public void predictItemUrlsForLooper(LoopExecutionResult<T> result, ChainContext context) throws ExecutionException{
+        T loopableEntity = result.getOrginalSeq();
+        //只能预测Request对象
+        if(loopableEntity instanceof RequestEntity){
+            Looper looper = loopableEntity.getLooper();
+            if (looper instanceof PredictableUrlLooper) {
+                //支持预测的looper
+                PredictableUrlLooper predictableUrlLooper = (PredictableUrlLooper) looper;
+                //子类实现预测url，在执行前提前获取所有即将遍历的url集合
+                doPredict(result,context);
+                predictableUrlLooper.setPredicted(true);
+            }
+        }
+    }
+
     public void setExecutor(LoopableExecutor<T> executor) {
         this.executor = executor;
     }
 
     public abstract LoopExecutionResult<T> doLoop(T loopableEntity) throws ExecutionException, IOException;
+
+    public abstract void doPredict(LoopExecutionResult<T> result, ChainContext context) throws ExecutionException;
 
     @Override
     public boolean isIgnoreParallelThreadHandle() {

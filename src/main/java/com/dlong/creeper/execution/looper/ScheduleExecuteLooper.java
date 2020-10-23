@@ -3,6 +3,7 @@ package com.dlong.creeper.execution.looper;
 import com.dlong.creeper.annotation.control.ExecutionMode;
 import com.dlong.creeper.exception.ExecutionException;
 import com.dlong.creeper.execution.base.LoopableExecutor;
+import com.dlong.creeper.execution.context.ChainContext;
 import com.dlong.creeper.model.result.ExecutionResult;
 import com.dlong.creeper.model.result.LoopExecutionResult;
 import com.dlong.creeper.model.seq.LoopableEntity;
@@ -86,6 +87,11 @@ public class ScheduleExecuteLooper<T extends LoopableEntity> extends BaseExecute
             e.printStackTrace();
         }
         return loopResult;
+    }
+
+    @Override
+    public void doPredict(LoopExecutionResult<T> result, ChainContext context) throws ExecutionException {
+
     }
 
     private CalendarIntervalTrigger buildTrigger(ScheduleLooper.Trigger looperTrigger, Long startTime, Long endTime, String name, String groupName) {

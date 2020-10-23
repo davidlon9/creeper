@@ -2,7 +2,6 @@ package com.dlong.creeper.resolver.looper;
 
 import com.dlong.creeper.annotation.control.looper.ParallelForEach;
 import com.dlong.creeper.exception.AnnotationNotFoundException;
-import com.dlong.creeper.model.seq.control.ForEachLooper;
 import com.dlong.creeper.model.seq.control.ParallelForEachLooper;
 import org.springframework.core.annotation.AnnotationUtils;
 

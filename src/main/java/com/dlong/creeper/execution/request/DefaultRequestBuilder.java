@@ -16,7 +16,6 @@ import org.apache.http.client.fluent.Request;
 import org.apache.http.message.BasicHeader;
 import org.apache.log4j.Logger;
 
-import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,7 +66,7 @@ public class DefaultRequestBuilder implements HttpRequestBuilder {
      * @param requestInfo
      * @return
      */
-    public String getParsedUrl(RequestInfo requestInfo){
+    public String buildUrl(RequestInfo requestInfo){
         String url = requestInfo.getUrl();
         //解析url中的表达式
         url = contextStore.getExpressionParser().parse(url, String.class);
@@ -89,7 +88,7 @@ public class DefaultRequestBuilder implements HttpRequestBuilder {
 
         String method = requestInfo.getHttpMethod().toUpperCase();
 
-        String url = getParsedUrl(requestInfo);
+        String url = buildUrl(requestInfo);
 
         Request request = createRequest(method, url);
         if(!method.equals("GET")){

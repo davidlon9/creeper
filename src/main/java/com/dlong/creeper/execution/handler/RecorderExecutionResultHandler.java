@@ -28,10 +28,18 @@ public class RecorderExecutionResultHandler implements RequestExecutionResultHan
     public void beforeExecute(ExecutionResult<? extends RequestEntity> executionResult, ChainContext context) throws ExecutionException {
         RequestEntity requestEntity = executionResult.getOrginalSeq();
         UrlRecorder recorder = requestEntity.getRecorder();
-        if (recorder == null) {
+        //没有recorder，或者有recorder也有looper，则返回
+        if (recorder == null || requestEntity.getLooper()!=null) {
             return;
         }
-        String url = new DefaultRequestBuilder(context).getParsedUrl(requestEntity.getRequestInfo());
+        if(!recorder.isReaded()){
+            try {
+                recorder.readUrlRecords(context);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        String url = new DefaultRequestBuilder(context).buildUrl(requestEntity.getRequestInfo());
         if (recorder.isUrlRecorded(url)) {
             logger.info("url " + url + " is already recorded!");
             //继续下一循环
@@ -54,7 +62,7 @@ public class RecorderExecutionResultHandler implements RequestExecutionResultHan
         if (!needRecordActions.contains(actionResult.getClass())) {
             return;
         }
-        String url = new DefaultRequestBuilder(context).getParsedUrl(requestEntity.getRequestInfo());
+        String url = new DefaultRequestBuilder(context).buildUrl(requestEntity.getRequestInfo());
         if (recorder instanceof FileUrlRecorder) {
             FileUrlRecorder fileUrlRecorder = (FileUrlRecorder) recorder;
             recorder.addUrlRecord(url);
@@ -62,7 +70,7 @@ public class RecorderExecutionResultHandler implements RequestExecutionResultHan
             if (fileUrlRecorder.isIterateToCount()) {
                 try {
                     logger.info("writing " + fileUrlRecorder.getPerIterateTimesUpdate() + " url to " + fileUrlRecorder.getRecordFile().getName() + " , current file url size is " + fileUrlRecorder.getCurrentIterateCount());
-                    fileUrlRecorder.writeUrlRecords();
+                    fileUrlRecorder.writeUrlRecords(context);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

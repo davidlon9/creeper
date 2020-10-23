@@ -1,7 +1,7 @@
 package com.dlong.creeper.model.seq.control;
 
 
-public class ForEachLooper extends Looper {
+public class ForEachLooper extends PredictableUrlLooper {
     private String itemsContextKey;
     private String itemName;
 

@@ -5,4 +5,6 @@ import org.apache.http.client.fluent.Request;
 
 public interface HttpRequestBuilder{
     Request buildRequest(RequestInfo requestInfo);
+
+    String buildUrl(RequestInfo requestInfo);
 }

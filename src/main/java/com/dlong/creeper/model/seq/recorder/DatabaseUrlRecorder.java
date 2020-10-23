@@ -2,6 +2,7 @@ package com.dlong.creeper.model.seq.recorder;
 
 import com.dlong.creeper.exception.MethodNotSupportException;
 import com.dlong.creeper.exception.RuntimeExecuteException;
+import com.dlong.creeper.execution.context.ChainContext;
 
 import java.io.IOException;
 import java.sql.*;
@@ -44,7 +45,8 @@ public class DatabaseUrlRecorder extends AbstractUrlRecorder {
         }
     }
 
-    public Set<String> readUrlRecords() throws IOException {
+    @Override
+    protected Set<String> doReadRecords(ChainContext context) throws IOException {
         Connection conn=null;
         Statement statement=null;
         ResultSet rs=null;
@@ -80,7 +82,7 @@ public class DatabaseUrlRecorder extends AbstractUrlRecorder {
         return DriverManager.getConnection(dataSource.getUrl(), dataSource.getUsername(), dataSource.getPassword());
     }
 
-    public void writeUrlRecords() throws IOException {
+    public void writeUrlRecords(ChainContext context) throws IOException {
         throw new MethodNotSupportException();
     }
 

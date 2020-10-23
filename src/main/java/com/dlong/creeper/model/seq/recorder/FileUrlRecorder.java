@@ -1,6 +1,8 @@
 package com.dlong.creeper.model.seq.recorder;
 
+import com.dlong.creeper.execution.context.ChainContext;
 import com.dlong.creeper.util.FileUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -53,7 +55,7 @@ public class FileUrlRecorder extends AbstractUrlRecorder {
         this.currentIterateCount++;
     }
 
-    public void writeUrlRecords() throws IOException {
+    public void writeUrlRecords(ChainContext context) throws IOException {
         Set<String> historicalUrls = super.getUrlRecords();
         StringBuilder sb=new StringBuilder();
         if (historicalUrls.size()>0) {
@@ -64,7 +66,8 @@ public class FileUrlRecorder extends AbstractUrlRecorder {
         FileUtil.write(this.recordFile,sb.toString());
     }
 
-    public Set<String> readUrlRecords() throws IOException {
+    @Autowired
+    public Set<String> doReadRecords(ChainContext context) throws IOException {
         currentIterateCount = 0;
         BufferedReader reader = new BufferedReader(new FileReader(this.recordFile));
         super.getUrlRecords().clear();

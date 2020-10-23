@@ -1,7 +1,7 @@
 package com.dlong.creeper.model.seq.control;
 
 
-public class ForIndexLooper extends Looper {
+public class ForIndexLooper extends PredictableUrlLooper {
     private String indexName="index";
     private String start;
     private String end;

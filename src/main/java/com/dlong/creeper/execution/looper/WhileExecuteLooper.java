@@ -2,6 +2,7 @@ package com.dlong.creeper.execution.looper;
 
 import com.dlong.creeper.exception.ExecutionException;
 import com.dlong.creeper.execution.base.LoopableExecutor;
+import com.dlong.creeper.execution.context.ChainContext;
 import com.dlong.creeper.model.result.ExecutionResult;
 import com.dlong.creeper.model.result.LoopExecutionResult;
 import com.dlong.creeper.model.seq.LoopableEntity;
@@ -57,6 +58,11 @@ public class WhileExecuteLooper<T extends LoopableEntity> extends BaseExecuteLoo
         loopResult.setLoopNum(count);
         loopResult.setTotalNum(count);
         return loopResult;
+    }
+
+    @Override
+    public void doPredict(LoopExecutionResult<T> result, ChainContext context) throws ExecutionException {
+
     }
 
     public boolean loopCondition(){

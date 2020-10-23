@@ -9,12 +9,13 @@ import com.dlong.creeper.execution.resolver.AutoNextSeqResultResolver;
 import com.dlong.creeper.model.result.ExecutionResult;
 import com.dlong.creeper.model.result.LoopExecutionResult;
 import com.dlong.creeper.model.seq.LoopableEntity;
+import com.dlong.creeper.model.seq.RequestEntity;
 import com.dlong.creeper.model.seq.control.ForIndexLooper;
-import com.dlong.creeper.model.seq.control.Looper;
 import com.dlong.creeper.model.seq.multi.Multiple;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.util.Collection;
 
 public class ForIndexExecuteLooper<T extends LoopableEntity> extends BaseExecuteLooper<T> {
     private static Logger logger= Logger.getLogger(ForIndexExecuteLooper.class);
@@ -26,22 +27,15 @@ public class ForIndexExecuteLooper<T extends LoopableEntity> extends BaseExecute
     @Override
     @SuppressWarnings(value = "unchecked")
     public LoopExecutionResult<T> doLoop(T loopableEntity) throws ExecutionException, IOException {
-        ChainContext context = getContext();
-        ContextParamStore contextStore = getContext().getContextStore();
-
-        Looper looper = loopableEntity.getLooper();
-        ForIndexLooper forIndexEntity= (ForIndexLooper) looper;
         Multiple multiple = loopableEntity instanceof Multiple ? (Multiple) loopableEntity:null;
-
-        String startExpr = forIndexEntity.getStart();
-        String endExpr = forIndexEntity.getEnd();
-
         LoopExecutionResult<T> loopResult = new LoopExecutionResult<>(loopableEntity);
 
-        Integer start = context.getExpressionParser().parse(startExpr,Integer.class);
-        Integer end = context.getExpressionParser().parse(endExpr,Integer.class);
-        contextStore.addParam("start",start);
-        contextStore.addParam("end",end);
+        ContextParamStore contextStore = getContext().getContextStore();
+        ForIndexLooper forIndexLooper = (ForIndexLooper) loopableEntity.getLooper();
+
+        Integer start = getStartIndex(contextStore,forIndexLooper);
+        Integer end = getEndIndex(contextStore,forIndexLooper);
+        Collection<Object> prediectItems = forIndexLooper.getPredictItems();
         int i;
         for (i = start; i <= end; i++) {
             if(isMultipleShutdown(multiple)){
@@ -49,9 +43,12 @@ public class ForIndexExecuteLooper<T extends LoopableEntity> extends BaseExecute
                 logger.warn("Looper of "+loopableEntity+" is break probably cause by other thread successed!");
                 break;
             }
+            if(forIndexLooper.isPredicted() && !prediectItems.contains(i)){
+                continue;
+            }
             logger.info("* Loop "+i+" of "+end+" of "+loopableEntity+" will be execute by "+this.getClass().getSimpleName());
 
-            contextStore.addParam(forIndexEntity.getIndexName(),i);
+            contextStore.addParam(forIndexLooper.getIndexName(),i);
 
             ExecutionResult<T> innerResult = executor.doExecute(loopableEntity);
 
@@ -71,5 +68,41 @@ public class ForIndexExecuteLooper<T extends LoopableEntity> extends BaseExecute
         loopResult.setTotalNum(end);
         new AutoNextSeqResultResolver().afterExecuteResovle(loopResult,getContext());
         return loopResult;
+    }
+
+    @Override
+    public void doPredict(LoopExecutionResult<T> result, ChainContext context) throws ExecutionException {
+        T loopableEntity = result.getOrginalSeq();
+        ContextParamStore contextStore = getContext().getContextStore();
+        ForIndexLooper forIndexLooper = (ForIndexLooper) loopableEntity.getLooper();
+        Integer start = getStartIndex(contextStore, forIndexLooper);
+        Integer end = getEndIndex(contextStore, forIndexLooper);
+        if(loopableEntity instanceof RequestEntity){
+            RequestEntity requestEntity = (RequestEntity) loopableEntity;
+            int i;
+            for (i = start; i <= end; i++) {
+                contextStore.addParam(forIndexLooper.getIndexName(),i);
+                forIndexLooper.putPredictUrlItem(requestEntity.buildUrl(context),i);
+            }
+            forIndexLooper.setPredicted(true);
+        }
+    }
+
+    private Integer getEndIndex(ContextParamStore contextStore, ForIndexLooper forIndexLooper) {
+        Integer value = (Integer) contextStore.getValue("end");
+        if(value == null){
+            value = contextStore.getExpressionParser().parse(forIndexLooper.getEnd(), Integer.class);
+            contextStore.addParam("end",value);
+        }
+        return value;
+    }
+
+    private Integer getStartIndex(ContextParamStore contextStore, ForIndexLooper forIndexLooper) {
+        Integer value = (Integer) contextStore.getValue("start");
+        if(value == null){
+            value = contextStore.getExpressionParser().parse(forIndexLooper.getStart(), Integer.class);
+            contextStore.addParam("start",value);
+        }
+        return value;
     }
 }
