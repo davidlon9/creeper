@@ -1,10 +1,13 @@
 package com.dlong.creeper.execution.context;
 
 import com.dlong.creeper.exception.RuntimeExecuteException;
+import com.dlong.creeper.execution.request.DefaultRequestBuilder;
+import com.dlong.creeper.execution.request.HttpRequestBuilder;
 import com.dlong.creeper.expression.ContextExpressionParser;
 import com.dlong.creeper.util.SSLUtil;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.fluent.Executor;
+import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.impl.client.BasicCookieStore;
 
 public class ExecutionContext {
@@ -12,6 +15,7 @@ public class ExecutionContext {
     protected FormParamStore paramStore;
     protected CookieStore cookieStore;
     protected ContextParamStore contextStore;
+    protected HttpRequestBuilder requestBuilder;
 
     public ExecutionContext() {
         this(null,null);
@@ -56,6 +60,7 @@ public class ExecutionContext {
             throw new RuntimeExecuteException(e);
         }
         setExecutor(this.executor);
+        this.requestBuilder=new DefaultRequestBuilder(this);
     }
 
     private Executor createExecutor() {
@@ -108,5 +113,13 @@ public class ExecutionContext {
         ExecutionContext clone = (ExecutionContext) super.clone();
         clone.setContextStore(this.contextStore.clone());
         return clone;
+    }
+
+    public HttpRequestBuilder getRequestBuilder() {
+        return requestBuilder;
+    }
+
+    public void setRequestBuilder(HttpRequestBuilder requestBuilder) {
+        this.requestBuilder = requestBuilder;
     }
 }

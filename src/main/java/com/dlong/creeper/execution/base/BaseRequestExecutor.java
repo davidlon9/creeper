@@ -33,8 +33,6 @@ import java.util.Collections;
 
 
 public class BaseRequestExecutor<T extends RequestEntity> extends AbstractLoopableExecutor<T> implements RequestExecutor<T> {
-    private HttpRequestBuilder requestBuilder;
-
     private RequestExecutionResultHandlerRegistry handlerExecuteHandlerRegistry;
     private ExecutionResultResolverRegistry handlerExecuteResultResolverRegistry;
 
@@ -52,13 +50,7 @@ public class BaseRequestExecutor<T extends RequestEntity> extends AbstractLoopab
         init();
     }
 
-    public BaseRequestExecutor(ChainContext context, HttpRequestBuilder requestBuilder) {
-        this(context);
-        this.requestBuilder = requestBuilder;
-    }
-
     private void init(){
-        this.requestBuilder = new DefaultRequestBuilder(super.getContext());
         this.handlerExecuteHandlerRegistry = new HandlerExecutionResultHandlerRegistry();
         this.handlerExecuteResultResolverRegistry = new ExecutionResultResolverRegistry();
 
@@ -85,7 +77,7 @@ public class BaseRequestExecutor<T extends RequestEntity> extends AbstractLoopab
 
         Request request;
         try {
-            request = requestBuilder.buildRequest(requestEntity.getRequestInfo());
+            request = requestEntity.buildRequest(getContext());
         } catch (Exception e) {
             logger.error("request build error, no url parsed out");
             return handleError(e,executionResult);
@@ -221,14 +213,6 @@ public class BaseRequestExecutor<T extends RequestEntity> extends AbstractLoopab
             executionResult.setContent(new ContentResponseHandler().handleResponse(httpResponse));
         }
         return executionResult;
-    }
-
-    public HttpRequestBuilder getRequestBuilder() {
-        return requestBuilder;
-    }
-
-    public void setRequestBuilder(HttpRequestBuilder requestBuilder) {
-        this.requestBuilder = requestBuilder;
     }
 
     public RequestExecutionResultHandlerRegistry getHandlerExecuteHandlerRegistry() {
