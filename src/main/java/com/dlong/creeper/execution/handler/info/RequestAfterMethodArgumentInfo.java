@@ -1,8 +1,10 @@
 package com.dlong.creeper.execution.handler.info;
 
 import com.dlong.creeper.exception.RuntimeExecuteException;
+import com.dlong.creeper.execution.context.ContextParamStore;
 import com.dlong.creeper.execution.context.ExecutionContext;
 import com.dlong.creeper.model.result.ExecutionResult;
+import com.dlong.creeper.model.seq.control.PredictableUrlLooper;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.fluent.Content;
 import org.apache.log4j.Logger;
@@ -10,8 +12,10 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public class RequestAfterMethodArgumentInfo extends HandlerMethodArgumentInfo {
     private static Logger logger= Logger.getLogger(RequestAfterMethodArgumentInfo.class);
@@ -34,8 +38,7 @@ public class RequestAfterMethodArgumentInfo extends HandlerMethodArgumentInfo {
         for (int i = 0; i < parameterTypes.length; i++) {
             Class<?> parameterType = parameterTypes[i];
             if(!isSupportArgType(parameterType)){
-                args[i]=null;
-                logger.warn(parameterType +" can't as a arg for handler entity method,this arg value will be null. please try these parameter types:"+getSupportedTypeList().toString());
+                args[i] = findValueInContext(getParameterName(method, i), parameterType);
                 continue;
             }
             try {
@@ -64,7 +67,9 @@ public class RequestAfterMethodArgumentInfo extends HandlerMethodArgumentInfo {
     public static Object getData(ExecutionResult executionResult, Class<?> dataType) throws IOException {
         Object result = null;
         Content content = executionResult.getContent();
-        if(content!=null){
+        if(dataType.equals(HttpResponse.class)){
+            result = executionResult.getHttpResponse();
+        }else if(content!=null){
             if(dataType.equals(String.class)){
                 result = content.asString();
             }else if(dataType.equals(Content.class)){
@@ -72,8 +77,6 @@ public class RequestAfterMethodArgumentInfo extends HandlerMethodArgumentInfo {
             }else if(dataType.equals(InputStream.class)){
                 result = content.asStream();
             }
-        }else if(dataType.equals(HttpResponse.class)){
-            result = executionResult.getHttpResponse();
         }else{
             logger.warn(dataType+" type arg value is null");
         }

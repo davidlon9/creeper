@@ -1,11 +1,14 @@
 package com.dlong.creeper.execution.handler.info;
 
+import com.dlong.creeper.exception.RuntimeExecuteException;
 import com.dlong.creeper.execution.context.*;
 import org.apache.http.client.CookieStore;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.log4j.Logger;
+import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +21,10 @@ public class HandlerMethodArgumentInfo {
 
     protected static final List<Class> supportedTypeList = new ArrayList<>();
 
+    private LocalVariableTableParameterNameDiscoverer parameterNameDiscoverer = new LocalVariableTableParameterNameDiscoverer();
+
+    private ExecutionContext context;
+
     static{
         supportedTypeList.add(ExecutionContext.class);
         supportedTypeList.add(FormParamStore.class);
@@ -28,6 +35,7 @@ public class HandlerMethodArgumentInfo {
     }
 
     public HandlerMethodArgumentInfo(ExecutionContext context) {
+        this.context = context;
         initContextArgInstanceMap(context);
     }
 
@@ -70,7 +78,34 @@ public class HandlerMethodArgumentInfo {
         return args;
     }
 
-//    /**
+    public String getParameterName(Method method, int paramIndex) {
+        return this.parameterNameDiscoverer.getParameterNames(method)[paramIndex];
+    }
+
+    public Object findValueInContext(String parameterName, Class<?> type) {
+        ContextParamStore contextStore = context.getContextStore();
+        Object value = contextStore.getValue(parameterName);
+        if(value == null){
+            Map<String, Object> paramMap = contextStore.getParamMap();
+            for (Object o : paramMap.values()) {
+                if(type.isAssignableFrom(o.getClass())){
+                    if(value == null){
+                        value = o;
+                    }else{
+                        throw new RuntimeExecuteException("cannot find specific parameter "+type.getSimpleName()+" in context store, because its more than 1 same type value");
+                    }
+                }
+            }
+            if(value == null){
+                throw new RuntimeExecuteException("cannot find specific parameter "+ parameterName +" in context store");
+            }
+        }else if(!type.isAssignableFrom(value.getClass())){
+            throw new RuntimeExecuteException("found specific parameter "+parameterName+" in context store , but type is not assginable to "+type.getSimpleName());
+        }
+        return value;
+    }
+
+    //    /**
 //     * 获取前处理器方法的参数
 //     * @param entityTarget
 //     * @param request

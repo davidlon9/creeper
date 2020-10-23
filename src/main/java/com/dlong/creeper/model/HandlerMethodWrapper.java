@@ -63,7 +63,7 @@ public class HandlerMethodWrapper{
             }else{
                 logger.warn("handler method is null");
             }
-        } catch (IllegalAccessException | InvocationTargetException e) {
+        } catch (IllegalAccessException | InvocationTargetException | IllegalArgumentException e ) {
             throw new RuntimeExecuteException(" HandlerMethod "+method.getName()+" invoke failed",e.getCause());
         }
         return result;

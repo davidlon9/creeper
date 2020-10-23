@@ -29,16 +29,15 @@ public class ExecutionMethodArgumentInfo extends HandlerMethodArgumentInfo {
         Class<?>[] parameterTypes = method.getParameterTypes();
         Object[] args=new Object[parameterTypes.length];
         for (int i = 0; i < parameterTypes.length; i++) {
-            if(!isSupportArgType(parameterTypes[i])){
-                args[i]=null;
-                logger.warn(parameterTypes[i]+" can't as a arg for handler entity method,this arg value will be null. please try these parameter types:"+getSupportedTypeList().toString());
+            Class<?> parameterType = parameterTypes[i];
+            if(!isSupportArgType(parameterType)){
+                args[i] = findValueInContext(getParameterName(method, i), parameterType);
                 continue;
             }
-
-            if (parameterTypes[i].equals(Request.class)) {
+            if (parameterType.equals(Request.class)) {
                 args[i]=request;
             }else{
-                args[i] = getArgInstance(parameterTypes[i]);
+                args[i] = getArgInstance(parameterType);
             }
         }
         return args;
