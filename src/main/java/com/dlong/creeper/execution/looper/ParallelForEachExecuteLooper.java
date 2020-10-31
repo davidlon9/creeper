@@ -1,6 +1,5 @@
 package com.dlong.creeper.execution.looper;
 
-import com.dlong.creeper.annotation.control.looper.ParallelForEach;
 import com.dlong.creeper.control.RetryAction;
 import com.dlong.creeper.exception.ExecutionException;
 import com.dlong.creeper.execution.base.LoopableExecutor;
@@ -11,17 +10,20 @@ import com.dlong.creeper.model.result.ExecutionResult;
 import com.dlong.creeper.model.result.LoopExecutionResult;
 import com.dlong.creeper.model.seq.LoopableEntity;
 import com.dlong.creeper.model.seq.RequestEntity;
-import com.dlong.creeper.model.seq.control.ForEachLooper;
 import com.dlong.creeper.model.seq.control.Looper;
 import com.dlong.creeper.model.seq.control.ParallelForEachLooper;
 import com.dlong.creeper.model.seq.multi.Multiple;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.util.Collection;
+import java.util.*;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class ParallelForEachExecuteLooper<T extends LoopableEntity> extends BaseExecuteLooper<T> {
     private static Logger logger= Logger.getLogger(ParallelForEachExecuteLooper.class);
@@ -49,6 +51,24 @@ public class ParallelForEachExecuteLooper<T extends LoopableEntity> extends Base
         AtomicInteger count=new AtomicInteger(0);
         AtomicBoolean isStop=new AtomicBoolean(false);
         AtomicReference<Exception> exception=new AtomicReference<>(null);
+
+        ForkJoinPool forkJoinPool = new ForkJoinPool(forEachLooper.getParallelism());
+        try {
+            forkJoinPool.submit(() -> doIterate(loopableEntity, contextStore, forEachLooper, multiple, items, loopResult, count, isStop, exception)).get();
+        } catch (InterruptedException | java.util.concurrent.ExecutionException e) {
+            exception.set(e);
+        }
+        Exception e = exception.get();
+        if(e !=null){
+            throw new ExecutionException(e);
+        }
+        loopResult.setLoopNum(count.get());
+        loopResult.setTotalNum(items.size());
+        new AutoNextSeqResultResolver().afterExecuteResovle(loopResult,getContext());
+        return loopResult;
+    }
+
+    private void doIterate(T loopableEntity, ContextParamStore contextStore, ParallelForEachLooper forEachLooper, Multiple multiple, Collection items, LoopExecutionResult<T> loopResult, AtomicInteger count, AtomicBoolean isStop, AtomicReference<Exception> exception) {
         items.parallelStream().forEach(obj->{
             if(isStop.get()){
                 return;
@@ -87,14 +107,6 @@ public class ParallelForEachExecuteLooper<T extends LoopableEntity> extends Base
             loopResult.setNextSeq(innerResult.getNextSeq());
             loopResult.addLoopResult(innerResult);
         });
-        Exception e = exception.get();
-        if(e !=null){
-            throw new ExecutionException(e);
-        }
-        loopResult.setLoopNum(count.get());
-        loopResult.setTotalNum(items.size());
-        new AutoNextSeqResultResolver().afterExecuteResovle(loopResult,getContext());
-        return loopResult;
     }
 
     @Override
@@ -129,4 +141,25 @@ public class ParallelForEachExecuteLooper<T extends LoopableEntity> extends Base
         return retryResult;
     }
 
+    public static void main(String[] args) throws java.util.concurrent.ExecutionException, InterruptedException {
+        List<Integer> integerList= IntStream.range(1,500).boxed().collect(Collectors.toList());
+        System.out.println();
+        AtomicInteger count=new AtomicInteger(0);
+        ForkJoinPool customThreadPool = new ForkJoinPool(8);
+        List<Integer> nums=new ArrayList<>();
+        ForkJoinTask<?> submit = customThreadPool.submit(() -> {
+            integerList.parallelStream().forEach((i) -> {
+                System.out.println(Thread.currentThread().getName() + ":" + i + "  count:" + count.addAndGet(1));
+                nums.add(i);
+                try {
+                    Thread.sleep(200);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            });
+        });
+        submit.get();
+        Collections.sort(nums);
+        System.out.println(nums.size());
+    }
 }

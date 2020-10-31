@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.sql.*;
 import java.util.Set;
 
-public class DatabaseUrlRecorder extends AbstractUrlRecorder {
+public class DatabaseUrlRecorder extends BaseRecorder {
     private DataSource dataSource;
     private String urlColName;
     private String tableName;

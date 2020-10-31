@@ -6,7 +6,7 @@ import com.dlong.creeper.model.seq.recorder.UrlRecorder;
 
 public class LoopableEntity extends HandleableEntity{
     private Looper looper;
-    private UrlRecorder recorder;
+    private UrlRecorder urlRecorder;
     private ThreadLocalMap<Thread> parallelLocalThread = new ThreadLocalMap<>();
 
     public Looper getLooper() {
@@ -18,11 +18,11 @@ public class LoopableEntity extends HandleableEntity{
     }
 
     public UrlRecorder getRecorder() {
-        return recorder;
+        return urlRecorder;
     }
 
-    public void setRecorder(UrlRecorder recorder) {
-        this.recorder = recorder;
+    public void setRecorder(UrlRecorder urlRecorder) {
+        this.urlRecorder = urlRecorder;
     }
 
     public Thread getParalleThread() {
@@ -38,6 +38,6 @@ public class LoopableEntity extends HandleableEntity{
     }
 
     public boolean isUrlRecorded(String historicalUrl){
-        return this.recorder!=null && this.recorder.isUrlRecorded(historicalUrl);
+        return this.urlRecorder !=null && this.urlRecorder.isUrlRecorded(historicalUrl);
     }
 }

@@ -1,7 +1,9 @@
 package com.dlong.creeper.resolver.recorder;
 
-import com.dlong.creeper.annotation.control.recorder.FileUrlRecorder;
+import com.dlong.creeper.annotation.control.recorder.RecordeDataToExcel;
+import com.dlong.creeper.annotation.control.recorder.RecordeUrlToFile;
 import com.dlong.creeper.exception.AnnotationNotFoundException;
+import com.dlong.creeper.model.seq.recorder.ExcelDataRecorder;
 import com.dlong.creeper.model.seq.recorder.UrlRecorder;
 import com.dlong.creeper.resolver.base.AnnotationResolver;
 import com.dlong.creeper.util.FileUtil;
@@ -11,20 +13,20 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 
-public class FileRecordsIgnoreResolver extends AnnotationResolver implements RecorderResolver{
+public class ExcelDataRecorderResolver extends AnnotationResolver implements RecorderResolver{
     public static final String DEFAULT_RECORD_FILE_DIR_NAME = "records";
-    public static final String DEFAULT_RECORD_FILE_NAME = "all.txt";
+    public static final String DEFAULT_RECORD_FILE_NAME = "data.xlsx";
 
-    public FileRecordsIgnoreResolver(AnnotatedElement target) {
-        super(target,FileUrlRecorder.class);
+    public ExcelDataRecorderResolver(AnnotatedElement target) {
+        super(target,RecordeUrlToFile.class);
     }
 
     @Override
     public UrlRecorder resolve() throws AnnotationNotFoundException {
         Annotation annotation = super.resolveAnnotation();
-        FileUrlRecorder fileRecorder = (FileUrlRecorder) annotation;
-        if(fileRecorder != null){
-            String path = fileRecorder.filePath();
+        RecordeDataToExcel recordeDataToExcel = (RecordeDataToExcel) annotation;
+        if(recordeDataToExcel != null){
+            String path = recordeDataToExcel.excelPath();
             File file;
             if(path.equals("/")){
                 file = new File(System.getProperty("user.dir") + File.separator + DEFAULT_RECORD_FILE_DIR_NAME + File.separator + DEFAULT_RECORD_FILE_NAME);
@@ -32,14 +34,16 @@ public class FileRecordsIgnoreResolver extends AnnotationResolver implements Rec
                 file = new File(path);
             }
             if(file.isDirectory()){
-                file = new File(path+File.separator+file.getName()+".txt");
+                file = new File(path+File.separator+file.getName()+".xlsx");
             }
             try {
                 FileUtil.createIfNotExists(file);
-                com.dlong.creeper.model.seq.recorder.FileUrlRecorder fileUrlRecorder = new com.dlong.creeper.model.seq.recorder.FileUrlRecorder(file);
-                fileUrlRecorder.setRecordFile(file);
-                fileUrlRecorder.setPerIterateTimesUpdate(fileRecorder.perIterateTimesUpdate());
-                return fileUrlRecorder;
+                ExcelDataRecorder dataRecorder = new ExcelDataRecorder(file);
+                dataRecorder.setExcelFile(file);
+                dataRecorder.setDataListContextKey(recordeDataToExcel.dataListContextKey());
+                dataRecorder.setUrlColName(recordeDataToExcel.urlColName());
+                dataRecorder.setWriteStrategy(recordeDataToExcel.writeStrategy());
+                return dataRecorder;
             } catch (IOException e) {
                 e.printStackTrace();
                 return null;

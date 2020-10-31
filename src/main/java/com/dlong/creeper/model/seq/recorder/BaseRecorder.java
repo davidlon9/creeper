@@ -6,8 +6,9 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-public abstract class AbstractUrlRecorder implements UrlRecorder {
+public abstract class BaseRecorder implements UrlRecorder {
     private boolean isReaded = false;
+    private WriteStrategy writeStrategy = WriteStrategy.LoopEnd;
     private Set<String> urlRecords = new HashSet<>(0);
 
     public Set<String> getUrlRecords() {
@@ -27,6 +28,14 @@ public abstract class AbstractUrlRecorder implements UrlRecorder {
         Set<String> urls = doReadRecords(context);
         this.isReaded = true;
         return urls;
+    }
+
+    public WriteStrategy getWriteStrategy() {
+        return writeStrategy;
+    }
+
+    public void setWriteStrategy(WriteStrategy writeStrategy) {
+        this.writeStrategy = writeStrategy;
     }
 
     protected abstract Set<String> doReadRecords(ChainContext context) throws IOException;

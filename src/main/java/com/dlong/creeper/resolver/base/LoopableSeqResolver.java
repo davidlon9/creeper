@@ -30,10 +30,10 @@ public class LoopableSeqResolver extends HandleableResolver{
     private void resolveRecoder(LoopableEntity loopableEntity) throws AnnotationNotFoundException {
         RecorderResolver recoderResolver = ResolverFactory.getRecoderResolver(getTarget());
         if(recoderResolver!=null){
-            UrlRecorder recorder = recoderResolver.resolve();
-            if(recorder != null){
-                loopableEntity.setRecorder(recorder);
-                logger.info("set Recorder "+recorder.getClass().getSimpleName()+" for "+WrapUtil.enBrackets(loopableEntity.getName()));
+            UrlRecorder urlRecorder = recoderResolver.resolve();
+            if(urlRecorder != null){
+                loopableEntity.setRecorder(urlRecorder);
+                logger.info("set UrlRecorder "+ urlRecorder.getClass().getSimpleName()+" for "+WrapUtil.enBrackets(loopableEntity.getName()));
             }
         }
     }

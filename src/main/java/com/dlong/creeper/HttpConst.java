@@ -1,5 +1,10 @@
 package com.dlong.creeper;
 
+import com.dlong.creeper.control.*;
+
+import java.util.Arrays;
+import java.util.List;
+
 public class HttpConst {
     public static final String SCHEME_HTTP="http";
     public static final String SCHEME_HTTPS="https";
@@ -19,5 +24,4 @@ public class HttpConst {
     public static final String CONTENT_TYPE_TEXT_HTML = "text/html";
     public static final String CONTENT_TYPE_TEXT_PLAIN = "text/plain";
     public static final String CONTENT_TYPE_TEXT_XML = "text/xml";
-
 }

@@ -20,9 +20,10 @@ public class ParallelForEachLooperResolver extends BaseLooperResolver<ParallelFo
         Map<String,Object> attributes = AnnotationUtils.getAnnotationAttributes(getAnnotation());
         Object itemsContextKey = attributes.get("itemsContextKey");
         Object itemName = attributes.get("itemName");
-
+        Integer parallelism = (Integer) attributes.get("parallelism");
         forEachLooper.setItemName(itemName.toString());
         forEachLooper.setItemsContextKey(itemsContextKey.toString());
+        forEachLooper.setParallelism(parallelism);
         return forEachLooper;
     }
 }

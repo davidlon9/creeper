@@ -12,5 +12,6 @@ import java.lang.annotation.Target;
 public @interface ParallelForEach {
     String itemsContextKey();
     String itemName() default "item";
+    int parallelism() default 3;
     ExecutionMode executionMode() default ExecutionMode.SEQUENTIAL;
 }

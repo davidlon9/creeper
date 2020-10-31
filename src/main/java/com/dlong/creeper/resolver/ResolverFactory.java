@@ -2,7 +2,8 @@ package com.dlong.creeper.resolver;
 
 import com.dlong.creeper.annotation.control.looper.ParallelForEach;
 import com.dlong.creeper.annotation.control.recorder.DatabaseRecordsIgnore;
-import com.dlong.creeper.annotation.control.recorder.FileUrlRecorder;
+import com.dlong.creeper.annotation.control.recorder.RecordeDataToExcel;
+import com.dlong.creeper.annotation.control.recorder.RecordeUrlToFile;
 import com.dlong.creeper.annotation.control.looper.ForEach;
 import com.dlong.creeper.annotation.control.looper.ForIndex;
 import com.dlong.creeper.annotation.control.looper.While;
@@ -16,7 +17,8 @@ import com.dlong.creeper.annotation.seq.multi.MultiUserChain;
 import com.dlong.creeper.exception.RuntimeResolveException;
 import com.dlong.creeper.resolver.looper.*;
 import com.dlong.creeper.resolver.recorder.DatabaseRecordsIgnoreResolver;
-import com.dlong.creeper.resolver.recorder.FileRecordsIgnoreResolver;
+import com.dlong.creeper.resolver.recorder.ExcelDataRecorderResolver;
+import com.dlong.creeper.resolver.recorder.FileUrlRecorderResolver;
 import com.dlong.creeper.resolver.recorder.RecorderResolver;
 
 import java.lang.annotation.Annotation;
@@ -46,7 +48,8 @@ public class ResolverFactory {
         looperAnnoResolverClassMap.put(While.class, WhileLooperResolver.class);
         looperAnnoResolverClassMap.put(Scheduler.class, ScheduleLooperResolver.class);
 
-        recoderAnnoResolverClassMap.put(FileUrlRecorder.class, FileRecordsIgnoreResolver.class);
+        recoderAnnoResolverClassMap.put(RecordeUrlToFile.class, FileUrlRecorderResolver.class);
+        recoderAnnoResolverClassMap.put(RecordeDataToExcel.class, ExcelDataRecorderResolver.class);
         recoderAnnoResolverClassMap.put(DatabaseRecordsIgnore.class, DatabaseRecordsIgnoreResolver.class);
     }
 
