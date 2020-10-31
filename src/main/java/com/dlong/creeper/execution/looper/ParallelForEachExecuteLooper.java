@@ -71,6 +71,7 @@ public class ParallelForEachExecuteLooper<T extends LoopableEntity> extends Base
     private void doIterate(T loopableEntity, ContextParamStore contextStore, ParallelForEachLooper forEachLooper, Multiple multiple, Collection items, LoopExecutionResult<T> loopResult, AtomicInteger count, AtomicBoolean isStop, AtomicReference<Exception> exception) {
         items.parallelStream().forEach(obj->{
             if(isStop.get()){
+                logger.info("Parallel Loop is breaked "+obj+" won't be iterate");
                 return;
             }
             if(isMultipleShutdown(multiple)){
@@ -81,7 +82,7 @@ public class ParallelForEachExecuteLooper<T extends LoopableEntity> extends Base
             }
 
             contextStore.addParam(forEachLooper.getItemName(),obj);
-            logger.info("* Parallel Loop "+count.get()+"of "+items.size()+" of "+loopableEntity+" will be execute by "+this.getClass().getSimpleName());
+            logger.info("* Parallel Loop "+count.addAndGet(1)+" of "+items.size()+" of "+loopableEntity+" will be execute by "+this.getClass().getSimpleName());
             ExecutionResult<T> innerResult;
             try {
                 innerResult = executor.doExecute(loopableEntity);
@@ -96,8 +97,6 @@ public class ParallelForEachExecuteLooper<T extends LoopableEntity> extends Base
                         isStop.set(true);
                         return;
                     }
-                }else{
-                    count.addAndGet(1);
                 }
             } catch (IOException | ExecutionException e) {
                 exception.set(e);
