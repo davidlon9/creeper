@@ -10,7 +10,6 @@ import com.dlong.creeper.model.seq.LoopableEntity;
 import java.io.IOException;
 
 public abstract class AbstractLoopableExecutor<T extends LoopableEntity> extends BaseChainContextExecutor implements LoopableExecutor<T>,Cloneable{
-
     public AbstractLoopableExecutor(ChainContext context) {
         super(context);
     }
@@ -48,4 +47,6 @@ public abstract class AbstractLoopableExecutor<T extends LoopableEntity> extends
         }
         return result;
     }
+
+
 }

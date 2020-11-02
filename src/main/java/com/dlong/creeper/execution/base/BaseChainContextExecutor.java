@@ -8,20 +8,9 @@ public class BaseChainContextExecutor {
     private Logger logger= Logger.getLogger(BaseChainContextExecutor.class);
 
     private ChainContext context;
-    private final boolean isMultiThread;
+    private boolean isMultiThread;
 
-    private ThreadLocal<ChainContext> contextThreadLocal=new ThreadLocal<ChainContext>(){
-        @Override
-        protected ChainContext initialValue() {
-            try {
-                return context.clone();
-            } catch (CloneNotSupportedException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-    };
-
+    private ThreadLocal<ChainContext> contextThreadLocal;
 
     public BaseChainContextExecutor(ChainContext context) {
         this(context,false);
@@ -30,6 +19,9 @@ public class BaseChainContextExecutor {
     public BaseChainContextExecutor(ChainContext context, boolean isMultiThread) {
         this.context = context;
         this.isMultiThread = isMultiThread;
+        if(isMultiThread){
+            this.contextThreadLocal = getInitialThreadLocal();
+        }
     }
 
 
@@ -63,5 +55,23 @@ public class BaseChainContextExecutor {
 
     public boolean isMultiThread() {
         return isMultiThread;
+    }
+
+    public void setMultiThread(boolean multiThread) {
+        isMultiThread = multiThread;
+        if(isMultiThread){
+            this.contextThreadLocal = getInitialThreadLocal();
+        }
+    }
+
+    public ThreadLocal<ChainContext> getInitialThreadLocal() {
+        return ThreadLocal.withInitial(() -> {
+            try {
+                return context.clone();
+            } catch (CloneNotSupportedException e) {
+                e.printStackTrace();
+            }
+            return null;
+        });
     }
 }

@@ -2,6 +2,7 @@ package com.dlong.creeper.execution.looper;
 
 import com.dlong.creeper.control.RetryAction;
 import com.dlong.creeper.exception.ExecutionException;
+import com.dlong.creeper.execution.base.AbstractLoopableExecutor;
 import com.dlong.creeper.execution.base.LoopableExecutor;
 import com.dlong.creeper.execution.context.ChainContext;
 import com.dlong.creeper.execution.context.ContextParamStore;
@@ -27,6 +28,7 @@ import java.util.stream.IntStream;
 
 public class ParallelForEachExecuteLooper<T extends LoopableEntity> extends BaseExecuteLooper<T> {
     private static Logger logger= Logger.getLogger(ParallelForEachExecuteLooper.class);
+    private ThreadLocal<ContextParamStore> storeThreadLocal=new ThreadLocal<>();
 
     public ParallelForEachExecuteLooper(LoopableExecutor<T> executor) {
         super(executor,ParallelForEachLooper.class);
@@ -54,7 +56,7 @@ public class ParallelForEachExecuteLooper<T extends LoopableEntity> extends Base
 
         ForkJoinPool forkJoinPool = new ForkJoinPool(forEachLooper.getParallelism());
         try {
-            forkJoinPool.submit(() -> doIterate(loopableEntity, contextStore, forEachLooper, multiple, items, loopResult, count, isStop, exception)).get();
+            forkJoinPool.submit(() -> doIterate(loopableEntity, forEachLooper, multiple, items, loopResult, count, isStop, exception)).get();
         } catch (InterruptedException | java.util.concurrent.ExecutionException e) {
             exception.set(e);
         }
@@ -68,7 +70,9 @@ public class ParallelForEachExecuteLooper<T extends LoopableEntity> extends Base
         return loopResult;
     }
 
-    private void doIterate(T loopableEntity, ContextParamStore contextStore, ParallelForEachLooper forEachLooper, Multiple multiple, Collection items, LoopExecutionResult<T> loopResult, AtomicInteger count, AtomicBoolean isStop, AtomicReference<Exception> exception) {
+    private void doIterate(T loopableEntity, ParallelForEachLooper forEachLooper, Multiple multiple, Collection items, LoopExecutionResult<T> loopResult, AtomicInteger count, AtomicBoolean isStop, AtomicReference<Exception> exception) {
+        AbstractLoopableExecutor loopableExecutor = (AbstractLoopableExecutor) this.executor;
+        loopableExecutor.setMultiThread(true);
         items.parallelStream().forEach(obj->{
             if(isStop.get()){
                 logger.info("Parallel Loop is breaked "+obj+" won't be iterate");
@@ -80,8 +84,7 @@ public class ParallelForEachExecuteLooper<T extends LoopableEntity> extends Base
                 isStop.set(true);
                 return;
             }
-
-            contextStore.addParam(forEachLooper.getItemName(),obj);
+            loopableExecutor.getContext().getContextStore().addParam(forEachLooper.getItemName(),obj);
             logger.info("* Parallel Loop "+count.addAndGet(1)+" of "+items.size()+" of "+loopableEntity+" will be execute by "+this.getClass().getSimpleName());
             ExecutionResult<T> innerResult;
             try {
@@ -138,6 +141,14 @@ public class ParallelForEachExecuteLooper<T extends LoopableEntity> extends Base
             return retryInLoop(loopableEntity, loopResult);
         }
         return retryResult;
+    }
+
+    private AbstractLoopableExecutor<T> cloneAsMultiExecutor() throws CloneNotSupportedException {
+        AbstractLoopableExecutor<T> loopableExecutor = (AbstractLoopableExecutor<T>) this.executor;
+        AbstractLoopableExecutor<T> clonedExecutor = loopableExecutor.clone();
+        clonedExecutor.setMultiThread(true);
+        this.executor = clonedExecutor;
+        return clonedExecutor;
     }
 
     public static void main(String[] args) throws java.util.concurrent.ExecutionException, InterruptedException {
